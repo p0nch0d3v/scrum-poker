@@ -1,2 +1,3 @@
 # scrum-poker-nest-preact
-Sscrum Poker created with Nestjs and Preact
+
+Scrum Poker created with Nestjs and Preact
