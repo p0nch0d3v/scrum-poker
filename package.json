@@ -6,7 +6,7 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --parallel",
     "build": "turbo run build",
     "start": "node apps/api/dist/main"
   }
