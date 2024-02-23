@@ -8,4 +8,7 @@ export class Room {
 
     @Column()
     name: string;
+
+    @Column({nullable: true})
+    password: string;
 }
