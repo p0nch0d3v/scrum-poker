@@ -4,3 +4,8 @@ node_modules/
 .turbo
 /.turbo
 .turbo/
+.vscode
+/.vscode
+.vscode/
+
+.env.docker
