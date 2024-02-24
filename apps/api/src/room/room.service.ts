@@ -14,9 +14,15 @@ export class RoomService {
   ) {}
 
   async create(createRoomDto: CreateRoomDTO): Promise<string> {
-    if (createRoomDto.password !== undefined && createRoomDto.password !== null) {
+    if (createRoomDto.password !== undefined 
+        && createRoomDto.password !== null 
+        && createRoomDto.password.trim().length > 0) {
       createRoomDto.password = await this.hashPassword(createRoomDto.password);
     }
+    else {
+      createRoomDto.password = null;
+    }
+
     const room = await this.roomssRepository.create(createRoomDto);
     await this.roomssRepository.save(room);
     return room.id;
