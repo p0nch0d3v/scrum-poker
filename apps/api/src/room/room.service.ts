@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateRoomDTO } from './dto/create-room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
-import { Repository } from 'typeorm';
+import { Repository, IsNull, Not } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { RoomDTO } from './dto/room.dto';
 
@@ -36,6 +36,15 @@ export class RoomService {
       return true;
     }
     return false;
+  }
+
+  async hasPassword(id: string): Promise<boolean> {
+    return await this.roomssRepository.exists({
+      where: {
+        id: id,
+        password: Not(IsNull())
+      }
+    });
   }
 
   private async hashPassword(password: string): Promise<string> {
