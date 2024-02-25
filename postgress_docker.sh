@@ -1,4 +1,5 @@
 #!/bin/bash 
+
 echo $1
 container_name=scrum-poker-local
 volume_name=scrum-poker-local-volume
@@ -44,6 +45,7 @@ start () {
       --env POSTGRES_USER=$POSTGRES_USER \
       --env POSTGRES_DB=$POSTGRES_DB \
       --volume "$volume_name:/var/lib/postgresql/data" \
+      --network host \
       --detach \
       $docker_image
 
