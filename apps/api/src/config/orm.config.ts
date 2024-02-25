@@ -1,22 +1,25 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { Room } from "src/room/entities/room.entity";
 
 require('dotenv').config();
 
-export const typeOrmModuleOptions: TypeOrmModuleOptions = {
-    type: 'postgres',
+export function typeOrmModuleOptions(isProduction: boolean): TypeOrmModuleOptions {
+    return {
+        type: 'postgres',
 
-    host: process.env.POSTGRES_DB_HOST,
-    port: parseInt(<string>process.env.POSTGRES_DB_PORT),
-    username: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DATABASE,
+        host: process.env.POSTGRES_DB_HOST,
+        port: parseInt(<string>process.env.POSTGRES_DB_PORT),
+        username: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
+        database: process.env.POSTGRES_DATABASE,
 
-    entities: [ __dirname + '**/*.entity{.ts,.js}' ]
-};
+        entities: [Room]
+    };
+}
 
 export function getOrmConfig(isProduction: boolean) {
     return {
-        ...typeOrmModuleOptions,
+        ...typeOrmModuleOptions(isProduction),
         migrationsTableName: "migrations",
         migrations: ["src/migrations/*.ts"],
         cli: {
