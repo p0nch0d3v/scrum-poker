@@ -1,6 +1,8 @@
 import { FunctionalComponent } from "preact";
 import { useEffect, useState } from "preact/hooks";
+import { route } from 'preact-router';
 import { getRoom } from '../../services/api.service';
+import { validateUUID } from "../../helpers/helpers";
 
 type RoomProps = {
   id: string
@@ -8,13 +10,21 @@ type RoomProps = {
 
 const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
   const [room, setRoom] = useState<any>(null);
-  
+
   useEffect(() => {
     async function useEffectAsync() {
-      const getRoomResult = await getRoom(id);
-      console.debug(getRoomResult);
-      setRoom(getRoomResult);
-      //setRoom(await getRoom(id));
+      if (validateUUID(id)) {
+        const getRoomResult = await getRoom(id);
+        if (!getRoomResult) {
+          alert('');
+          route(`/`);
+        }
+        setRoom(getRoomResult);
+      }
+      else {
+        alert('');
+        route(`/`);
+      }
     }
     useEffectAsync();
   }, []);

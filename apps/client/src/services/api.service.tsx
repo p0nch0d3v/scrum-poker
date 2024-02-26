@@ -21,7 +21,8 @@ const joinRoom = async function (id: string, password: string) {
 
 const getRoom = async function (id: string) {
     return await axios.get(`/api/room/get?id=${id}`)
-        .then((r) => r.data);
+        .then((r) => r.data)
+        .catch((e) => { console.debug(e); return null;});
 };
 
 export {

@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
 import { route } from 'preact-router';
 import { roomHasPassword, joinRoom } from '../../services/api.service';
+import { validateUUID } from "../../helpers/helpers";
 
 export default function JoinRoomComponent() {
     const [roomId, setRoomId] = useState<string>('');
@@ -10,12 +11,11 @@ export default function JoinRoomComponent() {
     const onRoomIdChange = async function (event: any) {
         const value = event?.target?.value;
 
-        if (value !== undefined && value !== null && value?.trim().length > 0) {
+        if (value !== undefined && value !== null && value?.trim().length > 0 && validateUUID(value)) {
             setRoomId(value);
             setRoomNeedsPassword(await roomHasPassword(value));
         }
         else {
-            setRoomId('');
             setRoomNeedsPassword(false);
         }
     };
