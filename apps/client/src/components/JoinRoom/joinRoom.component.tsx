@@ -1,4 +1,5 @@
 import { useState } from "preact/hooks";
+import { route } from 'preact-router';
 import { roomHasPassword, joinRoom } from '../../services/api.service';
 
 export default function JoinRoomComponent() {
@@ -29,6 +30,9 @@ export default function JoinRoomComponent() {
     const onJoinClick = async function () {
         const canJoin = await joinRoom(roomId, password);
         console.debug('canJoin =', canJoin);
+        if (canJoin) {
+            route(`/room/${roomId}`);
+        }
     };
 
     return (

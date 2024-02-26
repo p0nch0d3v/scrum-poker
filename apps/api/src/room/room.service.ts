@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
 import { Repository, IsNull, Not } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { JoinRoomDTO } from './dto/joinRoom.dto';
 import { RoomDTO } from './dto/room.dto';
 
 @Injectable()
@@ -11,12 +12,12 @@ export class RoomService {
   constructor(
     @InjectRepository(Room)
     private roomssRepository: Repository<Room>,
-  ) {}
+  ) { }
 
   async create(createRoomDto: CreateRoomDTO): Promise<string> {
-    if (createRoomDto.password !== undefined 
-        && createRoomDto.password !== null 
-        && createRoomDto.password.trim().length > 0) {
+    if (createRoomDto.password !== undefined
+      && createRoomDto.password !== null
+      && createRoomDto.password.trim().length > 0) {
       createRoomDto.password = await this.hashPassword(createRoomDto.password);
     }
     else {
@@ -28,7 +29,7 @@ export class RoomService {
     return room.id;
   }
 
-  async exists(roomDto: RoomDTO): Promise<boolean> {
+  async exists(roomDto: JoinRoomDTO): Promise<boolean> {
     const savedRoom = await this.roomssRepository.findOne({
       where: {
         id: roomDto.id
@@ -51,6 +52,16 @@ export class RoomService {
         password: Not(IsNull())
       }
     });
+  }
+
+  async getByUniqueId(id: string): Promise<RoomDTO> {
+    const savedRoom = await this.roomssRepository.findOne({
+      where: {
+        id: id
+      }
+    });
+
+    return new RoomDTO(savedRoom.id, savedRoom.name);
   }
 
   private async hashPassword(password: string): Promise<string> {
