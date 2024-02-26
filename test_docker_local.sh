@@ -18,7 +18,7 @@ export $(cat $env_file | xargs)
 docker run \
     --rm \
     --network host \
-    --publish 3000:3000 \
+    --publish 3000:80 \
     --env NODE_ENV='production' \
     --env POSTGRES_HOST=$POSTGRES_HOST \
     --env POSTGRES_PORT=$POSTGRES_PORT \
@@ -27,3 +27,4 @@ docker run \
     --env POSTGRES_DATABASE=$POSTGRES_DATABASE \
     --name $container_name \
     $image_name
+ 
