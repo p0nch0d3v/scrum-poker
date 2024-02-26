@@ -27,7 +27,9 @@ class ConfigService {
 
     public isProduction(): boolean {
         const node_env = this.getValue('NODE_ENV', false);
-        return node_env == 'production' || (node_env != 'development' && node_env != 'local');
+        const value = node_env == 'production' || (node_env != 'development' && node_env != 'local');
+        console.debug('is Production =', value);
+        return value;
     }
 
     public getTypeOrmConfig(): TypeOrmModuleOptions {

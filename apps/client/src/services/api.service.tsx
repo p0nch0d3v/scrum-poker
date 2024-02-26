@@ -5,6 +5,22 @@ const createRoom = async function (name?: string, password?: string): Promise<st
         'name': name,
         'password': password
     }).then((r) => r.data);
-}
+};
 
-export { createRoom }
+const roomHasPassword = async function (id: string): Promise<boolean> {
+    return await axios.get(`/api/room/hasPassword?id=${id}`)
+        .then((r) => r.data);
+};
+
+const joinRoom = async function (id: string, password: string) {
+    return await axios.post('/api/room/join', {
+        'id': id,
+        'password': password
+    }).then((r) => r.data);
+};
+
+export {
+    createRoom,
+    roomHasPassword,
+    joinRoom
+}

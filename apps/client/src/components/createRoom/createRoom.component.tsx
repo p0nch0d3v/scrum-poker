@@ -22,15 +22,15 @@ export default function CreateRoomComponent() {
     }
 
     return (
-        <div>
+        <div style={{border: '1px solid cyan', margin: 10}}>
             <div>Create Room</div>
             <div>Name:</div>
             <div>
-                <input type="text" onChange={onRoomNameChange} />
+                <input value={roomName} type="text" onChange={onRoomNameChange} />
             </div>
             <div>Password</div>
             <div>
-                <input type="password" onChange={onPasswordChange} />
+                <input value={password} type="password" onChange={onPasswordChange} />
             </div>
             <div>
                 <input type="button"
