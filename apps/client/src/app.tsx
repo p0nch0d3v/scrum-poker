@@ -1,12 +1,11 @@
+import { Router, Route }from 'preact-router';
+import HomeComponent from './components/home/home.component';
 import './app.css'
-import JoinRoomComponent from './components/JoinRoom/joinRoom.component'
-import CreateRoomComponent from './components/createRoom/createRoom.component'
 
 export function App() {
   return (
-    <>
-      <JoinRoomComponent />
-      <CreateRoomComponent />
-    </>
+    <Router>
+      <Route path='/' component={HomeComponent} />
+    </Router>
   )
 }
