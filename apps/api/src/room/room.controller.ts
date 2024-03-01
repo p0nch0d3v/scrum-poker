@@ -32,4 +32,9 @@ export class RoomController {
   async get(@Query('id') id: string): Promise<RoomDTO> {
     return await this.roomService.getByUniqueId(id);
   }
+
+  @Get('all')
+  async getAll(): Promise<Array<RoomDTO>> {
+    return await this.roomService.getAll();
+  }
 }

@@ -11,7 +11,7 @@ import { RoomDTO } from './dto/room.dto';
 export class RoomService {
   constructor(
     @InjectRepository(Room)
-    private roomssRepository: Repository<Room>,
+    private roomsRepository: Repository<Room>,
   ) { }
 
   async create(createRoomDto: CreateRoomDTO): Promise<string> {
@@ -24,13 +24,13 @@ export class RoomService {
       createRoomDto.password = null;
     }
 
-    const room = await this.roomssRepository.create(createRoomDto);
-    await this.roomssRepository.save(room);
+    const room = await this.roomsRepository.create(createRoomDto);
+    await this.roomsRepository.save(room);
     return room.id;
   }
 
   async exists(roomDto: JoinRoomDTO): Promise<boolean> {
-    const savedRoom = await this.roomssRepository.findOne({
+    const savedRoom = await this.roomsRepository.findOne({
       where: {
         id: roomDto.id
       }
@@ -46,7 +46,7 @@ export class RoomService {
   }
 
   async hasPassword(id: string): Promise<boolean> {
-    return await this.roomssRepository.exists({
+    return await this.roomsRepository.exists({
       where: {
         id: id,
         password: Not(IsNull())
@@ -55,13 +55,26 @@ export class RoomService {
   }
 
   async getByUniqueId(id: string): Promise<RoomDTO> {
-    const savedRoom = await this.roomssRepository.findOne({
+    const savedRoom = await this.roomsRepository.findOne({
       where: {
         id: id
       }
     });
 
-    return new RoomDTO(savedRoom.id, savedRoom.name);
+    return new RoomDTO(savedRoom.id, savedRoom.name, savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0);
+  }
+
+  async getAll(): Promise<Array<RoomDTO>> {
+    const rooms = await this.roomsRepository
+      .createQueryBuilder('room')
+      .select(['room.id', 'room.name'])
+      .addSelect("password is not NULL", "room_hasPassword")
+      .getRawMany();
+    const allRooms = [];
+    rooms.forEach(room => {
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_hasPassword));
+    });
+    return allRooms;
   }
 
   private async hashPassword(password: string): Promise<string> {
