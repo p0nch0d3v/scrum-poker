@@ -1,9 +1,9 @@
 import JoinRoomComponent from '../JoinRoom/joinRoom.component'
 import CreateRoomComponent from '../createRoom/createRoom.component'
-import useSessionStorage from '../../hooks/useSessionStorage ';
+import useLocalStorage from '../../hooks/useLocalStorage ';
 
 export default function HomeComponent() {
-  const [userName, setUserName] = useSessionStorage('userName', '');
+  const [userName, setUserName] = useLocalStorage('userName', null);
 
   const onUserNameChange = function(e: any) {
     setUserName(e?.target?.value);
@@ -16,8 +16,8 @@ export default function HomeComponent() {
         <input value={userName} type="text" placeholder={'your name'} onChange={onUserNameChange} />
       </div>
       <div>
-        <JoinRoomComponent />
-        <CreateRoomComponent />
+        <JoinRoomComponent userName={userName} />
+        <CreateRoomComponent userName={userName}/>
       </div>
     </>
   )

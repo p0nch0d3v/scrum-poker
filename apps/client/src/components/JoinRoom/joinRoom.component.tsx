@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 import { roomHasPassword, joinRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
 
-export default function JoinRoomComponent() {
+export default function JoinRoomComponent({ userName }: { userName: string }) {
     const [roomId, setRoomId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [roomNeedsPassword, setRoomNeedsPassword] = useState<boolean>(false);
@@ -38,10 +38,11 @@ export default function JoinRoomComponent() {
     };
 
     const disableJoinButton = function (): boolean {
+        const noUserName = isUndefinedNullOrEmpty(userName);
         const noRomm = isUndefinedNullOrEmpty(roomId);
         const noPass = isUndefinedNullOrEmpty(password);
 
-        return (noRomm || (roomNeedsPassword && noPass));
+        return noUserName || noRomm || (roomNeedsPassword && noPass);
     }
     return (
         <div style={{ border: '1px solid orange', margin: 10 }}>

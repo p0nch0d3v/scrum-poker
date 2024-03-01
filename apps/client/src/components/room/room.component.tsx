@@ -3,12 +3,14 @@ import { useEffect, useState } from "preact/hooks";
 import { route } from 'preact-router';
 import { getRoom } from '../../services/api.service';
 import { validateUUID } from "../../helpers/helpers";
+import useLocalStorage from "../../hooks/useLocalStorage ";
 
 type RoomProps = {
   id: string
 }
 
 const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
+  const [userName] = useLocalStorage('userName', null);
   const [room, setRoom] = useState<any>(null);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
 
   return (
     <>
-      <div><span onClick={() => route('/') }>Back to home</span></div>
+      <div><span onClick={() => route('/') }>Back to home</span>{' '}<span>{userName}</span></div>
       <div>
         <div>Room</div>
         <div>{id}</div>
