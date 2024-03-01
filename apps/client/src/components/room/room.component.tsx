@@ -30,11 +30,14 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
   }, []);
 
   return (
-    <div>
-      <div>Room</div>
-      <div>{id}</div>
-      <div>{room?.name}</div>
-    </div>
+    <>
+      <div><span onClick={() => route('/') }>Back to home</span></div>
+      <div>
+        <div>Room</div>
+        <div>{id}</div>
+        <div>{room?.name}</div>
+      </div>
+    </>
   );
 };
 

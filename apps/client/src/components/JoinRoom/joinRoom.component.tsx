@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
 import { route } from 'preact-router';
 import { roomHasPassword, joinRoom } from '../../services/api.service';
-import { validateUUID } from "../../helpers/helpers";
+import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
 
 export default function JoinRoomComponent() {
     const [roomId, setRoomId] = useState<string>('');
@@ -11,32 +11,40 @@ export default function JoinRoomComponent() {
     const onRoomIdChange = async function (event: any) {
         const value = event?.target?.value;
 
-        if (value !== undefined && value !== null && value?.trim().length > 0 && validateUUID(value)) {
+        if (!isUndefinedNullOrEmpty(value) && validateUUID(value)) {
             setRoomId(value);
-            setRoomNeedsPassword(await roomHasPassword(value));
+            const hasPassword: boolean = await roomHasPassword(value);
+            setRoomNeedsPassword(hasPassword);
         }
         else {
+            setRoomId('');
             setRoomNeedsPassword(false);
         }
     };
 
     const onPasswordChange = async function (event: any) {
         const value = event?.target?.value;
-        if (value !== undefined && value !== null && value?.trim().length > 0) {
-            setPassword(value);
-        }
+        setPassword(value);
     }
 
     const onJoinClick = async function () {
-        const canJoin = await joinRoom(roomId, password);
-        console.debug('canJoin =', canJoin);
-        if (canJoin) {
-            route(`/room/${roomId}`);
+        if (!disableJoinButton()) {
+            const canJoin: boolean = (await joinRoom(roomId, password));
+
+            if (canJoin) {
+                route(`/room/${roomId}`);
+            }
         }
     };
 
+    const disableJoinButton = function (): boolean {
+        const noRomm = isUndefinedNullOrEmpty(roomId);
+        const noPass = isUndefinedNullOrEmpty(password);
+
+        return (noRomm || (roomNeedsPassword && noPass));
+    }
     return (
-        <div style={{border: '1px solid orange', margin: 10}}>
+        <div style={{ border: '1px solid orange', margin: 10 }}>
             <div>Join Room</div>
             <div>
                 <div>Room:</div>
@@ -50,7 +58,7 @@ export default function JoinRoomComponent() {
                     <input value={password} type="password" onChange={onPasswordChange} />
                 </div>
             </div>)}
-            <input type="button" value="Join" onClick={onJoinClick} />
+            <input type="button" value="Join" onClick={onJoinClick} disabled={disableJoinButton()} />
         </div>
     );
 };

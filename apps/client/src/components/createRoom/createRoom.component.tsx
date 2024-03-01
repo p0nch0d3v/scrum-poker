@@ -1,5 +1,7 @@
 import { useState } from "preact/hooks";
+import { route } from 'preact-router';
 import { createRoom } from '../../services/api.service';
+import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
 
 export default function CreateRoomComponent() {
     const [roomName, setRoomName] = useState<string>('');
@@ -15,10 +17,14 @@ export default function CreateRoomComponent() {
     }
 
     const onCreateClick = async function () {
-        const result = await createRoom(roomName, password);
-        setRoomId(result);
-        setPassword('');
-        setRoomName('');
+        const createResult = await createRoom(roomName, password);
+
+        if (!isUndefinedNullOrEmpty(createResult)) {
+            setRoomId(createResult);
+            setPassword('');
+            setRoomName('');
+            route(`/room/${createResult}`);
+        }
     }
 
     return (
