@@ -5,6 +5,7 @@ import { getRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
 import useLocalStorage from "../../hooks/useLocalStorage ";
 import { io, Socket } from 'socket.io-client';
+import Config from "../../config/config";
 
 type RoomProps = {
   id: string
@@ -17,7 +18,7 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
   const [intervalId, setIntervalId] = useState<NodeJS.Timer>();
-  const [wsServer, setWsServer] = useState(io('develop.local:3000', { autoConnect: false, reconnection: true }))
+  const [wsServer, setWsServer] = useState(io(Config.SOCKET_SERVER, { autoConnect: false, reconnection: true }))
 
   useEffect(() => {
     async function useEffectAsync() {
@@ -121,9 +122,9 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
               {' '}
               <span>{user.socketId}</span>
               {' '}
-              <span>{user.socketId === connectionId ? '*': ''}</span>
+              <span>{user.socketId === connectionId ? '*' : ''}</span>
             </div>
-            </>
+          </>
         ))}
       </div>
     </>
