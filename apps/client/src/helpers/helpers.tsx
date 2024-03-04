@@ -8,7 +8,7 @@ const validateUUID = function (uuid: string): boolean {
     return regexV1.test(uuid) || regexV2.test(uuid) || regexV3.test(uuid) || regexV4.test(uuid) || regexV5.test(uuid)
 };
 
-const isUndefinedNullOrEmpty = function(value: string): boolean {
+const isUndefinedNullOrEmpty = function(value: string | undefined): boolean {
     return typeof value === 'undefined'
         || value === undefined
         || value === null
