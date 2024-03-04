@@ -9,12 +9,15 @@ docker container rm $container_name
 docker image rm $image_name
 
 docker build \
+    --progress plain \
     --no-cache \
+    --build-arg VITE_NODE_ENV='production' \
+    --build-arg VITE_SOCKET_SERVER='' \
     --tag $image_name \
     .
 
 export $(cat $env_file | xargs)
-
+    
 docker run \
     --rm \
     --network host \
