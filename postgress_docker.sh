@@ -63,3 +63,7 @@ if [[ $1 == "start" ]]; then
   stop
   start
 fi
+
+if [ -z $1 ] || [ $1 == "" ] ; then
+  echo "User [start] or [stop]"
+fi
