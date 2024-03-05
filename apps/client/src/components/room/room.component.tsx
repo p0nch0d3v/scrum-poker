@@ -7,6 +7,18 @@ import useLocalStorage from "../../hooks/useLocalStorage ";
 import { io, Socket } from 'socket.io-client';
 import Config from "../../config/config";
 
+const Messages = {
+  FROM_SERVER: {
+    people: 'people',
+    connect: 'connect',
+    cards: 'cards'
+  },
+  TO_SERVER: {
+    disconnect: 'disconnect',
+    join_me: 'join_me'
+  }
+}
+
 type RoomProps = {
   id: string
 }
@@ -39,7 +51,7 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
       setConnectionId(wsServer.id)
 
       if (!connected) {
-        const _interval_id = setInterval(conntectWS, 1000);
+        const _interval_id = setInterval(conntectWS, 500);
         setIntervalId(_interval_id);
       }
       setWsServer(setWsEvents(wsServer));
@@ -48,8 +60,13 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
 
     return () => {
       if (wsServer.connected || !wsServer.disconnected) {
-        wsServer.off('joined', onJoinedHandler);
+        wsServer.off(Messages.FROM_SERVER.connect, onConnectHandler);
+        wsServer.off(Messages.FROM_SERVER.people, onPeopleHandler);
         wsServer.disconnect();
+      }
+      if (intervalId) {
+        clearInterval(intervalId);
+        setIntervalId(undefined);
       }
     };
   }, []);
@@ -60,7 +77,17 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
     };
   }, [connected, connectionId])
 
-  const onJoinedHandler = function (data: any) {
+  /* ---------- */
+
+  const onConnectHandler = function (data: any) {
+    console.log('connect', data);
+    wsServer.emit('join_me', { roomId: id, userName: userName });
+    let usersTmp = Array<any>();
+    usersTmp.push({ socketId: connectionId, userName: userName });
+    setUsers(usersTmp);
+  };
+
+  const onPeopleHandler = function (data: any) {
     console.log('joined', data);
     if (data.roomId === id) {
       let serverUsers = Array<any>();
@@ -69,19 +96,13 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
       });
       setUsers(serverUsers);
     }
-  }
+  };
+
+  /* ---------- */
 
   const setWsEvents = function (socket: Socket): Socket {
-    socket.off('connect').on('connect', function () {
-      console.log('connect');
-      socket.emit('join_me', { roomId: id, userName: userName });
-      let usersTmp = Array<any>();
-      usersTmp.push({ socketId: connectionId, userName: userName });
-      setUsers(usersTmp);
-    });
-
-    socket.on('joined', onJoinedHandler);
-
+    socket.on(Messages.FROM_SERVER.connect, onConnectHandler);
+    socket.on(Messages.FROM_SERVER.people, onPeopleHandler);
     return socket;
   }
 
@@ -100,20 +121,21 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
       <div><span onClick={() => route('/')}>Back to home</span>{' '}<span>{userName}</span></div>
       <div>
         <div>Room</div>
-        <div>{id}</div>
-        <div>{room?.name}</div>
+        <div>room id: {id}</div>
+        <div>room name: {room?.name}</div>
       </div>
 
       <div>
-        {connected ? "true" : "false"}
+        intervalId: {intervalId}
+      </div>
+
+      <div>
+        connected: {connected ? "true" : "false"}
       </div>
       <div>
-        {connectionId}
+        connectionId: {connectionId}
       </div>
-      <div>
-        {wsServer && wsServer.connected &&
-          <button onClick={async () => wsServer.emit('ping')}>ping</button>}
-      </div>
+
       <div>
         {users.map((user) => (
           <>
