@@ -15,13 +15,13 @@ export class SocketService {
       this.connectedClients.delete(clientId);
 
       for (let i = 0; i < this.allRooms.size; i++) {
-        let roomId = Array.from(this.allRooms.keys())[i];
+        let roomId = (Array.from(this.allRooms.keys())[i]).toString();
         let room = this.allRooms.get(roomId);
         const index = room.findIndex((e) => { return e.socketId == clientId });
         if (index > -1) {
           room.splice(index, 1);
           console.log(`disconnected from [${roomId}`)
-          socket.broadcast.emit('joined', room);
+          this.emitJoned(socket, roomId, this.allRooms.get(roomId));
         }
       }
     });
@@ -35,18 +35,22 @@ export class SocketService {
 
       socket.join(data.roomId);
 
-      const nofityJoined:any = { 
-        'roomId': data.roomId, 
-        'people': this.allRooms.get(data.roomId) 
-      };
-
-      socket.emit('joined', nofityJoined);
-      socket.broadcast.emit('joined', nofityJoined);
-      socket.to(data.room).emit('joined', nofityJoined);
-      socket.to(clientId).emit('joined', nofityJoined);
+      this.emitJoned(socket, data.roomId, this.allRooms.get(data.roomId));
     });
 
     // Handle other events and messages from the client
+  }
+
+  emitJoned = function(socket: Socket, roomId: string, people: Array<any>){
+    const nofityJoined:any = { 
+      'roomId': roomId, 
+      'people': this.allRooms.get(roomId) 
+    };
+
+    socket.emit('joined', nofityJoined);
+    socket.broadcast.emit('joined', nofityJoined);
+    socket.to(roomId).emit('joined', nofityJoined);
+    socket.to(socket.id).emit('joined', nofityJoined);
   }
 
   // Add more methods for handling events, messages, etc.
