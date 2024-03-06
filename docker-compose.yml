@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  web:
+    image: node:20
+    command: >
+      sh -c "cd /app &&
+             npm install --global typescript@5.2.2 @nestjs/cli turbo@1.12.4 vite@5.1.0
+             npm install --legacy-peer-deps &&
+             npm run dev"
+    volumes:
+      - .:/app
+    ports:
+      - 3000:3000
+      - 5173:5173
+    network_mode: "host"
+ 
