@@ -9,7 +9,9 @@ const Messages = {
   FROM_CLIENT: {
     disconnect: 'disconnect',
     join_me: 'join_me',
-    vote: 'vote'
+    vote: 'vote',
+    clear_votes: 'clear_votes',
+    hide_unHide: 'hide_unHide'
   }
 }
 
@@ -23,7 +25,7 @@ export class SocketService {
     this.connectedClients.set(clientId, socket);
 
     socket.on(Messages.FROM_CLIENT.disconnect, (data: any) => {
-      console.log(`[${Messages.FROM_CLIENT.disconnect}]`, socket.id, clientId);
+      console.log(`[${Messages.FROM_CLIENT.disconnect}]`, socket.id, clientId, data);
       this.connectedClients.delete(clientId);
 
       for (let i = 0; i < this.allRooms.size; i++) {
@@ -39,11 +41,11 @@ export class SocketService {
     });
 
     socket.on(Messages.FROM_CLIENT.join_me, (data: any) => {
-      console.log(`[${Messages.FROM_CLIENT.join_me}]`, socket.id, clientId, data.roomId);
+      console.log(`[${Messages.FROM_CLIENT.join_me}]`, socket.id, clientId, data);
       if (!this.allRooms.has(data.roomId)) {
         this.allRooms.set(data.roomId, []);
       }
-      this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id });
+      this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: true });
 
       socket.join(data.roomId);
 
@@ -52,20 +54,40 @@ export class SocketService {
     });
 
     socket.on(Messages.FROM_CLIENT.vote, (data: any) => {
-      console.log(`[${Messages.FROM_CLIENT.vote}]`, data);
-      for (let i = 0; i < this.allRooms.size; i++) {
-        let roomId = (Array.from(this.allRooms.keys())[i]).toString();
-        let room = this.allRooms.get(roomId);
+      console.log(`[${Messages.FROM_CLIENT.vote}]`, socket.id, clientId, data);
+      const roomId = data.roomId
+      let room = this.allRooms.get(roomId);
 
-        const index = room.findIndex((e) => { return e.socketId == data.userId });
-        if (index > -1) {
-          const user = room.splice(index, 1);
-          let newUser = { ...user[0] };
-          newUser['vote'] = data.vote;
-          room.push(newUser);
-          this.emitPeople(socket, roomId, this.allRooms.get(roomId));
-        }
+      const index = room.findIndex((e) => { return e.socketId == data.userId });
+      if (index > -1) {
+        const user = room.splice(index, 1);
+        let newUser = { ...user[0] };
+        newUser['vote'] = data.vote;
+        room.push(newUser);
+        this.emitPeople(socket, roomId, this.allRooms.get(roomId));
       }
+    });
+
+    socket.on(Messages.FROM_CLIENT.clear_votes, (data: any) => {
+      console.log(`[${Messages.FROM_CLIENT.clear_votes}]`, socket.id, clientId, data);
+      const roomId = data.roomId
+      let room = this.allRooms.get(roomId);
+      for (let i = 0; i < room.length; i++) {
+        const user = room[i];
+        user.vote = null;
+      }
+      this.emitPeople(socket, roomId, this.allRooms.get(roomId));
+    });
+
+    socket.on(Messages.FROM_CLIENT.hide_unHide, (data: any) => {
+      console.log(`[${Messages.FROM_CLIENT.hide_unHide}]`, socket.id, clientId, data);
+      const roomId = data.roomId
+      let room = this.allRooms.get(roomId);
+      for (let i = 0; i < room.length; i++) {
+        const user = room[i];
+        user.hide = !user.hide
+      }
+      this.emitPeople(socket, roomId, this.allRooms.get(roomId));
     });
 
     // Handle other events and messages from the client
@@ -87,7 +109,7 @@ export class SocketService {
     const nofityCards: any = {
       'roomId': roomId,
       'cards': [
-        { text: '☕', value: '?' },
+        { text: '☕️', value: '☕️' },
         { text: '1', value: '1' },
         { text: '2', value: '2' },
         { text: '3', value: '3' },

@@ -16,7 +16,9 @@ const Messages = {
   TO_SERVER: {
     disconnect: 'disconnect',
     join_me: 'join_me',
-    vote: 'vote'
+    vote: 'vote',
+    clear_votes: 'clear_votes',
+    hide_unHide: 'hide_unHide'
   }
 }
 
@@ -109,6 +111,14 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
     wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: value });
   };
 
+  const onClearAllClick = function () {
+    wsServer.emit(Messages.TO_SERVER.clear_votes, { roomId: id });
+  }
+
+  const OnHideUnHideClick = function () {
+    wsServer.emit(Messages.TO_SERVER.hide_unHide, { roomId: id });
+  }
+
   /* ---------- */
 
   const setWsEvents = function (socket: Socket): Socket {
@@ -149,9 +159,14 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
         {cards.map((card) => (
           <div>
             <span>{card.text}</span>
-            <button onClick={() => { onVoteClick(card.value); }} value={card.value}>{card.text}</button>
+            <button onClick={() => { onVoteClick(card); }} value={card.value}>{card.text}</button>
           </div>
         ))}
+      </div>
+      <hr />
+      <div>
+        <button onClick={onClearAllClick} >Clear All</button>
+        <button onClick={OnHideUnHideClick} >Hide / Unhide</button>
       </div>
       <hr />
       <div>
@@ -163,7 +178,7 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
             {' '}
             <span>{user.socketId === connectionId ? '*' : ''}</span>
             {' '}
-            <span>{user.vote}</span>
+            <span>{user.hide ? '?' : user.vote ? JSON.stringify(user.vote): ''}</span>
           </div>
         ))}
       </div>
