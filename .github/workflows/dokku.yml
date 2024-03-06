@@ -5,13 +5,10 @@ on:
     branches:
       - master
 
-env:
-  REMOTE_URL: ${{ vars.REMOTE_URL }}
-  REMOTE_PRIVATE_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: dokku
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -20,5 +17,5 @@ jobs:
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
-          git_remote_url: ${{ env.REMOTE_URL }}
-          ssh_private_key: ${{ env.REMOTE_PRIVATE_KEY }}
+          git_remote_url: ${{ vars.REMOTE_URL }}
+          ssh_private_key: ${{ secrets.REMOTE_PRIVATE_KEY }}
