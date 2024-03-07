@@ -8,6 +8,6 @@
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
-    "start": "node apps/api/dist/src/main"
+    "start": "node apps/api/dist/main"
   }
 }

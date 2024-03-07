@@ -18,8 +18,4 @@ RUN npm install --global typescript@5.2.2 @nestjs/cli turbo@1.12.4 vite@5.1.0
 RUN npm install --legacy-peer-deps
 RUN npm run build
 
-# WORKDIR /app/apps/api
-# RUN npm run typeorm migration:run -- -d ./src/config/migration.config.ts
-# WORKDIR /app
-# CMD [ "npm", "run" , "start"]
 CMD ["bash", "docker_entry_point.sh"]

@@ -26,7 +26,7 @@ export function getOrmConfig(isProduction: boolean) {
         ...typeOrmModuleOptions(isProduction),
 
         migrationsTableName: "migrations",
-        migrations: ["./migrations/*.ts"],
+        migrations: ["./src/migrations/*.ts"],
 
         /* Note : it is unsafe to use synchronize: true for schema synchronization
            on production once you get data in your database. */
