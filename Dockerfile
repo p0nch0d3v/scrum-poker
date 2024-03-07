@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 ARG NODE_ENV=""
 ARG VITE_NODE_ENV=""
@@ -17,4 +17,9 @@ COPY . /app
 RUN npm install --global typescript@5.2.2 @nestjs/cli turbo@1.12.4 vite@5.1.0
 RUN npm install --legacy-peer-deps
 RUN npm run build
-CMD [ "npm", "run" , "start"]
+
+# WORKDIR /app/apps/api
+# RUN npm run typeorm migration:run -- -d ./src/config/migration.config.ts
+# WORKDIR /app
+# CMD [ "npm", "run" , "start"]
+CMD ["bash", "docker_entry_point.sh"]

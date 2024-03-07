@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
+import { RoomService } from './room.service';
 
 const Messages = {
   TO_CLIENT: {
@@ -17,6 +18,9 @@ const Messages = {
 
 @Injectable()
 export class SocketService {
+
+  constructor(private readonly roomService: RoomService) { }
+
   private readonly allRooms: Map<String, Array<any>> = new Map();
   private readonly connectedClients: Map<string, Socket> = new Map();
 
@@ -40,7 +44,7 @@ export class SocketService {
       }
     });
 
-    socket.on(Messages.FROM_CLIENT.join_me, (data: any) => {
+    socket.on(Messages.FROM_CLIENT.join_me, async (data: any) => {
       console.log(`[${Messages.FROM_CLIENT.join_me}]`, socket.id, clientId, data);
       if (!this.allRooms.has(data.roomId)) {
         this.allRooms.set(data.roomId, []);
@@ -50,7 +54,7 @@ export class SocketService {
       socket.join(data.roomId);
 
       this.emitPeople(socket, data.roomId, this.allRooms.get(data.roomId));
-      this.emitCards(socket, data.roomId);
+      await this.emitCards(socket, data.roomId);
     });
 
     socket.on(Messages.FROM_CLIENT.vote, (data: any) => {
@@ -105,19 +109,23 @@ export class SocketService {
     socket.to(socket.id).emit(Messages.TO_CLIENT.people, nofityJoined);
   }
 
-  emitCards = function (socket: Socket, roomId: string) {
-    const nofityCards: any = {
+  emitCards = async function (socket: Socket, roomId: string) {
+    const savedCards = await this.roomService.getCards(roomId);
+    let cards = savedCards.split(',');
+
+    let nofityCards: any = {
       'roomId': roomId,
       'cards': [
         { text: '☕️', value: '☕️' },
-        { text: '1', value: '1' },
-        { text: '2', value: '2' },
-        { text: '3', value: '3' },
-        { text: '5', value: '5' },
-        { text: '8', value: '8' },
-        { text: '13', value: '13' }
+        { text: '?', value: '?' },
+        { text: '♾️', value: '♾️' },
       ]
     };
+
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
+      nofityCards.cards.push({ text: card, value: card });
+    }
 
     socket.emit(Messages.TO_CLIENT.cards, nofityCards);
     socket.broadcast.emit(Messages.TO_CLIENT.cards, nofityCards);

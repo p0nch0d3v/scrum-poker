@@ -43,11 +43,16 @@ start () {
       --publish $POSTGRES_PORT:5432 \
       --env POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
       --env POSTGRES_USER=$POSTGRES_USER \
-      --env POSTGRES_DB=$POSTGRES_DB \
+      --env POSTGRES_DB=$POSTGRES_DATABASE \
       --volume "$volume_name:/var/lib/postgresql/data" \
       --network host \
       --detach \
       $docker_image
+
+      sleep 10
+
+      docker exec $container_name \
+        psql -U $POSTGRES_USER -c "CREATE DATABASE \"$POSTGRES_DATABASE\";"
 
       docker container list --filter name=$container_name --format '{{.Names}}'
       docker container list --filter name=$container_name --format '{{.Status}}'

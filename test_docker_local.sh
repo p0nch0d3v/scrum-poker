@@ -17,7 +17,8 @@ docker build \
     .
 
 export $(cat $env_file | xargs)
-    
+cat $env_file
+
 docker run \
     --rm \
     --network host \
