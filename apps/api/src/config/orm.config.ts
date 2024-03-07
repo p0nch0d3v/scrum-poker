@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { Room } from "src/room/entities/room.entity";
+import { Room } from "../room/entities/room.entity";
+import { DataSourceOptions } from "typeorm";
 
 require('dotenv').config();
 
@@ -20,19 +21,17 @@ export function typeOrmModuleOptions(isProduction: boolean): TypeOrmModuleOption
 }
 
 export function getOrmConfig(isProduction: boolean) {
+
     return {
         ...typeOrmModuleOptions(isProduction),
+
         migrationsTableName: "migrations",
-        migrations: ["src/migrations/*.ts"],
-        cli: {
-            "migrationsDir": "src/migrations"
-        },
+        migrations: ["./migrations/*.ts"],
 
         /* Note : it is unsafe to use synchronize: true for schema synchronization
            on production once you get data in your database. */
-        // synchronize: true,
-        autoLoadEntities: !isProduction,
-        synchronize: !isProduction
-    };
-};
 
+        synchronize: false,
+        dropSchema: !isProduction,
+    } as DataSourceOptions;
+};
