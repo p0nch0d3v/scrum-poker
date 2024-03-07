@@ -61,20 +61,31 @@ export class RoomService {
       }
     });
 
-    return new RoomDTO(savedRoom.id, savedRoom.name, savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0);
+    return new RoomDTO(savedRoom.id,
+      savedRoom.name,
+      savedRoom.cards,
+      savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0);
   }
 
   async getAll(): Promise<Array<RoomDTO>> {
     const rooms = await this.roomsRepository
       .createQueryBuilder('room')
-      .select(['room.id', 'room.name'])
+      .select(['room.id', 'room.name', 'room.cards'])
       .addSelect("password is not NULL", "room_hasPassword")
       .getRawMany();
     const allRooms = [];
     rooms.forEach(room => {
-      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_hasPassword));
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_cards, room.room_hasPassword));
     });
     return allRooms;
+  }
+
+  async getCards(id: string): Promise<string> {
+    const savedRoom = await this.getByUniqueId(id);
+    if (savedRoom !== undefined || savedRoom !== null) {
+      return savedRoom.cards;
+    }
+    return "";
   }
 
   private async hashPassword(password: string): Promise<string> {
