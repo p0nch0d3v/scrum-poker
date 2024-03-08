@@ -30,6 +30,10 @@ export class RoomService {
   }
 
   async exists(roomDto: JoinRoomDTO): Promise<boolean> {
+    if (!this.validateUUID(roomDto.id)) {
+      return false;
+    }
+
     const savedRoom = await this.roomsRepository.findOne({
       where: {
         id: roomDto.id
@@ -46,6 +50,10 @@ export class RoomService {
   }
 
   async hasPassword(id: string): Promise<boolean> {
+    if (!this.validateUUID(id)) {
+      return false;
+    }
+
     return await this.roomsRepository.exists({
       where: {
         id: id,
@@ -55,16 +63,23 @@ export class RoomService {
   }
 
   async getByUniqueId(id: string): Promise<RoomDTO> {
+    if (!this.validateUUID(id)) {
+      return null;
+    }
+
     const savedRoom = await this.roomsRepository.findOne({
       where: {
         id: id
       }
     });
 
-    return new RoomDTO(savedRoom.id,
+    savedRoom
+
+    return (savedRoom !== undefined && savedRoom !== null) ? new RoomDTO(savedRoom.id,
       savedRoom.name,
       savedRoom.cards,
-      savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0);
+      savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0)
+      : null;
   }
 
   async getAll(): Promise<Array<RoomDTO>> {
@@ -82,7 +97,7 @@ export class RoomService {
 
   async getCards(id: string): Promise<string> {
     const savedRoom = await this.getByUniqueId(id);
-    if (savedRoom !== undefined || savedRoom !== null) {
+    if (savedRoom !== undefined && savedRoom !== null) {
       return savedRoom.cards;
     }
     return "";
@@ -92,4 +107,14 @@ export class RoomService {
     const hashedPassword = await bcrypt.hash(password, 10);
     return hashedPassword;
   }
+
+  private validateUUID = function (uuid: string): boolean {
+    const regexV1 = /^[0-9A-F]{8}-[0-9A-F]{4}-[1][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+    const regexV2 = /^[0-9A-F]{8}-[0-9A-F]{4}-[2][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+    const regexV3 = /^[0-9A-F]{8}-[0-9A-F]{4}-[3][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+    const regexV4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+    const regexV5 = /^[0-9A-F]{8}-[0-9A-F]{4}-[5][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+
+    return regexV1.test(uuid) || regexV2.test(uuid) || regexV3.test(uuid) || regexV4.test(uuid) || regexV5.test(uuid)
+  };
 }
