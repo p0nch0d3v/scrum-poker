@@ -1,11 +1,12 @@
 import { FunctionalComponent } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { route } from 'preact-router';
+
 import { getRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
 import useLocalStorage from "../../hooks/useLocalStorage ";
 import { io, Socket } from 'socket.io-client';
 import Config from "../../config/config";
+import HeaderComponent from "../header/header.component";
 
 const Messages = {
   FROM_SERVER: {
@@ -28,6 +29,7 @@ type RoomProps = {
 
 const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
   const [userName] = useLocalStorage('userName', null);
+  const [validRoom, setValidRoom] = useState<boolean>()
   const [room, setRoom] = useState<any>(null);
   const [users, setUsers] = useState<Array<any>>([]);
   const [cards, setCards] = useState<Array<any>>([]);
@@ -38,27 +40,27 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
 
   useEffect(() => {
     async function useEffectAsync() {
+      let isValidRoom = false;
       if (validateUUID(id)) {
         const getRoomResult = await getRoom(id);
-        if (!getRoomResult) {
-          alert('');
-          route(`/`);
-        }
+        isValidRoom = getRoomResult !== undefined && getRoomResult !== null;
+        setValidRoom(isValidRoom);
         setRoom(getRoomResult);
       }
       else {
-        alert('');
-        route(`/`);
+        setValidRoom(false);
       }
 
-      setConnected(wsServer.connected);
-      setConnectionId(wsServer.id)
+      if (isValidRoom && !isUndefinedNullOrEmpty(userName)) {
+        setConnected(wsServer.connected);
+        setConnectionId(wsServer.id)
 
-      if (!connected) {
-        const _interval_id = setInterval(conntectWS, 500);
-        setIntervalId(_interval_id);
+        if (!connected) {
+          const _interval_id = setInterval(conntectWS, 500);
+          setIntervalId(_interval_id);
+        }
+        setWsServer(setWsEvents(wsServer));
       }
-      setWsServer(setWsEvents(wsServer));
     }
     useEffectAsync();
 
@@ -136,52 +138,58 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
 
   return (
     <>
-      <div><span onClick={() => route('/')}>Back to home</span>{' '}<span>{userName}</span></div>
-      <div>
-        <div>Room</div>
-        <div>room id: {id}</div>
-        <div>room name: {room?.name}</div>
-      </div>
+      <HeaderComponent />
+      {!userName && <div>Invalid username</div>}
+      {!validRoom && <div>Invalid room</div>}
+      {validRoom && userName &&
+        <>
 
-      <div>
-        intervalId: {intervalId}
-      </div>
+          <div>
+            <div>Room</div>
+            <div>room id: {id}</div>
+            <div>room name: {room?.name}</div>
+          </div>
 
-      <div>
-        connected: {connected ? "true" : "false"}
-      </div>
-      <div>
-        connectionId: {connectionId}
-      </div>
-      <hr />
-      <div>
-        <div>CARDS</div>
-        {cards.map((card) => (
           <div>
-            <span>{card.text}</span>
-            <button onClick={() => { onVoteClick(card); }} value={card.value}>{card.text}</button>
+            intervalId: {intervalId}
           </div>
-        ))}
-      </div>
-      <hr />
-      <div>
-        <button onClick={onClearAllClick} >Clear All</button>
-        <button onClick={OnHideUnHideClick} >Hide / Unhide</button>
-      </div>
-      <hr />
-      <div>
-        {users.map((user) => (
+
           <div>
-            <span>{user.userName}</span>
-            {' '}
-            <span>{user.socketId}</span>
-            {' '}
-            <span>{user.socketId === connectionId ? '*' : ''}</span>
-            {' '}
-            <span>{user.hide ? '?' : user.vote ? JSON.stringify(user.vote): ''}</span>
+            connected: {connected ? "true" : "false"}
           </div>
-        ))}
-      </div>
+          <div>
+            connectionId: {connectionId}
+          </div>
+          <hr />
+          <div>
+            <div>CARDS</div>
+            {cards.map((card) => (
+              <div>
+                <span>{card.text}</span>
+                <button onClick={() => { onVoteClick(card); }} value={card.value}>{card.text}</button>
+              </div>
+            ))}
+          </div>
+          <hr />
+          <div>
+            <button onClick={onClearAllClick} >Clear All</button>
+            <button onClick={OnHideUnHideClick} >Hide / Unhide</button>
+          </div>
+          <hr />
+          <div>
+            {users.map((user) => (
+              <div>
+                <span>{user.userName}</span>
+                {' '}
+                <span>{user.socketId}</span>
+                {' '}
+                <span>{user.socketId === connectionId ? '*' : ''}</span>
+                {' '}
+                <span>{user.hide ? '?' : user.vote ? JSON.stringify(user.vote) : ''}</span>
+              </div>
+            ))}
+          </div>
+        </>}
     </>
   );
 };
