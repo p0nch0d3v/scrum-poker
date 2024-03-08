@@ -1,6 +1,5 @@
-import { route } from 'preact-router';
-import { useRef } from 'preact/hooks';
 import useLocalStorage from '../../hooks/useLocalStorage ';
+import { useRef } from 'preact/hooks';
 
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', null);
@@ -12,10 +11,6 @@ export default function HeaderComponent() {
     }
 
     return (<>
-        {window.location.pathname !== '/' &&
-            <div>
-                <span onClick={() => route('/')}>Back to home</span>
-            </div>}
         <div>
             Name [{userName}]:
             <input value={userName}
