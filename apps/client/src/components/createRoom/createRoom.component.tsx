@@ -1,9 +1,11 @@
-import { useState } from "preact/hooks";
-import { route } from 'preact-router';
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+
 import { createRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
 
 export default function CreateRoomComponent() {
+    const navigate = useNavigate();
     const [roomName, setRoomName] = useState<string>('');
     const [cardsValues, setCardsValues] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -29,7 +31,7 @@ export default function CreateRoomComponent() {
             setPassword('');
             setRoomName('');
             setCardsValues('');
-            route(`/room/${createResult}`);
+            navigate(`/room/${createResult}`);
         }
     }
 

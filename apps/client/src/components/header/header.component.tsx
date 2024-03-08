@@ -1,5 +1,5 @@
 import useLocalStorage from '../../hooks/useLocalStorage ';
-import { useRef } from 'preact/hooks';
+import { useRef } from 'react';
 
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', null);

@@ -1,17 +1,16 @@
-import { Router, Route }from 'preact-router';
+import { Routes, Route } from 'react-router-dom';
 import HomeComponent from './components/home/home.component';
 import RoomComponent from './components/room/room.component';
 import LayoutComponent from './components/layout/layout.component';
 import './app.css'
 
-
 export function App() {
   return (
     <LayoutComponent>
-    <Router>
-      <Route path='/' component={HomeComponent} />
-      <Route path='/room/:id' component={RoomComponent} />
-    </Router>
+      <Routes>
+        <Route path="/" element={<HomeComponent />} />
+        <Route path="/room/:id" element={<RoomComponent />} />
+      </Routes>
     </LayoutComponent>
   )
 }

@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useState } from "react";
 
 const useLocalStorage = (keyName: string, defaultValue: any) => {
     const [storedValue, setStoredValue] = useState(() => {

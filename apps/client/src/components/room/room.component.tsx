@@ -1,11 +1,11 @@
-import { FunctionalComponent } from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useState } from "react";
 
 import { getRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, shuffleArray, validateUUID } from "../../helpers/helpers";
 import useLocalStorage from "../../hooks/useLocalStorage ";
 import { io, Socket } from 'socket.io-client';
 import Config from "../../config/config";
+import { useParams } from "react-router-dom";
 
 const Messages = {
   FROM_SERVER: {
@@ -22,11 +22,10 @@ const Messages = {
   }
 }
 
-type RoomProps = {
-  id: string
-}
+const RoomComponent = function () {
+  let { id } = useParams();
+  id = (id === undefined || id === null) ? '' : id;
 
-const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
   const [userName] = useLocalStorage('userName', null);
   const [validRoom, setValidRoom] = useState<boolean>()
   const [room, setRoom] = useState<any>(null);
@@ -34,7 +33,7 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
   const [cards, setCards] = useState<Array<any>>([]);
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
-  const [intervalId, setIntervalId] = useState<NodeJS.Timer>();
+  const [intervalId, setIntervalId] = useState<any>();
   const [wsServer, setWsServer] = useState(io(Config.SOCKET_SERVER, { autoConnect: false, reconnection: true }))
 
   useEffect(() => {
@@ -104,7 +103,7 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
     console.log(`[${Messages.FROM_SERVER.people}]`, data);
 
     if (data.roomId === id) {
-      
+
       setCards(shuffleArray(data.cards));
     }
   }
@@ -185,11 +184,11 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
                 <span>{user.socketId === connectionId ? '*' : ''}</span>
                 {' '}
                 <span>{
-                  user.vote !== null 
-                  ? (user.hide ? '?' : user.vote ? JSON.stringify(user.vote) : '') 
-                  : ''
-                  }
-                  </span>
+                  user.vote !== null
+                    ? (user.hide ? '?' : user.vote ? JSON.stringify(user.vote) : '')
+                    : ''
+                }
+                </span>
               </div>
             ))}
           </div>

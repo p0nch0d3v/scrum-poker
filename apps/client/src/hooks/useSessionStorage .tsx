@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useState } from "react";
 
 const useSessionStorage = (keyName: string, defaultValue: any) => {
     const [storedValue, setStoredValue] = useState(() => {
