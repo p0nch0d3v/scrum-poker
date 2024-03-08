@@ -2,7 +2,7 @@ import { FunctionalComponent } from "preact";
 import { useEffect, useState } from "preact/hooks";
 
 import { getRoom } from '../../services/api.service';
-import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
+import { isUndefinedNullOrEmpty, shuffleArray, validateUUID } from "../../helpers/helpers";
 import useLocalStorage from "../../hooks/useLocalStorage ";
 import { io, Socket } from 'socket.io-client';
 import Config from "../../config/config";
@@ -105,7 +105,8 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
     console.log(`[${Messages.FROM_SERVER.people}]`, data);
 
     if (data.roomId === id) {
-      setCards(data.cards);
+      
+      setCards(shuffleArray(data.cards));
     }
   }
 
@@ -185,7 +186,12 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
                 {' '}
                 <span>{user.socketId === connectionId ? '*' : ''}</span>
                 {' '}
-                <span>{user.hide ? '?' : user.vote ? JSON.stringify(user.vote) : ''}</span>
+                <span>{
+                  user.vote !== null 
+                  ? (user.hide ? '?' : user.vote ? JSON.stringify(user.vote) : '') 
+                  : ''
+                  }
+                  </span>
               </div>
             ))}
           </div>

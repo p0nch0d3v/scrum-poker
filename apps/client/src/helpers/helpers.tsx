@@ -17,6 +17,18 @@ const isUndefinedNullOrEmpty = function (value: string | undefined): boolean {
         || value.length === 0;
 }
 
+const shuffleArray = (array: Array<any>) => {
+    let currentIndex = array.length,  randomIndex;
+    
+    while (currentIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    return array;
+  }
+
 if (Config.IS_PRODUCTION) {
     window.console.log = () => { };
     window.console.debug = () => { };
@@ -25,5 +37,6 @@ if (Config.IS_PRODUCTION) {
 
 export {
     validateUUID,
-    isUndefinedNullOrEmpty
+    isUndefinedNullOrEmpty,
+    shuffleArray
 };
