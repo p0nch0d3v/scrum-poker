@@ -66,7 +66,7 @@ export class SocketService {
       if (index > -1) {
         const user = room.splice(index, 1);
         let newUser = { ...user[0] };
-        newUser['vote'] = data.vote;
+        newUser['vote'] = data.vote.value !== null ? data.vote : null;
         room.push(newUser);
         this.emitPeople(socket, roomId, this.allRooms.get(roomId));
       }
@@ -119,6 +119,7 @@ export class SocketService {
         { text: '☕️', value: '☕️' },
         { text: '?', value: '?' },
         { text: '♾️', value: '♾️' },
+        { text: 'X', value: null }
       ]
     };
 

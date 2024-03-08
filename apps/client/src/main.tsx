@@ -1,5 +1,10 @@
-import { render } from 'preact'
+import ReactDOM from 'react-dom/client'
 import { App } from './app.tsx'
 import './index.css'
+import { BrowserRouter } from 'react-router-dom';
 
-render(<App />, document.getElementById('app')!)
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);

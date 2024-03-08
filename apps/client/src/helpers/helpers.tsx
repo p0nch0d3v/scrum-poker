@@ -1,6 +1,7 @@
 import Config from "../config/config";
 
-const validateUUID = function (uuid: string): boolean {
+const validateUUID = function (uuid: string | undefined): boolean {
+    uuid = (uuid === undefined || uuid === null) ? '' : uuid;
     const regexV1 = /^[0-9A-F]{8}-[0-9A-F]{4}-[1][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
     const regexV2 = /^[0-9A-F]{8}-[0-9A-F]{4}-[2][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
     const regexV3 = /^[0-9A-F]{8}-[0-9A-F]{4}-[3][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
@@ -17,6 +18,18 @@ const isUndefinedNullOrEmpty = function (value: string | undefined): boolean {
         || value.length === 0;
 }
 
+const shuffleArray = (array: Array<any>) => {
+    let currentIndex = array.length, randomIndex;
+
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
+
 if (Config.IS_PRODUCTION) {
     window.console.log = () => { };
     window.console.debug = () => { };
@@ -25,5 +38,6 @@ if (Config.IS_PRODUCTION) {
 
 export {
     validateUUID,
-    isUndefinedNullOrEmpty
+    isUndefinedNullOrEmpty,
+    shuffleArray
 };

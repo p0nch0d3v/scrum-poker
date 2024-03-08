@@ -1,7 +1,10 @@
-import { useEffect, useState } from "preact/hooks"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom";
+
 import { getLatest } from "../../services/api.service";
 
 export default function RoomListComponent() {
+    const navigate = useNavigate();
     const [rooms, setRooms] = useState<Array<any>>([]);
 
     useEffect(() => {
@@ -17,9 +20,9 @@ export default function RoomListComponent() {
         <div style={{ border: '1px solid white', margin: 10, padding: 10 }}>
             {rooms.map((room) => (
                 <div>
-                    <a target={'self'} href={`/room/${room.id}`}>
+                    <span onClick={() => navigate(`/room/${room.id}`)}>
                         <span>{room.name}</span>
-                    </a>
+                    </span>
                 </div>
             ))}
         </div>

@@ -1,9 +1,11 @@
-import { useState } from "preact/hooks";
-import { route } from 'preact-router';
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+
 import { roomHasPassword, joinRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
 
 export default function JoinRoomComponent() {
+    const navigate = useNavigate();
     const [roomId, setRoomId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [roomNeedsPassword, setRoomNeedsPassword] = useState<boolean>(false);
@@ -32,7 +34,7 @@ export default function JoinRoomComponent() {
             const canJoin: boolean = (await joinRoom(roomId, password));
 
             if (canJoin) {
-                route(`/room/${roomId}`);
+                navigate(`/room/${roomId}`);
             }
         }
     };
