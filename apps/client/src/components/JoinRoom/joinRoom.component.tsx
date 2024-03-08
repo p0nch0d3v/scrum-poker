@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 import { roomHasPassword, joinRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
 
-export default function JoinRoomComponent({ userName }: { userName: string }) {
+export default function JoinRoomComponent() {
     const [roomId, setRoomId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [roomNeedsPassword, setRoomNeedsPassword] = useState<boolean>(false);
@@ -28,7 +28,7 @@ export default function JoinRoomComponent({ userName }: { userName: string }) {
     }
 
     const onJoinClick = async function () {
-        if (!disableJoinButton()) {
+        if (!isUndefinedNullOrEmpty(roomId)) {
             const canJoin: boolean = (await joinRoom(roomId, password));
 
             if (canJoin) {
@@ -37,15 +37,17 @@ export default function JoinRoomComponent({ userName }: { userName: string }) {
         }
     };
 
-    const disableJoinButton = function (): boolean {
-        const noUserName = isUndefinedNullOrEmpty(userName);
-        const noRomm = isUndefinedNullOrEmpty(roomId);
-        const noPass = isUndefinedNullOrEmpty(password);
+    // TEMPORARY DISABLED
+    // const disableJoinButton = function (): boolean {
+    //     const noUserName = isUndefinedNullOrEmpty(userName);
+    //     const noRomm = isUndefinedNullOrEmpty(roomId);
+    //     const noPass = isUndefinedNullOrEmpty(password);
 
-        return noUserName || noRomm || (roomNeedsPassword && noPass);
-    }
+    //     return noUserName || noRomm || (roomNeedsPassword && noPass);
+    // }
+
     return (
-        <div style={{ border: '1px solid orange', margin: 10 }}>
+        <div style={{ border: '1px solid white', margin: 10 }}>
             <div>Join Room</div>
             <div>
                 <div>Room:</div>
@@ -59,7 +61,7 @@ export default function JoinRoomComponent({ userName }: { userName: string }) {
                     <input value={password} type="password" onChange={onPasswordChange} />
                 </div>
             </div>)}
-            <input type="button" value="Join" onClick={onJoinClick} disabled={disableJoinButton()} />
+            <input type="button" value="Join" onClick={onJoinClick} disabled={isUndefinedNullOrEmpty(roomId)} />
         </div>
     );
 };

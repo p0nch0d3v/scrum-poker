@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Room {
@@ -14,4 +14,7 @@ export class Room {
 
     @Column()
     cards: string;
+
+    @CreateDateColumn()
+    created_at: Date;
 }

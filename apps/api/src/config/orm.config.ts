@@ -1,7 +1,6 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { Room } from "../room/entities/room.entity";
 import { DataSourceOptions } from "typeorm";
-import { CreateRoomm1709781884967 } from "src/migrations/1709781884967-createRoomm";
 
 require('dotenv').config();
 

@@ -49,7 +49,12 @@ start () {
       --detach \
       $docker_image
 
-      sleep 10
+      secs=$((10))
+      while [ $secs -gt 0 ]; do
+        echo -ne "$secs, "
+        sleep 1
+        : $((secs--))
+      done
 
       docker exec $container_name \
         psql -U $POSTGRES_USER -c "CREATE DATABASE \"$POSTGRES_DATABASE\";"
