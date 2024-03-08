@@ -37,4 +37,9 @@ export class RoomController {
   async getAll(): Promise<Array<RoomDTO>> {
     return await this.roomService.getAll();
   }
+
+  @Get('latest')
+  async latest(): Promise<Array<RoomDTO>> {
+    return await this.roomService.latest();
+  }
 }

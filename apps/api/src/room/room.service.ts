@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateRoomDTO } from './dto/create-room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
-import { Repository, IsNull, Not } from 'typeorm';
+import { Repository, IsNull, Not, SelectQueryBuilder } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JoinRoomDTO } from './dto/joinRoom.dto';
 import { RoomDTO } from './dto/room.dto';
@@ -78,20 +78,18 @@ export class RoomService {
     return (savedRoom !== undefined && savedRoom !== null) ? new RoomDTO(savedRoom.id,
       savedRoom.name,
       savedRoom.cards,
+      savedRoom.created_at,
       savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0)
       : null;
   }
 
   async getAll(): Promise<Array<RoomDTO>> {
-    const rooms = await this.roomsRepository
-      .createQueryBuilder('room')
-      .select(['room.id', 'room.name', 'room.cards'])
-      .addSelect("password is not NULL", "room_hasPassword")
-      .getRawMany();
+    const rooms =  await (await this.query()).getRawMany();
     const allRooms = [];
     rooms.forEach(room => {
-      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_cards, room.room_hasPassword));
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_cards, room.room_created_at, room.room_hasPassword));
     });
+    
     return allRooms;
   }
 
@@ -101,6 +99,23 @@ export class RoomService {
       return savedRoom.cards;
     }
     return "";
+  }
+
+  async latest(): Promise<Array<RoomDTO>> {
+    const rooms = await (await this.query()).take(10).getRawMany();
+    const allRooms = [];
+    rooms.forEach(room => {
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_cards, room.room_created_at, room.room_hasPassword));
+    });
+    return allRooms;
+  }
+
+  private async query(): Promise<SelectQueryBuilder<Room>> {
+    return await this.roomsRepository
+      .createQueryBuilder('room')
+      .select(['room.id', 'room.name', 'room.cards', 'room.created_at'])
+      .addSelect("password is not NULL", "room_hasPassword")
+      .orderBy("created_at", "DESC");
   }
 
   private async hashPassword(password: string): Promise<string> {
