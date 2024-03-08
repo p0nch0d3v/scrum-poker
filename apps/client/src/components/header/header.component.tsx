@@ -12,12 +12,17 @@ export default function HeaderComponent() {
     }
 
     return (<>
-        <div><span onClick={() => route('/')}>Back to home</span>{' '}<span>{userName}</span></div>
-        Name [{userName}]:
-        <input value={userName} 
-            type="text" 
-            placeholder={'your name'} 
-            ref={userNameInput} />
-        <button onClick={onSetUserNameClick}>Set</button>
+        {window.location.pathname !== '/' &&
+            <div>
+                <span onClick={() => route('/')}>Back to home</span>
+            </div>}
+        <div>
+            Name [{userName}]:
+            <input value={userName}
+                type="text"
+                placeholder={'your name'}
+                ref={userNameInput} />
+            <button onClick={onSetUserNameClick}>Set</button>
+        </div>
     </>);
 }

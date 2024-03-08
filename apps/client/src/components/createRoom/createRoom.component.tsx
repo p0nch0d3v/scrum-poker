@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 import { createRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
 
-export default function CreateRoomComponent({ userName }: { userName: string }) {
+export default function CreateRoomComponent() {
     const [roomName, setRoomName] = useState<string>('');
     const [cardsValues, setCardsValues] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -44,11 +44,11 @@ export default function CreateRoomComponent({ userName }: { userName: string }) 
     }
 
     const disableCreateRoom = () => {
-        return isUndefinedNullOrEmpty(roomName) || isUndefinedNullOrEmpty(cardsValues) || isUndefinedNullOrEmpty(userName);
+        return isUndefinedNullOrEmpty(roomName) || isUndefinedNullOrEmpty(cardsValues);
     };
 
     return (
-        <div style={{ border: '1px solid cyan', margin: 10 }}>
+        <div style={{ border: '1px solid white', margin: 10 }}>
             <div>Create Room</div>
             <div>Name:</div>
             <div>
