@@ -12,7 +12,7 @@ class ConfigService {
         if (!value && throwOnMissing) {
             console.error(`config error - missing env.${key}`)
         }
-
+        console.debug(`[${key}]`, value)
         return value;
     }
 
