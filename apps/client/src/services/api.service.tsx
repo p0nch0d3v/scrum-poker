@@ -26,9 +26,15 @@ const getRoom = async function (id: string) {
         .catch((e) => { console.debug(e); return null; });
 };
 
+const getLatest = async function () {
+    return await axios.get('/api/room/latest')
+        .then((r) => r.data);
+}
+
 export {
     createRoom,
     roomHasPassword,
     joinRoom,
-    getRoom
+    getRoom,
+    getLatest
 }
