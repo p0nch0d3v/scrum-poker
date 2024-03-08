@@ -6,7 +6,6 @@ import { isUndefinedNullOrEmpty, shuffleArray, validateUUID } from "../../helper
 import useLocalStorage from "../../hooks/useLocalStorage ";
 import { io, Socket } from 'socket.io-client';
 import Config from "../../config/config";
-import HeaderComponent from "../header/header.component";
 
 const Messages = {
   FROM_SERVER: {
@@ -139,7 +138,6 @@ const RoomComponent: FunctionalComponent<RoomProps> = ({ id }) => {
 
   return (
     <>
-      <HeaderComponent />
       {!userName && <div>Invalid username</div>}
       {!validRoom && <div>Invalid room</div>}
       {validRoom && userName &&

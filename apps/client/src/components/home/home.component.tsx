@@ -1,17 +1,17 @@
 import JoinRoomComponent from '../JoinRoom/joinRoom.component'
 import CreateRoomComponent from '../createRoom/createRoom.component'
-import HeaderComponent from '../header/header.component'
+
+import LayoutComponent from '../layout/layout.component'
 import RoomListComponent from '../roomList/roomList.component'
 
 export default function HomeComponent() {
   return (
-    <>
-      <HeaderComponent />
-      <div>
+    <LayoutComponent>
+      <>
         <JoinRoomComponent />
         <CreateRoomComponent />
         <RoomListComponent />
-      </div>
-    </>
+      </>
+    </LayoutComponent>
   )
 }
