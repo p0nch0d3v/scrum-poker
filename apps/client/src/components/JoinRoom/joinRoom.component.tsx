@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { Box, Button, Card, CardActions, CardContent, InputLabel, TextField, Typography } from "@mui/material";
 
 import { roomHasPassword, joinRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
@@ -49,21 +50,28 @@ export default function JoinRoomComponent() {
     // }
 
     return (
-        <div style={{ border: '1px solid white', margin: 10 }}>
-            <div>Join Room</div>
-            <div>
-                <div>Room:</div>
-                <div>
-                    <input value={roomId} type="text" onChange={onRoomIdChange} />
-                </div>
-            </div>
-            {roomNeedsPassword && (<div>
-                <div>Password:</div>
-                <div>
-                    <input value={password} type="password" onChange={onPasswordChange} />
-                </div>
-            </div>)}
-            <input type="button" value="Join" onClick={onJoinClick} disabled={isUndefinedNullOrEmpty(roomId)} />
-        </div>
+        <Box width={{ xs: '100%', s: '100%', md: '50%', l: '33%', xl: '33%' }} margin={1}>
+            <Card>
+                <CardContent>
+                    <Typography sx={{ fontSize: 14, textAlign: 'center' }} color="text.secondary" gutterBottom>
+                        JOIN ROOM
+                    </Typography>
+                    <InputLabel id="card-serie-label">Room Id</InputLabel>
+                    <TextField
+                        fullWidth={true}
+                        placeholder="00000000-0000-0000-0000-000000000000"
+                        onChange={onRoomIdChange} />
+                </CardContent>
+                <CardActions>
+                    <Button
+                        size="small"
+                        variant="contained"
+                        onClick={onJoinClick}
+                        disabled={isUndefinedNullOrEmpty(roomId)} >
+                        Join
+                    </Button>
+                </CardActions>
+            </Card>
+        </Box>
     );
 };

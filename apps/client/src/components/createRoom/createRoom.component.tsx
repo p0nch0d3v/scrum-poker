@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { Box, Button, Card, CardActions, CardContent, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 
 import { createRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
@@ -50,35 +51,42 @@ export default function CreateRoomComponent() {
     };
 
     return (
-        <div style={{ border: '1px solid white', margin: 10 }}>
-            <div>Create Room</div>
-            <div>Name:</div>
-            <div>
-                <input value={roomName} type="text" onChange={onRoomNameChange} />
-            </div>
-            {/* TEMPORARY DISABLED */}
-            {/* <div>Password</div>
-            <div>
-                <input value={password} type="password" onChange={onPasswordChange} />
-            </div> */}
-            <div>
-                <select value={cardsValues} onChange={onSeriesChange}>
-                    <option value={''} selected={true}>NONE</option>
-                    <option value={fibonacciSerie}>Fibonacci</option>
-                    <option value={tShirtSerie}>T-Shirt</option>
-                </select>
-            </div>
-            <div>
-                <input value={cardsValues} type="text" onChange={onCardsValuesChange} />
-            </div>
-            <div>
-                <input type="button"
-                    value="Create"
-                    disabled={disableCreateRoom()}
-                    onClick={onCreateClick}
-                />
-            </div>
-            <div>{roomId}</div>
-        </div>
+        <Box width={{ xs: '100%', s: '100%', md: '50%', l: '33%', xl: '33%' }} margin={1}>
+            <Card>
+                <CardContent>
+                    <Typography sx={{ fontSize: 14, textAlign: 'center' }} color="text.secondary" gutterBottom>
+                        CREATE ROOM
+                    </Typography>
+                    <InputLabel id="card-serie-label">Room Name</InputLabel>
+                    <TextField
+                        fullWidth={true}
+                        placeholder="Room Name"
+                        style={{ marginBottom: "1em" }}
+                        onChange={onRoomNameChange} />
+                    <InputLabel id="card-serie-label">Card Serie</InputLabel>
+                    <Select
+                        fullWidth={true}
+                        labelId="card-serie-label"
+                        onChange={onSeriesChange}>
+                        <MenuItem value={''} selected={true}>NONE</MenuItem >
+                        <MenuItem value={fibonacciSerie}>Fibonacci</MenuItem>
+                        <MenuItem value={tShirtSerie}>T-Shirt</MenuItem>
+                    </Select>
+                    <TextField
+                        fullWidth={true}
+                        value={cardsValues}
+                        onChange={onCardsValuesChange} />
+                </CardContent>
+                <CardActions>
+                    <Button
+                        size="small"
+                        variant="contained"
+                        onClick={onCreateClick}
+                        disabled={disableCreateRoom()} >
+                        Create
+                    </Button>
+                </CardActions>
+            </Card>
+        </Box>
     );
 }
