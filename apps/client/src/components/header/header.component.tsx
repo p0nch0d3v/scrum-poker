@@ -1,23 +1,30 @@
+import { AppBar, Box, TextField, Toolbar, Typography } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import useLocalStorage from '../../hooks/useLocalStorage ';
-import { useRef } from 'react';
 
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', null);
-    const userNameInput = useRef(null);
 
-    const onSetUserNameClick = () => {
-        const newUserNameValue = userNameInput.current?.['value'];
-        setUserName(newUserNameValue);
+    const onUserNameChange = (e: any) => {
+        setUserName(e.target.value);
     }
 
-    return (<>
-        <div>
-            Name [{userName}]:
-            <input value={userName}
-                type="text"
-                placeholder={'your name'}
-                ref={userNameInput} />
-            <button onClick={onSetUserNameClick}>Set</button>
-        </div>
-    </>);
+    return (
+        <AppBar position="relative">
+            <Toolbar>
+                <MenuIcon />
+                <Typography variant="h6" component="div" marginLeft={1} width={'100%'} align='left'>
+                    Scrum pokeR
+                </Typography>
+                <Box alignItems={'right'} alignContent={'right'}>
+                    <TextField
+                        placeholder='Participant name'
+                        variant="outlined"
+                        color="secondary"
+                        value={userName}
+                        onChange={onUserNameChange} />
+                </Box>
+            </Toolbar>
+        </AppBar>
+    );
 }
