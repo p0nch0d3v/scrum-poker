@@ -49,7 +49,9 @@ export class SocketService {
       if (!this.allRooms.has(data.roomId)) {
         this.allRooms.set(data.roomId, []);
       }
-      this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: true });
+      if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1 ) { 
+        this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: true });
+      }
 
       socket.join(data.roomId);
 
@@ -79,6 +81,7 @@ export class SocketService {
       for (let i = 0; i < room.length; i++) {
         const user = room[i];
         user.vote = null;
+        user.hide = true;
       }
       this.emitPeople(socket, roomId, this.allRooms.get(roomId));
     });
@@ -119,7 +122,7 @@ export class SocketService {
         { text: '☕️', value: '☕️' },
         { text: '?', value: '?' },
         { text: '♾️', value: '♾️' },
-        { text: 'X', value: null }
+        { text: '-', value: null }
       ]
     };
 
