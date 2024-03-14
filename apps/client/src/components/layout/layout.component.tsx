@@ -1,11 +1,11 @@
 import { FunctionComponent } from "react";
 import HeaderComponent from '../header/header.component'
 
-type LayoutsProps = {
+type LayoutProps = {
     children: any
 }
 
-const LayoutComponent: FunctionComponent<LayoutsProps> = ({ children }) => {
+const LayoutComponent: FunctionComponent<LayoutProps> = ({ children }) => {
     return (
         <>
             <HeaderComponent />

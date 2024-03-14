@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { NewLifecycle, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { io, Socket } from 'socket.io-client';
+import { Box, Button, Typography } from "@mui/material";
 
 import { getRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, shuffleArray, validateUUID } from "../../helpers/helpers";
 import useLocalStorage from "../../hooks/useLocalStorage ";
-import { io, Socket } from 'socket.io-client';
 import Config from "../../config/config";
-import { useParams } from "react-router-dom";
+import CardComponent from "../card/card.component";
+import ParticipantComponent from "../participant/participant.component";
 
 const Messages = {
   FROM_SERVER: {
@@ -100,15 +103,14 @@ const RoomComponent = function () {
   };
 
   const onCardsHandler = function (data: any) {
-    console.log(`[${Messages.FROM_SERVER.people}]`, data);
-
+    console.log(`[${Messages.FROM_SERVER.cards}]`, data);
     if (data.roomId === id) {
-
       setCards(shuffleArray(data.cards));
     }
   }
 
   const onVoteClick = function (value: any) {
+    console.log(`[${Messages.TO_SERVER.vote}]`, value);
     wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: value });
   };
 
@@ -121,6 +123,8 @@ const RoomComponent = function () {
   }
 
   /* ---------- */
+
+
 
   const setWsEvents = function (socket: Socket): Socket {
     socket.on(Messages.FROM_SERVER.connect, onConnectHandler);
@@ -136,64 +140,46 @@ const RoomComponent = function () {
   };
 
   return (
-    <>
-      {!userName && <div>Invalid username</div>}
-      {!validRoom && <div>Invalid room</div>}
-      {validRoom && userName &&
-        <>
+    <Box width={'100vw'} height={'100vh'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
+      <Typography sx={{ fontSize: '1em', textAlign: 'center', marginTop: '1em' }}
+        color="text.secondary"
+        gutterBottom>
+        ROOM: {room?.name}
+      </Typography>
 
-          <div>
-            <div>Room</div>
-            <div>room id: {id}</div>
-            <div>room name: {room?.name}</div>
-          </div>
+      {(!connected || isUndefinedNullOrEmpty(connectionId)) && <>Loading...</>}
 
-          <div>
-            intervalId: {intervalId}
-          </div>
+      {connected && !isUndefinedNullOrEmpty(connectionId) &&
+        <Box display={'flex'} flexDirection={'column'}>
+          <Box style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
+            {cards.map((card) =>
+              <CardComponent card={card}
+                onClick={() => { onVoteClick(card); }} />
+            )}
+          </Box>
 
-          <div>
-            connected: {connected ? "true" : "false"}
-          </div>
-          <div>
-            connectionId: {connectionId}
-          </div>
-          <hr />
-          <div>
-            <div>CARDS</div>
-            {cards.map((card) => (
-              <div>
-                <span>{card.text}</span>
-                <button onClick={() => { onVoteClick(card); }} value={card.value}>{card.text}</button>
-              </div>
-            ))}
-          </div>
-          <hr />
-          <div>
-            <button onClick={onClearAllClick} >Clear All</button>
-            <button onClick={OnHideUnHideClick} >Hide / Unhide</button>
-          </div>
-          <hr />
-          <div>
-            {users.map((user) => (
-              <div>
-                <span>{user.userName}</span>
-                {' '}
-                <span>{user.socketId}</span>
-                {' '}
-                <span>{user.socketId === connectionId ? '*' : ''}</span>
-                {' '}
-                <span>{
-                  user.vote !== null
-                    ? (user.hide ? '?' : user.vote ? JSON.stringify(user.vote) : '')
-                    : ''
-                }
-                </span>
-              </div>
-            ))}
-          </div>
-        </>}
-    </>
+          <Box width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }}
+            marginTop={2}
+            display={'flex'}
+            justifyContent={'space-between'}
+            alignSelf={'center'}>
+            <Button variant="contained"
+              onClick={onClearAllClick}>Clear All</Button>
+            <Button variant="contained"
+              onClick={OnHideUnHideClick}>Hide / Unhide</Button>
+          </Box>
+
+          <Box display={'flex'}
+            marginTop={2}
+            flexDirection={'column'}
+            width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }} alignSelf={'center'}>
+            {[...new Set(users)].map((user) =>
+              <ParticipantComponent participant={user} current={user.socketId === connectionId ? true : false} />
+            )}
+          </Box>
+        </Box>
+      }
+    </Box>
   );
 };
 
