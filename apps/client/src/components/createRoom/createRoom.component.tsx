@@ -51,7 +51,9 @@ export default function CreateRoomComponent() {
     };
 
     return (
-        <Box width={{ xs: '100%', s: '100%', md: '50%', l: '33%', xl: '33%' }} margin={1}>
+        <Box width={{ xs: '100%', s: '100%', md: '50%', l: '33%', xl: '33%' }}
+            marginLeft={{ md: '25%', l: '33%', xl: '33%' }}
+            marginTop={5} marginBottom={5}>
             <Card>
                 <CardContent>
                     <Typography sx={{ fontSize: 14, textAlign: 'center' }} color="text.secondary" gutterBottom>
