@@ -1,4 +1,4 @@
-import { AppBar, Box, TextField, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Input, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import useLocalStorage from '../../hooks/useLocalStorage ';
 import { useNavigate } from "react-router-dom";
@@ -19,12 +19,11 @@ export default function HeaderComponent() {
                     onClick={() => { navigate('/') }}>
                     Scrum pokeR
                 </Typography>
-                <Box alignItems={'right'} alignContent={'right'}>
-                    <TextField
-                        placeholder='Participant name'
-                        variant="outlined"
-                        color="secondary"
+                <Box alignItems={'right'} alignContent={'right'} className='participant-name'>
+                    <Input placeholder='Participant name'
+                        sx={{ color: 'unset' }}
                         value={userName}
+                        inputProps={{ maxLength: 25 }}
                         onChange={onUserNameChange} />
                 </Box>
             </Toolbar>
