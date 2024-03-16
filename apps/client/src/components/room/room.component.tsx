@@ -9,7 +9,8 @@ import useLocalStorage from "../../hooks/useLocalStorage ";
 import Config from "../../config/config";
 import CardComponent from "../card/card.component";
 import ParticipantComponent from "../participant/participant.component";
-import { CardDTO, NofityCardsDTO } from '../../../../DTOs/index';
+import { CardDTO, NofityCardsDTO } from 'models'
+import { ParticipantDTO } from "models/DTO/participant.dto";
 
 const Messages = {
   FROM_SERVER: {
@@ -33,8 +34,8 @@ const RoomComponent = function () {
   const [userName] = useLocalStorage('userName', null);
   const [validRoom, setValidRoom] = useState<boolean>()
   const [room, setRoom] = useState<any>(null);
-  const [users, setUsers] = useState<Array<any>>([]);
-  const [cards, setCards] = useState<Array<any>>([]);
+  const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
+  const [cards, setCards] = useState<Array<CardDTO>>([]);
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
   const [intervalId, setIntervalId] = useState<any>();
@@ -90,10 +91,10 @@ const RoomComponent = function () {
 
   const onConnectHandler = function (data: any) {
     console.log(`[${Messages.FROM_SERVER.connect}]`, data);
-    wsServer.emit('join_me', { roomId: id, userName: userName });
-    let usersTmp = Array<any>();
-    usersTmp.push({ socketId: connectionId, userName: userName });
-    setUsers(usersTmp);
+    wsServer.emit(Messages.TO_SERVER.join_me, { roomId: id, userName: userName });
+    // let usersTmp = Array<ParticipantDTO>();
+    // usersTmp.push({ socketId: connectionId, userName: userName, vote: undefined, hide: users[0].hide });
+    // setUsers(usersTmp);
   };
 
   const onPeopleHandler = function (data: any) {
@@ -110,7 +111,7 @@ const RoomComponent = function () {
     }
   }
 
-  const onVoteClick = function (value: any) {
+  const onVoteClick = function (value: CardDTO) {
     console.log(`[${Messages.TO_SERVER.vote}]`, value);
     wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: value });
   };
@@ -124,8 +125,6 @@ const RoomComponent = function () {
   }
 
   /* ---------- */
-
-
 
   const setWsEvents = function (socket: Socket): Socket {
     socket.on(Messages.FROM_SERVER.connect, onConnectHandler);

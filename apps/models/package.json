@@ -1,7 +1,7 @@
 {
-  "name": "dtos",
+  "name": "models",
   "version": "1.0.0",
-  "description": "",
+  "description": "models",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
