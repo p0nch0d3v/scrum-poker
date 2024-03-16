@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { RoomService } from './room.service';
+import { CardDTO, NofityCardsDTO } from '../../../DTOs/dist/index';
 
 const Messages = {
   TO_CLIENT: {
@@ -49,7 +50,7 @@ export class SocketService {
       if (!this.allRooms.has(data.roomId)) {
         this.allRooms.set(data.roomId, []);
       }
-      if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1 ) { 
+      if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1) {
         this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: true });
       }
 
@@ -116,7 +117,7 @@ export class SocketService {
     const savedCards = await this.roomService.getCards(roomId);
     let cards = savedCards.split(',');
 
-    let nofityCards: any = {
+    let nofityCards: NofityCardsDTO = {
       'roomId': roomId,
       'cards': [
         { text: '☕️', value: '☕️' },

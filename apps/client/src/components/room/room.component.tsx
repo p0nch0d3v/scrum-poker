@@ -9,6 +9,7 @@ import useLocalStorage from "../../hooks/useLocalStorage ";
 import Config from "../../config/config";
 import CardComponent from "../card/card.component";
 import ParticipantComponent from "../participant/participant.component";
+import { CardDTO, NofityCardsDTO } from '../../../../DTOs/index';
 
 const Messages = {
   FROM_SERVER: {
@@ -102,7 +103,7 @@ const RoomComponent = function () {
     }
   };
 
-  const onCardsHandler = function (data: any) {
+  const onCardsHandler = function (data: NofityCardsDTO) {
     console.log(`[${Messages.FROM_SERVER.cards}]`, data);
     if (data.roomId === id) {
       setCards(shuffleArray(data.cards));
