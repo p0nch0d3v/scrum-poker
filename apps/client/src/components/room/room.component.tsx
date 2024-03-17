@@ -9,6 +9,8 @@ import useLocalStorage from "../../hooks/useLocalStorage ";
 import Config from "../../config/config";
 import CardComponent from "../card/card.component";
 import ParticipantComponent from "../participant/participant.component";
+import { CardDTO, NofityCardsDTO, NotifyPeopleDTO } from 'models'
+import { ParticipantDTO } from "models/DTO/participant.dto";
 
 const Messages = {
   FROM_SERVER: {
@@ -32,8 +34,8 @@ const RoomComponent = function () {
   const [userName] = useLocalStorage('userName', null);
   const [validRoom, setValidRoom] = useState<boolean>()
   const [room, setRoom] = useState<any>(null);
-  const [users, setUsers] = useState<Array<any>>([]);
-  const [cards, setCards] = useState<Array<any>>([]);
+  const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
+  const [cards, setCards] = useState<Array<CardDTO>>([]);
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
   const [intervalId, setIntervalId] = useState<any>();
@@ -89,27 +91,27 @@ const RoomComponent = function () {
 
   const onConnectHandler = function (data: any) {
     console.log(`[${Messages.FROM_SERVER.connect}]`, data);
-    wsServer.emit('join_me', { roomId: id, userName: userName });
-    let usersTmp = Array<any>();
-    usersTmp.push({ socketId: connectionId, userName: userName });
-    setUsers(usersTmp);
+    wsServer.emit(Messages.TO_SERVER.join_me, { roomId: id, userName: userName });
+    // let usersTmp = Array<ParticipantDTO>();
+    // usersTmp.push({ socketId: connectionId, userName: userName, vote: undefined, hide: users[0].hide });
+    // setUsers(usersTmp);
   };
 
-  const onPeopleHandler = function (data: any) {
+  const onPeopleHandler = function (data: NotifyPeopleDTO) {
     console.log(`[${Messages.FROM_SERVER.people}]`, data);
     if (data.roomId === id) {
       setUsers(data.people);
     }
   };
 
-  const onCardsHandler = function (data: any) {
+  const onCardsHandler = function (data: NofityCardsDTO) {
     console.log(`[${Messages.FROM_SERVER.cards}]`, data);
     if (data.roomId === id) {
       setCards(shuffleArray(data.cards));
     }
   }
 
-  const onVoteClick = function (value: any) {
+  const onVoteClick = function (value: CardDTO) {
     console.log(`[${Messages.TO_SERVER.vote}]`, value);
     wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: value });
   };
@@ -123,8 +125,6 @@ const RoomComponent = function () {
   }
 
   /* ---------- */
-
-
 
   const setWsEvents = function (socket: Socket): Socket {
     socket.on(Messages.FROM_SERVER.connect, onConnectHandler);
@@ -151,10 +151,10 @@ const RoomComponent = function () {
       }
       {!validRoom &&
         <Typography sx={{ fontSize: '2.5em', textAlign: 'center', marginTop: '1em' }}
-        color="error"
-        gutterBottom>
-        Invalid Room
-      </Typography>
+          color="error"
+          gutterBottom>
+          Invalid Room
+        </Typography>
       }
       {validRoom && userName &&
         <>

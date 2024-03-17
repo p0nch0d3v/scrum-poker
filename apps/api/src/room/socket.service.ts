@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { RoomService } from './room.service';
+import { CardDTO, NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO } from 'models'
+import { ParticipantDTO } from 'models/DTO/participant.dto';
 
 const Messages = {
   TO_CLIENT: {
@@ -21,7 +23,7 @@ export class SocketService {
 
   constructor(private readonly roomService: RoomService) { }
 
-  private readonly allRooms: Map<String, Array<any>> = new Map();
+  private readonly allRooms: Map<String, Array<ParticipantDTO>> = new Map();
   private readonly connectedClients: Map<string, Socket> = new Map();
 
   handleConnection(socket: Socket): void {
@@ -44,12 +46,12 @@ export class SocketService {
       }
     });
 
-    socket.on(Messages.FROM_CLIENT.join_me, async (data: any) => {
+    socket.on(Messages.FROM_CLIENT.join_me, async (data: JoinMeDTO) => {
       console.log(`[${Messages.FROM_CLIENT.join_me}]`, socket.id, clientId, data);
       if (!this.allRooms.has(data.roomId)) {
         this.allRooms.set(data.roomId, []);
       }
-      if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1 ) { 
+      if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1) {
         this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: true });
       }
 
@@ -59,7 +61,7 @@ export class SocketService {
       await this.emitCards(socket, data.roomId);
     });
 
-    socket.on(Messages.FROM_CLIENT.vote, (data: any) => {
+    socket.on(Messages.FROM_CLIENT.vote, (data: VoteDTO) => {
       console.log(`[${Messages.FROM_CLIENT.vote}]`, socket.id, clientId, data);
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
@@ -74,7 +76,7 @@ export class SocketService {
       }
     });
 
-    socket.on(Messages.FROM_CLIENT.clear_votes, (data: any) => {
+    socket.on(Messages.FROM_CLIENT.clear_votes, (data: RoomInfoDTO) => {
       console.log(`[${Messages.FROM_CLIENT.clear_votes}]`, socket.id, clientId, data);
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
@@ -86,7 +88,7 @@ export class SocketService {
       this.emitPeople(socket, roomId, this.allRooms.get(roomId));
     });
 
-    socket.on(Messages.FROM_CLIENT.hide_unHide, (data: any) => {
+    socket.on(Messages.FROM_CLIENT.hide_unHide, (data: RoomInfoDTO) => {
       console.log(`[${Messages.FROM_CLIENT.hide_unHide}]`, socket.id, clientId, data);
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
@@ -96,14 +98,12 @@ export class SocketService {
       }
       this.emitPeople(socket, roomId, this.allRooms.get(roomId));
     });
-
-    // Handle other events and messages from the client
   }
 
-  emitPeople = function (socket: Socket, roomId: string, people: Array<any>) {
-    const nofityJoined: any = {
-      'roomId': roomId,
-      'people': this.allRooms.get(roomId)
+  emitPeople = function (socket: Socket, roomId: string, people: Array<ParticipantDTO>) {
+    const nofityJoined: NotifyPeopleDTO = {
+      roomId: roomId,
+      people: people
     };
 
     socket.emit(Messages.TO_CLIENT.people, nofityJoined);
@@ -116,7 +116,7 @@ export class SocketService {
     const savedCards = await this.roomService.getCards(roomId);
     let cards = savedCards.split(',');
 
-    let nofityCards: any = {
+    let nofityCards: NofityCardsDTO = {
       'roomId': roomId,
       'cards': [
         { text: '☕️', value: '☕️' },

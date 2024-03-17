@@ -1,5 +1,7 @@
 # Scrum pokeR
 
+> It's a monorepo, a monolithic.
+
 Created with:
 - Nestjs
 - Vite

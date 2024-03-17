@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRoomDTO } from './dto/create-room.dto';
+import { JoinRoomDTO,RoomDTO,CreateRoomDTO } from 'models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
 import { Repository, IsNull, Not, SelectQueryBuilder } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { JoinRoomDTO } from './dto/joinRoom.dto';
-import { RoomDTO } from './dto/room.dto';
 
 @Injectable()
 export class RoomService {

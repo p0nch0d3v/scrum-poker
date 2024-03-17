@@ -1,11 +1,8 @@
 import axios from 'axios';
+import { CreateRoomDTO, JoinRoomDTO, RoomDTO } from 'models';
 
-const createRoom = async function (name: string, cards: string, password?: string): Promise<string> {
-    return await axios.post('/api/room/create', {
-        'name': name,
-        'password': password,
-        'cards': cards
-    }).then((r) => r.data);
+const createRoom = async function (newRoom: CreateRoomDTO): Promise<string> {
+    return await axios.post('/api/room/create', newRoom).then((r) => r.data);
 };
 
 const roomHasPassword = async function (id: string): Promise<boolean> {
@@ -13,20 +10,17 @@ const roomHasPassword = async function (id: string): Promise<boolean> {
         .then((r) => r.data);
 };
 
-const joinRoom = async function (id: string, password: string) {
-    return await axios.post('/api/room/join', {
-        'id': id,
-        'password': password
-    }).then((r) => r.data);
+const joinRoom = async function (room: JoinRoomDTO) {
+    return await axios.post('/api/room/join', room).then((r) => r.data);
 };
 
-const getRoom = async function (id: string | undefined) {
+const getRoom = async function (id: string | undefined): Promise<RoomDTO> {
     return await axios.get(`/api/room/get?id=${id}`)
         .then((r) => r.data)
         .catch((e) => { console.debug(e); return null; });
 };
 
-const getLatest = async function () {
+const getLatest = async function (): Promise<Array<RoomDTO>> {
     return await axios.get('/api/room/latest')
         .then((r) => r.data);
 }
