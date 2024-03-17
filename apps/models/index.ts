@@ -4,6 +4,9 @@ import { JoinMeDTO } from './DTO/joinMe.dto';
 import { VoteDTO } from './DTO/vote.dto';
 import { RoomInfoDTO } from './DTO/roomInfo.dto';
 import { NotifyPeopleDTO } from './DTO/notifyPeople.dto';
+import { CreateRoomDTO } from './DTO/create-room.dto';
+import { JoinRoomDTO } from './DTO/joinRoom.dto';
+import { RoomDTO } from './DTO/room.dto';
 
 export {
     type CardDTO,
@@ -11,5 +14,8 @@ export {
     type JoinMeDTO,
     type VoteDTO,
     type RoomInfoDTO,
-    type NotifyPeopleDTO
+    type NotifyPeopleDTO,
+    type CreateRoomDTO,
+    type JoinRoomDTO,
+    RoomDTO
 };

@@ -9,7 +9,7 @@ import useLocalStorage from "../../hooks/useLocalStorage ";
 import Config from "../../config/config";
 import CardComponent from "../card/card.component";
 import ParticipantComponent from "../participant/participant.component";
-import { CardDTO, NofityCardsDTO } from 'models'
+import { CardDTO, NofityCardsDTO, NotifyPeopleDTO } from 'models'
 import { ParticipantDTO } from "models/DTO/participant.dto";
 
 const Messages = {
@@ -97,7 +97,7 @@ const RoomComponent = function () {
     // setUsers(usersTmp);
   };
 
-  const onPeopleHandler = function (data: any) {
+  const onPeopleHandler = function (data: NotifyPeopleDTO) {
     console.log(`[${Messages.FROM_SERVER.people}]`, data);
     if (data.roomId === id) {
       setUsers(data.people);
@@ -151,10 +151,10 @@ const RoomComponent = function () {
       }
       {!validRoom &&
         <Typography sx={{ fontSize: '2.5em', textAlign: 'center', marginTop: '1em' }}
-        color="error"
-        gutterBottom>
-        Invalid Room
-      </Typography>
+          color="error"
+          gutterBottom>
+          Invalid Room
+        </Typography>
       }
       {validRoom && userName &&
         <>

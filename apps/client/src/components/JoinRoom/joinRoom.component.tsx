@@ -4,6 +4,7 @@ import { Box, Button, Card, CardActions, CardContent, InputLabel, TextField, Typ
 
 import { roomHasPassword, joinRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
+import { JoinRoomDTO } from "models";
 
 export default function JoinRoomComponent() {
     const navigate = useNavigate();
@@ -32,7 +33,11 @@ export default function JoinRoomComponent() {
 
     const onJoinClick = async function () {
         if (!isUndefinedNullOrEmpty(roomId)) {
-            const canJoin: boolean = (await joinRoom(roomId, password));
+            const room: JoinRoomDTO = {
+                id: roomId,
+                password: password
+            }
+            const canJoin: boolean = (await joinRoom(room));
 
             if (canJoin) {
                 navigate(`/room/${roomId}`);

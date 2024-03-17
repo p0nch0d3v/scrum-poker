@@ -4,6 +4,7 @@ import { Box, Button, Card, CardActions, CardContent, InputLabel, MenuItem, Sele
 
 import { createRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
+import { CreateRoomDTO } from 'models';
 
 export default function CreateRoomComponent() {
     const navigate = useNavigate();
@@ -25,7 +26,10 @@ export default function CreateRoomComponent() {
     // }
 
     const onCreateClick = async function () {
-        const createResult = await createRoom(roomName, cardsValues, password);
+        const newRoom: CreateRoomDTO = {
+            name: roomName, password: password, cards: cardsValues
+        };
+        const createResult = await createRoom(newRoom);
 
         if (!isUndefinedNullOrEmpty(createResult)) {
             setRoomId(createResult);
