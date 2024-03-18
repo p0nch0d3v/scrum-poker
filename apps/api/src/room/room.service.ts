@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { JoinRoomDTO,RoomDTO,CreateRoomDTO } from 'models';
+import { JoinRoomDTO, RoomDTO, CreateRoomDTO } from 'models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
 import { Repository, IsNull, Not, SelectQueryBuilder } from 'typeorm';
@@ -82,12 +82,12 @@ export class RoomService {
   }
 
   async getAll(): Promise<Array<RoomDTO>> {
-    const rooms =  await (await this.query()).getRawMany();
+    const rooms = await (await this.query()).getRawMany();
     const allRooms = [];
     rooms.forEach(room => {
       allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_cards, room.room_created_at, room.room_hasPassword));
     });
-    
+
     return allRooms;
   }
 
