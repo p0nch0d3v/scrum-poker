@@ -1,17 +1,38 @@
 version: '3.9'
 
 services:
+  db:
+    image: postgres:16.1
+    platform: linux/amd64
+    env_file:
+      - path: .env.docker
+    volumes:
+      - scrum-poker-local-volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: 'always'
   web:
+    depends_on:
+      - db
+    links:
+      - "db:db"
     image: node:20
+    platform: linux/amd64
     command: >
-      sh -c "cd /app &&
-             npm install --global typescript@5.2.2 @nestjs/cli turbo@1.12.4 vite@5.1.0
-             npm install --legacy-peer-deps &&
-             npm run dev"
+      sh -c "cd /app && 
+            npm install --global typescript@5.2.2 @nestjs/cli turbo@1.12.4 vite@5.1.0 &&
+            npm install --legacy-peer-deps &&
+            export POSTGRES_URI=postgresql://$(printenv POSTGRES_USER):$(printenv POSTGRES_PASSWORD)@db:5432/$(printenv POSTGRES_DATABASE) &&
+            cd /app/apps/api && npm run typeorm migration:run -- -d ./src/config/migration.config.ts &&
+            npm run build && npm run dev"
     volumes:
       - .:/app
     ports:
       - 3000:3000
       - 5173:5173
-    network_mode: "host"
- 
+    env_file:
+      - path: .env.docker
+
+volumes:
+  scrum-poker-local-volume:
+    driver: local
