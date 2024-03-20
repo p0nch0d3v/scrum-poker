@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { io, Socket } from 'socket.io-client';
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 
@@ -12,6 +12,7 @@ import ParticipantComponent from "../participant/participant.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
 import { CardDTO, NofityCardsDTO, NotifyPeopleDTO } from 'models'
 import { ParticipantDTO } from "models/DTO/participant.dto";
+import InvalidRomModalComponent from "../invalidRoomModal/invalidRoomModal.component";
 
 const Messages = {
   FROM_SERVER: {
@@ -40,7 +41,8 @@ const RoomComponent = function () {
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
   const [intervalId, setIntervalId] = useState<any>();
-  const [wsServer, setWsServer] = useState(io(Config.SOCKET_SERVER, { autoConnect: false, reconnection: true }))
+  const [wsServer, setWsServer] = useState(io(Config.SOCKET_SERVER, { autoConnect: false, reconnection: true }));
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function useEffectAsync() {
@@ -143,15 +145,11 @@ const RoomComponent = function () {
   return (
 
     <Box width={'100vw'} height={'100vh'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
-      {!userName && <UserNameModalComponent open={!userName} onClose={() => { window.location.reload(); }} />}
-      {!validRoom &&
-        <Typography sx={{ fontSize: '2.5em', textAlign: 'center', marginTop: '1em' }}
-          color="error"
-          gutterBottom>
-          Invalid Room
-        </Typography>
-      }
-      {validRoom && userName &&
+      {validRoom === false && <InvalidRomModalComponent open={validRoom === false} onClose={() => { navigate('/'); }} />}
+
+      {validRoom === true && isUndefinedNullOrEmpty(userName) && <UserNameModalComponent open={!userName} onClose={() => { window.location.reload(); }} />}
+
+      {validRoom === true && !isUndefinedNullOrEmpty(userName) &&
         <>
           <Typography sx={{ fontSize: '1em', textAlign: 'center', marginTop: '1em' }}
             color="text.secondary"
@@ -160,7 +158,7 @@ const RoomComponent = function () {
           </Typography>
 
           {(!connected || isUndefinedNullOrEmpty(connectionId)) &&
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height:"50%" }}>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50%" }}>
               <CircularProgress size={100} />
             </Box>}
 
