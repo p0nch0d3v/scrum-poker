@@ -23,7 +23,7 @@ set_environment () {
 set_volume () {
   volume_exists=$(docker volume list --quiet --filter name=$volume_name)
 
-  if [ -z $volume_exists ] || [ "$volume_exists" = "" ]; then
+  if [[ -z $volume_exists || "$volume_exists" = "" ]]; then
     docker volume create $volume_name
   fi
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { io, Socket } from 'socket.io-client';
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 
 import { getRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty, shuffleArray, validateUUID } from "../../helpers/helpers";
@@ -9,6 +9,7 @@ import useLocalStorage from "../../hooks/useLocalStorage ";
 import Config from "../../config/config";
 import CardComponent from "../card/card.component";
 import ParticipantComponent from "../participant/participant.component";
+import UserNameModalComponent from "../userNameModal/userNameModal.component";
 import { CardDTO, NofityCardsDTO, NotifyPeopleDTO } from 'models'
 import { ParticipantDTO } from "models/DTO/participant.dto";
 
@@ -142,13 +143,7 @@ const RoomComponent = function () {
   return (
 
     <Box width={'100vw'} height={'100vh'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
-      {!userName &&
-        <Typography sx={{ fontSize: '2.5em', textAlign: 'center', marginTop: '1em' }}
-          color="error"
-          gutterBottom>
-          Invalid Username
-        </Typography>
-      }
+      {!userName && <UserNameModalComponent open={!userName} onClose={() => { window.location.reload(); }} />}
       {!validRoom &&
         <Typography sx={{ fontSize: '2.5em', textAlign: 'center', marginTop: '1em' }}
           color="error"
@@ -164,7 +159,10 @@ const RoomComponent = function () {
             ROOM: {room?.name}
           </Typography>
 
-          {(!connected || isUndefinedNullOrEmpty(connectionId)) && <>Loading...</>}
+          {(!connected || isUndefinedNullOrEmpty(connectionId)) &&
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height:"50%" }}>
+              <CircularProgress size={100} />
+            </Box>}
 
           {connected && !isUndefinedNullOrEmpty(connectionId) &&
             <Box display={'flex'} flexDirection={'column'}>
