@@ -9,7 +9,7 @@ type CardProps = {
 
 const CardComponent: FunctionComponent<CardProps> = ({ card, onClick }) => {
     return (
-            card.value !== null ?  (<Card sx={{ margin: '1em', width: '4em' }} onClick={onClick}>
+            card.value !== null ?  (<Card sx={{ margin: '1em', width: '4em', cursor: 'pointer' }} onClick={onClick}>
                 <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', alignContent: 'center' }}>
                     <Typography sx={{ fontSize: '2em' }}>
                         {card.text}
