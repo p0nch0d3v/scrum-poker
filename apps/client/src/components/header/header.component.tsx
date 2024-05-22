@@ -23,7 +23,7 @@ export default function HeaderComponent() {
                     <Input placeholder='Participant name'
                         sx={{ color: 'unset' }}
                         value={userName}
-                        inputProps={{ maxLength: 25 }}
+                        inputProps={{ maxLength: 15 }}
                         onChange={onUserNameChange} />
                 </Box>
             </Toolbar>

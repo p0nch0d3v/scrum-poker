@@ -38,7 +38,7 @@ const UserNameModalComponent: FunctionComponent<UserNameModalProps> = ({ open, o
                     <Input placeholder='Participant name'
                         sx={{ color: 'unset' }}
                         value={userName}
-                        inputProps={{ maxLength: 25 }}
+                        inputProps={{ maxLength: 15 }}
                         onChange={(e) => setUserName(e.target.value)} />
                 </Box>
                 <Button variant="contained" sx={{ marginTop: 2 }}
