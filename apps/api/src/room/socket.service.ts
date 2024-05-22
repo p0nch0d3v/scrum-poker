@@ -132,8 +132,6 @@ export class SocketService {
     }
 
     socket.emit(Messages.TO_CLIENT.cards, nofityCards);
-    socket.broadcast.emit(Messages.TO_CLIENT.cards, nofityCards);
-    socket.to(roomId).emit(Messages.TO_CLIENT.cards, nofityCards);
     socket.to(socket.id).emit(Messages.TO_CLIENT.cards, nofityCards);
   }
 
