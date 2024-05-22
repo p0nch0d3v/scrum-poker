@@ -184,8 +184,9 @@ const RoomComponent = function () {
 
               <Box display={'flex'}
                 marginTop={2}
-                flexDirection={'column'}
-                width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }} alignSelf={'center'}>
+                flexDirection={'row'}
+                flexWrap={'wrap'}
+                width={{ xs: '100%', s: '100%', md: '75%', l: '75%', xl: '75%' }} alignSelf={'center'}>
                 {[...new Set(users)].map((user) =>
                   <ParticipantComponent participant={user} current={user.socketId === connectionId ? true : false} />
                 )}

@@ -11,7 +11,7 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
     return (
         <Card sx={{}}>
             <CardContent sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Typography sx={{ fontSize: '1em', textDecoration: current ? 'underline' : '' }}>
+                <Typography sx={{ fontSize: '1em', textDecoration: current ? 'underline' : '', textWrap: 'wrap', maxWidth: '50%' }}>
                     {participant.userName}
                 </Typography>
                 {participant.vote && <CardComponent card={participant.hide ? { 'text': '*', 'value': '*' } : participant.vote} onClick={null} />}
