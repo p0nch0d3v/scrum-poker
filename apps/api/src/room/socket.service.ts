@@ -68,10 +68,7 @@ export class SocketService {
 
       const index = room.findIndex((e) => { return e.socketId == data.userId });
       if (index > -1) {
-        const user = room.splice(index, 1);
-        let newUser = { ...user[0] };
-        newUser['vote'] = data.vote.value !== null ? data.vote : null;
-        room.push(newUser);
+        room[index]['vote'] = data.vote.value !== null ? data.vote : null; 
         this.emitPeople(socket, roomId, this.allRooms.get(roomId));
       }
     });
