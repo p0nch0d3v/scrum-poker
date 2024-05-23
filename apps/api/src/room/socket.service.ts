@@ -24,6 +24,7 @@ export class SocketService {
   constructor(private readonly roomService: RoomService) { }
 
   private readonly allRooms: Map<String, Array<ParticipantDTO>> = new Map();
+  private readonly allRoomsInfo: Map<String, RoomInfoDTO> = new Map();
   private readonly connectedClients: Map<string, Socket> = new Map();
 
   handleConnection(socket: Socket): void {
@@ -51,8 +52,13 @@ export class SocketService {
       if (!this.allRooms.has(data.roomId)) {
         this.allRooms.set(data.roomId, []);
       }
+      if (!this.allRoomsInfo.has(data.roomId)) {
+        this.allRoomsInfo.set(data.roomId, new RoomInfoDTO(data.roomId, true));
+      }
+
       if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1) {
-        this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: true });
+        const hide: boolean = this.allRoomsInfo.get(data.roomId).hide;
+        this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: hide });
       }
 
       socket.join(data.roomId);
@@ -68,7 +74,7 @@ export class SocketService {
 
       const index = room.findIndex((e) => { return e.socketId == data.userId });
       if (index > -1) {
-        room[index]['vote'] = data.vote.value !== null ? data.vote : null; 
+        room[index]['vote'] = data.vote.value !== null ? data.vote : null;
         this.emitPeople(socket, roomId, this.allRooms.get(roomId));
       }
     });
@@ -77,6 +83,9 @@ export class SocketService {
       console.log(`[${Messages.FROM_CLIENT.clear_votes}]`, socket.id, clientId, data);
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
+
+      this.allRoomsInfo.get(roomId).hide = true;
+
       for (let i = 0; i < room.length; i++) {
         const user = room[i];
         user.vote = null;
@@ -89,9 +98,13 @@ export class SocketService {
       console.log(`[${Messages.FROM_CLIENT.hide_unHide}]`, socket.id, clientId, data);
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
+
+      this.allRoomsInfo.get(roomId).hide = !this.allRoomsInfo.get(roomId).hide
+      const currentHide = this.allRoomsInfo.get(roomId).hide;
+
       for (let i = 0; i < room.length; i++) {
         const user = room[i];
-        user.hide = !user.hide
+        user.hide = currentHide;
       }
       this.emitPeople(socket, roomId, this.allRooms.get(roomId));
     });
