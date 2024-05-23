@@ -13,7 +13,7 @@ export {
     type NofityCardsDTO,
     type JoinMeDTO,
     type VoteDTO,
-    type RoomInfoDTO,
+    RoomInfoDTO,
     type NotifyPeopleDTO,
     type CreateRoomDTO,
     type JoinRoomDTO,
