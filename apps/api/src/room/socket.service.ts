@@ -38,11 +38,13 @@ export class SocketService {
       for (let i = 0; i < this.allRooms.size; i++) {
         let roomId = (Array.from(this.allRooms.keys())[i]).toString();
         let room = this.allRooms.get(roomId);
+        const hide: boolean = this.getHideVotesRoom(data.roomId);
+
         const index = room.findIndex((e) => { return e.socketId == clientId });
         if (index > -1) {
           room.splice(index, 1);
           console.log(`disconnected from [${roomId}`)
-          this.emitPeople(socket, roomId, this.allRooms.get(roomId));
+          this.emitPeople(socket, roomId, hide, this.allRooms.get(roomId));
         }
       }
     });
@@ -56,14 +58,14 @@ export class SocketService {
         this.allRoomsInfo.set(data.roomId, new RoomInfoDTO(data.roomId, true));
       }
 
+      const hide: boolean = this.getHideVotesRoom(data.roomId);
       if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1) {
-        const hide: boolean = this.allRoomsInfo.get(data.roomId).hide;
         this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: hide });
       }
 
       socket.join(data.roomId);
 
-      this.emitPeople(socket, data.roomId, this.allRooms.get(data.roomId));
+      this.emitPeople(socket, data.roomId, hide, this.allRooms.get(data.roomId));
       await this.emitCards(socket, data.roomId);
     });
 
@@ -71,11 +73,12 @@ export class SocketService {
       console.log(`[${Messages.FROM_CLIENT.vote}]`, socket.id, clientId, data);
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
+      const hide: boolean = this.getHideVotesRoom(data.roomId);
 
       const index = room.findIndex((e) => { return e.socketId == data.userId });
       if (index > -1) {
         room[index]['vote'] = data.vote.value !== null ? data.vote : null;
-        this.emitPeople(socket, roomId, this.allRooms.get(roomId));
+        this.emitPeople(socket, roomId, hide, this.allRooms.get(roomId));
       }
     });
 
@@ -84,14 +87,15 @@ export class SocketService {
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
 
-      this.allRoomsInfo.get(roomId).hide = true;
+      this.setHideVotesRoom(roomId, true);
+      const currentHide = this.getHideVotesRoom(roomId);
 
       for (let i = 0; i < room.length; i++) {
         const user = room[i];
         user.vote = null;
         user.hide = true;
       }
-      this.emitPeople(socket, roomId, this.allRooms.get(roomId));
+      this.emitPeople(socket, roomId, currentHide, this.allRooms.get(roomId));
     });
 
     socket.on(Messages.FROM_CLIENT.hide_unHide, (data: RoomInfoDTO) => {
@@ -99,20 +103,21 @@ export class SocketService {
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
 
-      this.allRoomsInfo.get(roomId).hide = !this.allRoomsInfo.get(roomId).hide
-      const currentHide = this.allRoomsInfo.get(roomId).hide;
+      this.setHideVotesRoom(roomId, !this.getHideVotesRoom(roomId))
+      const currentHide = this.getHideVotesRoom(roomId);
 
       for (let i = 0; i < room.length; i++) {
         const user = room[i];
         user.hide = currentHide;
       }
-      this.emitPeople(socket, roomId, this.allRooms.get(roomId));
+      this.emitPeople(socket, roomId, currentHide, this.allRooms.get(roomId));
     });
   }
 
-  emitPeople = function (socket: Socket, roomId: string, people: Array<ParticipantDTO>) {
+  emitPeople = function (socket: Socket, roomId: string, hideVotes: boolean, people: Array<ParticipantDTO>) {
     const nofityJoined: NotifyPeopleDTO = {
       roomId: roomId,
+      hide: hideVotes,
       people: people
     };
 
@@ -143,6 +148,21 @@ export class SocketService {
 
     socket.emit(Messages.TO_CLIENT.cards, nofityCards);
     socket.to(socket.id).emit(Messages.TO_CLIENT.cards, nofityCards);
+  }
+
+  getHideVotesRoom = function (roomId: string): boolean {
+    if (!this.allRoomsInfo.has(roomId)) {
+      this.allRoomsInfo.set(roomId, new RoomInfoDTO(roomId, true));
+    }
+    const hide: boolean = this.allRoomsInfo.get(roomId).hide;
+    return hide;
+  }
+
+  setHideVotesRoom = function (roomId: string, newValue: boolean) {
+    if (!this.allRoomsInfo.has(roomId)) {
+      this.allRoomsInfo.set(roomId, new RoomInfoDTO(roomId, newValue));
+    }
+    this.allRoomsInfo.get(roomId).hide = newValue;
   }
 
   // Add more methods for handling events, messages, etc.
