@@ -103,6 +103,14 @@ const RoomComponent = function () {
   const onPeopleHandler = function (data: NotifyPeopleDTO) {
     console.log(`[${Messages.FROM_SERVER.people}]`, data);
     if (data.roomId === id) {
+      setRoom({ ...room, hide: data.hide })
+      if (data.hide === false) {
+        var sortedArray: ParticipantDTO[] = data.people.sort((n1, n2) => {
+          return (isNaN(Number(n2.vote?.value)) ? -1 : Number(n2.vote?.value))
+            - (isNaN(Number(n1.vote?.value)) ? -1 : Number(n1.vote?.value))
+        });
+        data.people = sortedArray;
+      }
       setUsers(data.people);
     }
   };
@@ -143,10 +151,10 @@ const RoomComponent = function () {
   };
 
   const participantListWrapperStyle = {
-    display: 'flex', 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
-    justifyContent: 'space-evenly', 
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
     alignSelf: 'center',
     marginTop: '1rem'
   }
@@ -188,10 +196,10 @@ const RoomComponent = function () {
                 <Button variant="contained"
                   onClick={onClearAllClick}>Clear All</Button>
                 <Button variant="contained"
-                  onClick={OnHideUnHideClick}>Hide / Unhide</Button>
+                  onClick={OnHideUnHideClick}>{room?.hide ? 'Unhide' : 'Hide'}</Button>
               </Box>
 
-              <Box 
+              <Box
                 sx={participantListWrapperStyle}
                 width={{ xs: '100%', s: '100%', md: '75%', l: '75%', xl: '75%' }}>
                 {[...new Set(users)].map((user) =>
