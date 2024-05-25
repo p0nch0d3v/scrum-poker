@@ -12,8 +12,6 @@ type InvalidRomModalProps = {
 }
 
 const InvalidRomModalComponent: FunctionComponent<InvalidRomModalProps> = ({ open, onClose }) => {
-    const [userName, setUserName] = useLocalStorage('userName', null);
-
     const navigate = useNavigate();
 
     const style = {
