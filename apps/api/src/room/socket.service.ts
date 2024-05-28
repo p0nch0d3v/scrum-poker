@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { RoomService } from './room.service';
-import { CardDTO, NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO } from 'models'
+import { CardDTO, NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO, ErrorDTO } from 'models'
 import { ParticipantDTO } from 'models/DTO/participant.dto';
 
 const Messages = {
   TO_CLIENT: {
     people: 'people',
-    cards: 'cards'
+    cards: 'cards',
+    error: 'error'
   },
   FROM_CLIENT: {
     disconnect: 'disconnect',
@@ -63,10 +64,18 @@ export class SocketService {
         this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: hide });
       }
 
-      socket.join(data.roomId);
+      if (this.allRooms.get(data.roomId).findIndex((e) => {
+        return e.userName.trim().toLocaleLowerCase() === data.userName.trim().toLocaleLowerCase()
+          && e.socketId !== socket.id
+      }) >= 0) {
+        this.emitError(socket, data.roomId, `The username: [${data.userName}] is already joined`);
+      }
+      else {
+        socket.join(data.roomId);
 
-      this.emitPeople(socket, data.roomId, hide, this.allRooms.get(data.roomId));
-      await this.emitCards(socket, data.roomId);
+        this.emitPeople(socket, data.roomId, hide, this.allRooms.get(data.roomId));
+        await this.emitCards(socket, data.roomId);
+      }
     });
 
     socket.on(Messages.FROM_CLIENT.vote, (data: VoteDTO) => {
@@ -148,6 +157,17 @@ export class SocketService {
 
     socket.emit(Messages.TO_CLIENT.cards, nofityCards);
     socket.to(socket.id).emit(Messages.TO_CLIENT.cards, nofityCards);
+  }
+
+  emitError = async function (socket: Socket, roomId: string, errorMessage: string) {
+    let error: ErrorDTO = {
+      message: errorMessage,
+      socketId: socket.id,
+      roomId: roomId
+    };
+
+    socket.emit(Messages.TO_CLIENT.error, error);
+    socket.to(socket.id).emit(Messages.TO_CLIENT.error, error);
   }
 
   getHideVotesRoom = function (roomId: string): boolean {
