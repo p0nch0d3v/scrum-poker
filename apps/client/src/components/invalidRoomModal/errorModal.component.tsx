@@ -6,12 +6,13 @@ import Modal from '@mui/material/Modal';
 import { FunctionComponent } from 'react';
 import { Button, Input } from '@mui/material';
 
-type InvalidRomModalProps = {
+type ErrorModalProps = {
     open: boolean,
-    onClose: any
+    onClose: any,
+    message?: string
 }
 
-const InvalidRomModalComponent: FunctionComponent<InvalidRomModalProps> = ({ open, onClose }) => {
+const ErrorModalComponent: FunctionComponent<ErrorModalProps> = ({ open, onClose, message }) => {
     const navigate = useNavigate();
 
     const style = {
@@ -34,13 +35,13 @@ const InvalidRomModalComponent: FunctionComponent<InvalidRomModalProps> = ({ ope
         >
             <Box sx={style}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Invalid room Id
+                    {message}
                 </Typography>
                 <Button color="error" variant="contained" sx={{ marginTop: 2 }}
-                    onClick={() => { navigate('/'); }}>Close</Button>
+                    onClick={onClose}>Close</Button>
             </Box>
         </Modal>
     );
 }
 
-export default InvalidRomModalComponent;
+export default ErrorModalComponent;

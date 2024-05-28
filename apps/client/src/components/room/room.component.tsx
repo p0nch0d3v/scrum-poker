@@ -11,14 +11,17 @@ import CardComponent from "../card/card.component";
 import ParticipantComponent from "../participant/participant.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
 import { CardDTO, NofityCardsDTO, NotifyPeopleDTO } from 'models'
+import { ErrorDTO } from "models/DTO/error.dto";
 import { ParticipantDTO } from "models/DTO/participant.dto";
-import InvalidRomModalComponent from "../invalidRoomModal/invalidRoomModal.component";
+import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
+import { ErrorSharp } from "@mui/icons-material";
 
 const Messages = {
   FROM_SERVER: {
     people: 'people',
     connect: 'connect',
-    cards: 'cards'
+    cards: 'cards',
+    error: 'error'
   },
   TO_SERVER: {
     disconnect: 'disconnect',
@@ -35,11 +38,13 @@ const RoomComponent = function () {
 
   const [userName] = useLocalStorage('userName', null);
   const [validRoom, setValidRoom] = useState<boolean>()
+  const [validUserName, setValidUserName] = useState<boolean>()
   const [room, setRoom] = useState<any>(null);
   const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
   const [cards, setCards] = useState<Array<CardDTO>>([]);
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
+  const [error, setError] = useState<ErrorDTO>({});
   const [intervalId, setIntervalId] = useState<any>();
   const [wsServer, setWsServer] = useState(io(Config.SOCKET_SERVER, { autoConnect: false, reconnection: true }));
   const navigate = useNavigate();
@@ -75,6 +80,7 @@ const RoomComponent = function () {
         wsServer.off(Messages.FROM_SERVER.connect, onConnectHandler);
         wsServer.off(Messages.FROM_SERVER.people, onPeopleHandler);
         wsServer.off(Messages.FROM_SERVER.cards, onCardsHandler);
+        wsServer.off(Messages.FROM_SERVER.error, onErrorHandler);
         wsServer.disconnect();
       }
       if (intervalId) {
@@ -89,6 +95,12 @@ const RoomComponent = function () {
       clearInterval(intervalId);
     };
   }, [connected, connectionId])
+
+  useEffect(() => {
+    if (error?.message && (error.roomId !== id || (connectionId && error.socketId !== connectionId))) {
+      setError({})
+    }
+  }, [error, connectionId])
 
   /* ---------- */
 
@@ -122,6 +134,10 @@ const RoomComponent = function () {
     }
   }
 
+  const onErrorHandler = function (data: ErrorDTO) {
+    setError(data);
+  }
+
   const onVoteClick = function (value: CardDTO) {
     console.log(`[${Messages.TO_SERVER.vote}]`, value);
     wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: value });
@@ -141,6 +157,7 @@ const RoomComponent = function () {
     socket.on(Messages.FROM_SERVER.connect, onConnectHandler);
     socket.on(Messages.FROM_SERVER.people, onPeopleHandler);
     socket.on(Messages.FROM_SERVER.cards, onCardsHandler);
+    socket.on(Messages.FROM_SERVER.error, onErrorHandler);
     return socket;
   }
 
@@ -148,6 +165,13 @@ const RoomComponent = function () {
     setWsServer(wsServer.connect());
     setConnected(wsServer.connected);
     setConnectionId(wsServer.id);
+  };
+
+  const backToHome = () => {
+    setTimeout(() => {
+      navigate('/', { replace: true });
+      window.location.reload();
+    }, 1);
   };
 
   const participantListWrapperStyle = {
@@ -162,11 +186,20 @@ const RoomComponent = function () {
   return (
 
     <Box width={'100vw'} height={'100vh'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
-      {validRoom === false && <InvalidRomModalComponent open={validRoom === false} onClose={() => { navigate('/'); }} />}
+      {validRoom === false && <ErrorModalComponent
+        open={validRoom === false}
+        onClose={backToHome}
+        message="Invalid room Id" />}
 
-      {validRoom === true && isUndefinedNullOrEmpty(userName) && <UserNameModalComponent open={!userName} onClose={() => { window.location.reload(); }} />}
+      {validRoom === true && (isUndefinedNullOrEmpty(userName) || validUserName === false)
+        && <UserNameModalComponent open={!userName} onClose={backToHome} />}
 
-      {validRoom === true && !isUndefinedNullOrEmpty(userName) &&
+      {error !== null && !isUndefinedNullOrEmpty(error.message)
+        && <ErrorModalComponent open={!isUndefinedNullOrEmpty(error.message)}
+          onClose={backToHome}
+          message={error?.message} />}
+
+      {validRoom === true && !isUndefinedNullOrEmpty(userName) && !error.message &&
         <>
           <Typography sx={{ fontSize: '1em', textAlign: 'center', marginTop: '1em' }}
             color="text.secondary"
