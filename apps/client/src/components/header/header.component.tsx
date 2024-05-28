@@ -9,12 +9,18 @@ export default function HeaderComponent() {
     const userNameRef = useRef(userName);
     const navigate = useNavigate();
 
+    const backToHome = () => {
+        setTimeout(() => {
+          navigate('/', { replace: true });
+          window.location.reload();
+        }, 1);
+      };
+
     const onUserNameKeyUp = (e: any) => {
         if (e.keyCode === 13) {
             setTimeout(()=> {
                 setUserName(userNameRef.current.firstChild.value);
-                navigate('/');
-                window.location.reload();
+                backToHome();
             }, 250);
         }
     }
@@ -28,7 +34,7 @@ export default function HeaderComponent() {
             <Toolbar>
                 <MenuIcon />
                 <Typography variant="h6" component="div" marginLeft={1} width={'100%'} align='left'
-                    onClick={() => { navigate('/') }}>
+                    onClick={backToHome} >
                     Scrum pokeR
                 </Typography>
                 <Box alignItems={'right'} alignContent={'right'} className='participant-name'>

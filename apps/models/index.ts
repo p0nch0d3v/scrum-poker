@@ -7,6 +7,7 @@ import { NotifyPeopleDTO } from './DTO/notifyPeople.dto';
 import { CreateRoomDTO } from './DTO/create-room.dto';
 import { JoinRoomDTO } from './DTO/joinRoom.dto';
 import { RoomDTO } from './DTO/room.dto';
+import { ErrorDTO } from 'DTO/error.dto';
 
 export {
     type CardDTO,
@@ -17,5 +18,6 @@ export {
     type NotifyPeopleDTO,
     type CreateRoomDTO,
     type JoinRoomDTO,
-    RoomDTO
+    RoomDTO,
+    type ErrorDTO
 };
