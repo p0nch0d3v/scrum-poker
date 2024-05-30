@@ -42,8 +42,8 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
                 <Typography sx={userNameStyle(current)}>
                     {participant.userName}
                 </Typography>
-                {!participant.vote && <CardComponent card={emptyCard} onClick={null} />}
-                {participant.vote && <CardComponent card={participant.hide ? hiddenCard : participant.vote} onClick={null} />}
+                {!participant.vote && <CardComponent card={emptyCard} />}
+                {participant.vote && <CardComponent card={participant.hide ? hiddenCard : participant.vote} />}
                 
             </CardContent>
         </Card>
