@@ -1,4 +1,4 @@
-import { AppBar, Box, Input, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Input, Toolbar, Tooltip, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import useLocalStorage from '../../hooks/useLocalStorage ';
 import { useNavigate } from "react-router-dom";
@@ -38,11 +38,15 @@ export default function HeaderComponent() {
                     Scrum pokeR
                 </Typography>
                 <Box alignItems={'right'} alignContent={'right'} className='participant-name'>
+                <Tooltip disableFocusListener arrow 
+                         placement="left"
+                         title="Press [ENTER] to update the Participant name" >
                     <Input placeholder='Participant name'
                         sx={{ color: 'unset' }}
                         inputProps={{ maxLength: 15 }}
                         ref={userNameRef}
                         onKeyUp={onUserNameKeyUp} />
+                    </Tooltip>
                 </Box>
             </Toolbar>
         </AppBar>
