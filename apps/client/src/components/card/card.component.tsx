@@ -4,11 +4,11 @@ import { FunctionComponent } from "react";
 
 type CardProps = {
     card: any,
-    onClick: any,
-    disabled: boolean
+    onClick?: any,
+    disabled?: boolean
 }
 
-const cardStyle = (disabled: boolean) => {
+const cardStyle = (disabled?: boolean) => {
     return {
         margin: '1em',
         width: '4em',
