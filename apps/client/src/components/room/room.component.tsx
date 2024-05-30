@@ -216,7 +216,7 @@ const RoomComponent = function () {
             <Box display={'flex'} flexDirection={'column'}>
               <Box style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
                 {cards.map((card) =>
-                  <CardComponent card={card}
+                  <CardComponent card={card} disabled={room?.hide === false}
                     onClick={() => { onVoteClick(card); }} />
                 )}
               </Box>
@@ -226,7 +226,7 @@ const RoomComponent = function () {
                 display={'flex'}
                 justifyContent={'space-between'}
                 alignSelf={'center'}>
-                <Button variant="contained"
+                <Button variant="contained" 
                   onClick={onClearAllClick}>Clear All</Button>
                 <Button variant="contained"
                   onClick={OnHideUnHideClick}>{room?.hide ? 'Unhide' : 'Hide'}</Button>
