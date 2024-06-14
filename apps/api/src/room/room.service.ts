@@ -75,6 +75,7 @@ export class RoomService {
 
     return (savedRoom !== undefined && savedRoom !== null) ? new RoomDTO(savedRoom.id,
       savedRoom.name,
+      savedRoom.admin,
       savedRoom.cards,
       savedRoom.created_at,
       savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0)
@@ -85,7 +86,7 @@ export class RoomService {
     const rooms = await (await this.query()).getRawMany();
     const allRooms = [];
     rooms.forEach(room => {
-      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_cards, room.room_created_at, room.room_hasPassword));
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_admin, room.room_cards, room.room_created_at, room.room_hasPassword));
     });
 
     return allRooms;
@@ -103,7 +104,7 @@ export class RoomService {
     const rooms = await (await this.query()).take(10).getRawMany();
     const allRooms = [];
     rooms.forEach(room => {
-      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_cards, room.room_created_at, room.room_hasPassword));
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_admin, room.room_cards, room.room_created_at, room.room_hasPassword));
     });
     return allRooms;
   }
@@ -111,7 +112,7 @@ export class RoomService {
   private async query(): Promise<SelectQueryBuilder<Room>> {
     return await this.roomsRepository
       .createQueryBuilder('room')
-      .select(['room.id', 'room.name', 'room.cards', 'room.created_at'])
+      .select(['room.id', 'room.name', 'room.admin', 'room.cards', 'room.created_at'])
       .addSelect("password is not NULL", "room_hasPassword")
       .orderBy("created_at", "DESC");
   }
