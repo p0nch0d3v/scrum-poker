@@ -8,14 +8,16 @@ const Messages = {
   TO_CLIENT: {
     people: 'people',
     cards: 'cards',
-    error: 'error'
+    error: 'error',
+    refresh: 'refresh'
   },
   FROM_CLIENT: {
     disconnect: 'disconnect',
     join_me: 'join_me',
     vote: 'vote',
     clear_votes: 'clear_votes',
-    hide_unHide: 'hide_unHide'
+    hide_unHide: 'hide_unHide',
+    set_admin: 'set_admin'
   }
 }
 
@@ -121,6 +123,11 @@ export class SocketService {
       }
       this.emitPeople(socket, roomId, currentHide, this.allRooms.get(roomId));
     });
+
+    socket.on(Messages.FROM_CLIENT.set_admin, (roomId: string) => {
+      console.log(`[${Messages.FROM_CLIENT.set_admin}]`, socket.id, roomId);
+      this.emitAdmin(socket, roomId);
+    });
   }
 
   emitPeople = function (socket: Socket, roomId: string, hideVotes: boolean, people: Array<ParticipantDTO>) {
@@ -168,6 +175,13 @@ export class SocketService {
 
     socket.emit(Messages.TO_CLIENT.error, error);
     socket.to(socket.id).emit(Messages.TO_CLIENT.error, error);
+  }
+
+  emitAdmin = async function (socket: Socket, roomId: string) {
+    socket.emit(Messages.TO_CLIENT.refresh, roomId);
+    socket.broadcast.emit(Messages.TO_CLIENT.refresh, roomId);
+    socket.to(roomId).emit(Messages.TO_CLIENT.refresh, roomId);
+    socket.to(socket.id).emit(Messages.TO_CLIENT.refresh, roomId);
   }
 
   getHideVotesRoom = function (roomId: string): boolean {

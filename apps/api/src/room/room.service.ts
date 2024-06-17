@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { JoinRoomDTO, RoomDTO, CreateRoomDTO } from 'models';
+import { JoinRoomDTO, RoomDTO, CreateRoomDTO, SetAdminDTO } from 'models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
 import { Repository, IsNull, Not, SelectQueryBuilder } from 'typeorm';
@@ -107,6 +107,12 @@ export class RoomService {
       allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_admin, room.room_cards, room.room_created_at, room.room_hasPassword));
     });
     return allRooms;
+  }
+
+  async setAdmin(roomInfo: SetAdminDTO): Promise<boolean> {
+    const room = await this.getByUniqueId(roomInfo.roomId);
+    const updateResult = await this.roomsRepository.update(room.id, {admin: roomInfo.admin});
+    return updateResult.affected === 1;
   }
 
   private async query(): Promise<SelectQueryBuilder<Room>> {
