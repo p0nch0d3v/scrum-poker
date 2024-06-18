@@ -137,6 +137,10 @@ export class SocketService {
       people: people
     };
 
+    if (people.length === 0) {
+      this.roomService.setAdmin({ roomId: roomId, admin: '' });
+    } 
+
     socket.emit(Messages.TO_CLIENT.people, nofityJoined);
     socket.broadcast.emit(Messages.TO_CLIENT.people, nofityJoined);
     socket.to(roomId).emit(Messages.TO_CLIENT.people, nofityJoined);

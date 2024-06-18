@@ -45,6 +45,7 @@ const RoomComponent = function () {
   const [validUserName, setValidUserName] = useState<boolean>()
   const [room, setRoom] = useState<RoomDTO | null | undefined>();
   const [rommHasAdmin, setRoomHasAdmin] = useState<boolean>(false);
+  const [isUserAdmin, setIsUserAdmin] = useState<boolean>(false);
   const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
   const [cards, setCards] = useState<Array<CardDTO>>([]);
   const [connected, setConnected] = useState<boolean | undefined>();
@@ -64,6 +65,7 @@ const RoomComponent = function () {
           setValidRoom(isValidRoom);
           setRoom(getRoomResult);
           setRoomHasAdmin(!isUndefinedNullOrEmpty(getRoomResult.admin));
+          setIsUserAdmin(getRoomResult?.admin === userName);
         }, 1);
       }
       else {
@@ -279,6 +281,7 @@ const RoomComponent = function () {
                     participant={user}
                     current={user.socketId === connectionId ? true : false}
                     rommHasAdmin={rommHasAdmin}
+                    isUserAdmin={isUserAdmin}
                     onSetRoomAdmin={onSetRoomAdmin}
                   />
                 )}

@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, Typography } from "@mui/material";
+import { Button, Card, CardContent, Typography, Tooltip } from "@mui/material";
 import { FunctionComponent } from "react";
 import CardComponent from "../card/card.component";
 
@@ -7,6 +7,7 @@ type ParticipantProps = {
     current: boolean
     rommHasAdmin: boolean
     onSetRoomAdmin: any
+    isUserAdmin: boolean
 }
 
 const cardBoxStyle = {
@@ -37,13 +38,21 @@ const userNameStyle = (current: boolean) => {
 const emptyCard = { 'text': '', 'value': '' };
 const hiddenCard = { 'text': '*', 'value': '*' };
 
-const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, current, rommHasAdmin, onSetRoomAdmin }) => {
+const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, current, rommHasAdmin, onSetRoomAdmin, isUserAdmin }) => {
     return (
         <Card sx={cardBoxStyle} >
             <CardContent sx={cardContentStyle}>
                 <Typography sx={userNameStyle(current)}>
                     {participant.userName}
-                    {rommHasAdmin === false ? <Button onClick={() => { onSetRoomAdmin(participant.userName) }}>⭐</Button> : null}
+                    {
+                      (isUserAdmin === true && current === false) || rommHasAdmin === false ? 
+                      <Tooltip disableFocusListener arrow 
+                               placement="bottom"
+                               title="Make Admin">
+                        <Button onClick={() => { onSetRoomAdmin(participant.userName) }}>⭐</Button> 
+                      </Tooltip>
+                      : null
+                    }
                 </Typography>
                 {!participant.vote && <CardComponent card={emptyCard} />}
                 {participant.vote && <CardComponent card={participant.hide ? hiddenCard : participant.vote} />}
