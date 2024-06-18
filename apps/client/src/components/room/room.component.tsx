@@ -125,7 +125,11 @@ const RoomComponent = function () {
     console.log(`[${Messages.FROM_SERVER.people}]`, data);
     if (data.roomId === id) {
       if (room) {
-        room!.hide = data.hide;
+        let newRoom = {...room};
+        newRoom.hide = data.hide;
+        setTimeout(() => {
+          setRoom(newRoom);
+          });
       }
       if (data.hide === false) {
         var sortedArray: ParticipantDTO[] = data.people.sort((n1, n2) => {
