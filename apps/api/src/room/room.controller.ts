@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query, Put } from '@nestjs/common';
 import { RoomService } from './room.service';
-import { CreateRoomDTO, JoinRoomDTO, RoomDTO } from 'models';
+import { CreateRoomDTO, JoinRoomDTO, RoomDTO, SetAdminDTO } from 'models';
 
 @Controller('room')
 export class RoomController {
@@ -39,5 +39,10 @@ export class RoomController {
   @Get('latest')
   async latest(): Promise<Array<RoomDTO>> {
     return await this.roomService.latest();
+  }
+
+  @Put('setAdmin')
+  async setAdmin(@Body() roomInfo: SetAdminDTO): Promise<boolean> {
+    return await this.roomService.setAdmin(roomInfo)
   }
 }

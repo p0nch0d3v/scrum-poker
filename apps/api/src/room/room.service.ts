@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { JoinRoomDTO, RoomDTO, CreateRoomDTO } from 'models';
+import { JoinRoomDTO, RoomDTO, CreateRoomDTO, SetAdminDTO } from 'models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
 import { Repository, IsNull, Not, SelectQueryBuilder } from 'typeorm';
@@ -75,6 +75,7 @@ export class RoomService {
 
     return (savedRoom !== undefined && savedRoom !== null) ? new RoomDTO(savedRoom.id,
       savedRoom.name,
+      savedRoom.admin,
       savedRoom.cards,
       savedRoom.created_at,
       savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0)
@@ -85,7 +86,7 @@ export class RoomService {
     const rooms = await (await this.query()).getRawMany();
     const allRooms = [];
     rooms.forEach(room => {
-      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_cards, room.room_created_at, room.room_hasPassword));
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_admin, room.room_cards, room.room_created_at, room.room_hasPassword));
     });
 
     return allRooms;
@@ -103,15 +104,21 @@ export class RoomService {
     const rooms = await (await this.query()).take(10).getRawMany();
     const allRooms = [];
     rooms.forEach(room => {
-      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_cards, room.room_created_at, room.room_hasPassword));
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_admin, room.room_cards, room.room_created_at, room.room_hasPassword));
     });
     return allRooms;
+  }
+
+  async setAdmin(roomInfo: SetAdminDTO): Promise<boolean> {
+    const room = await this.getByUniqueId(roomInfo.roomId);
+    const updateResult = await this.roomsRepository.update(room.id, {admin: roomInfo.admin});
+    return updateResult.affected === 1;
   }
 
   private async query(): Promise<SelectQueryBuilder<Room>> {
     return await this.roomsRepository
       .createQueryBuilder('room')
-      .select(['room.id', 'room.name', 'room.cards', 'room.created_at'])
+      .select(['room.id', 'room.name', 'room.admin', 'room.cards', 'room.created_at'])
       .addSelect("password is not NULL", "room_hasPassword")
       .orderBy("created_at", "DESC");
   }

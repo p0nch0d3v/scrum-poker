@@ -9,6 +9,9 @@ export class Room {
     @Column()
     name: string;
 
+    @Column({ nullable: true }) 
+    admin: string;
+
     @Column({ nullable: true })
     password: string;
 
