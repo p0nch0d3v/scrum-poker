@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Card, CardActions, CardContent, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 
 import { createRoom } from '../../services/api.service';
 import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
+import useLocalStorage from '../../hooks/useLocalStorage ';
 import { CreateRoomDTO } from 'models';
 
 export default function CreateRoomComponent() {
@@ -12,6 +13,8 @@ export default function CreateRoomComponent() {
     const [cardsValues, setCardsValues] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [roomId, setRoomId] = useState<string>('');
+    const [admin, setAdmin] = useState<string>('');
+    const [userName] = useLocalStorage('userName', null);
 
     const fibonacciSerie = "1,2,3,5,8,13,21";
     const tShirtSerie = "XS,S,M,L,XL";
@@ -27,7 +30,7 @@ export default function CreateRoomComponent() {
 
     const onCreateClick = async function () {
         const newRoom: CreateRoomDTO = {
-            name: roomName, password: password, cards: cardsValues
+            name: roomName, admin: admin, password: password, cards: cardsValues
         };
         const createResult = await createRoom(newRoom);
 
@@ -50,9 +53,18 @@ export default function CreateRoomComponent() {
         setCardsValues(newValue);
     }
 
+    const onAdminNameChange = function (e: any) {
+        const newValue = e?.target?.value;
+        setAdmin(newValue);
+    }
+
     const disableCreateRoom = () => {
         return isUndefinedNullOrEmpty(roomName) || isUndefinedNullOrEmpty(cardsValues);
     };
+
+    useEffect(() => {
+        setAdmin(userName);
+    }, [userName])
 
     return (
         <Box width={{ xs: '100%', s: '100%', md: '50%', l: '33%', xl: '33%' }}
@@ -63,12 +75,14 @@ export default function CreateRoomComponent() {
                     <Typography sx={{ fontSize: 14, textAlign: 'center' }} color="text.secondary" gutterBottom>
                         CREATE ROOM
                     </Typography>
-                    <InputLabel id="card-serie-label">Room Name</InputLabel>
+
+                    <InputLabel id="room-name-label">Room Name</InputLabel>
                     <TextField
                         fullWidth={true}
                         placeholder="Room Name"
                         style={{ marginBottom: "1em" }}
                         onChange={onRoomNameChange} />
+
                     <InputLabel id="card-serie-label">Card Serie</InputLabel>
                     <Select
                         fullWidth={true}
@@ -82,6 +96,15 @@ export default function CreateRoomComponent() {
                         fullWidth={true}
                         value={cardsValues}
                         onChange={onCardsValuesChange} />
+
+                    <InputLabel id="card-admin-label">Admin</InputLabel>
+                    <TextField
+                        fullWidth={true}
+                        placeholder="Room Admin"
+                        style={{ marginBottom: "1em" }}
+                        disabled
+                        value={userName}
+                        onChange={onAdminNameChange} />
                 </CardContent>
                 <CardActions>
                     <Button

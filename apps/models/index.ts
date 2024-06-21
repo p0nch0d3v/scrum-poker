@@ -8,6 +8,7 @@ import { CreateRoomDTO } from './DTO/create-room.dto';
 import { JoinRoomDTO } from './DTO/joinRoom.dto';
 import { RoomDTO } from './DTO/room.dto';
 import { ErrorDTO } from 'DTO/error.dto';
+import { SetAdminDTO } from 'DTO/setAdmin.dto';
 
 export {
     type CardDTO,
@@ -19,5 +20,6 @@ export {
     type CreateRoomDTO,
     type JoinRoomDTO,
     RoomDTO,
-    type ErrorDTO
+    type ErrorDTO,
+    type SetAdminDTO,
 };
