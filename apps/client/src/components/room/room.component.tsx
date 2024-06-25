@@ -44,6 +44,7 @@ const RoomComponent = function () {
   const [validRoom, setValidRoom] = useState<boolean>()
   const [validUserName, setValidUserName] = useState<boolean>()
   const [room, setRoom] = useState<RoomDTO | null | undefined>();
+  const [roomHide, setRoomHide] = useState<boolean | null | undefined>();
   const [rommHasAdmin, setRoomHasAdmin] = useState<boolean>(false);
   const [isUserAdmin, setIsUserAdmin] = useState<boolean>(false);
   const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
@@ -61,16 +62,15 @@ const RoomComponent = function () {
       let isValidRoom = false;
       if (validateUUID(id)) {
         const getRoomResult = await getRoom(id);
-        isValidRoom = getRoomResult !== undefined && getRoomResult !== null;
-        setTimeout(() => {
-          setValidRoom(isValidRoom);
-          setRoom(getRoomResult);
-          setRoomHasAdmin(!isUndefinedNullOrEmpty(getRoomResult.admin));
-          setIsUserAdmin(getRoomResult?.admin === userName);
-        }, 1);
+        isValidRoom = typeof getRoomResult !== 'undefined' && getRoomResult !== null;
+        setValidRoom(isValidRoom);
+        setRoom(getRoomResult);
+        setRoomHide(true);
+        setRoomHasAdmin(!isUndefinedNullOrEmpty(getRoomResult.admin));
+        setIsUserAdmin(getRoomResult?.admin === userName);
       }
       else {
-        setValidRoom(false);
+        setValidRoom(isValidRoom);
       }
 
       if (isValidRoom && !isUndefinedNullOrEmpty(userName)) {
@@ -125,15 +125,11 @@ const RoomComponent = function () {
   };
 
   const onPeopleHandler = function (data: NotifyPeopleDTO) {
-    console.log(`[${Messages.FROM_SERVER.people}]`, data);
+    console.log(`[${Messages.FROM_SERVER.people}]`, data, room);
+
     if (data.roomId === id) {
-      if (room) {
-        let newRoom = {...room};
-        newRoom.hide = data.hide === true ? true : false;
-        setTimeout(() => {
-          setRoom(newRoom);
-          });
-      }
+      setRoomHide(data.hide === true ? true : false);
+
       if (data.hide === false) {
         var sortedArray: ParticipantDTO[] = data.people.sort((n1, n2) => {
           return (isNaN(Number(n2.vote?.value)) ? -1 : Number(n2.vote?.value))
@@ -159,9 +155,7 @@ const RoomComponent = function () {
   const onRefreshHandler = function (data: any) {
     console.log(`[${Messages.FROM_SERVER.refresh}]`, data);
     if (data.roomId === id) {
-      setTimeout(() => {
-        window.location.reload();
-      }, 1);
+      window.location.reload();
     }
   }
 
@@ -205,10 +199,8 @@ const RoomComponent = function () {
   };
 
   const backToHome = () => {
-    setTimeout(() => {
-      navigate('/', { replace: true });
-      window.location.reload();
-    }, 1);
+    navigate('/', { replace: true });
+    window.location.reload();
   };
 
   const participantListWrapperStyle = {
@@ -222,6 +214,17 @@ const RoomComponent = function () {
 
   return (
     <Box width={'100vw'} height={'100vh'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
+
+      {Config.IS_PRODUCTION === false && debug === true &&
+        <>
+          <Typography>{validRoom ? 'valid' : 'invalid'}</Typography>
+          <Typography>{roomHide ? 'hide' : 'no hide'}</Typography>
+          <Typography>
+            {JSON.stringify(room)}
+          </Typography>
+        </>
+      }
+
       {validRoom === false && <ErrorModalComponent
         open={validRoom === false}
         onClose={backToHome}
@@ -245,11 +248,6 @@ const RoomComponent = function () {
             {!isUndefinedNullOrEmpty(room?.admin) ? <> | Admin: {room?.admin}</> : <></>}
           </Typography>
 
-          {debug === true &&
-          <Typography>
-            {JSON.stringify(room)}
-          </Typography>}
-
           {(!connected || isUndefinedNullOrEmpty(connectionId)) &&
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50%" }}>
               <CircularProgress size={100} />
@@ -259,7 +257,7 @@ const RoomComponent = function () {
             <Box display={'flex'} flexDirection={'column'}>
               <Box style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
                 {cards.map((card) =>
-                  <CardComponent card={card} disabled={room?.hide === false}
+                  <CardComponent card={card} disabled={roomHide === false}
                     onClick={() => { onVoteClick(card); }} />
                 )}
               </Box>
@@ -275,7 +273,7 @@ const RoomComponent = function () {
                     <Button variant="contained"
                       onClick={onClearAllClick}>Clear All</Button>
                     <Button variant="contained"
-                      onClick={OnHideUnHideClick}>{room?.hide === true ? 'Unhide' : 'Hide'}</Button>
+                      onClick={OnHideUnHideClick}>{roomHide === true ? 'Unhide' : 'Hide'}</Button>
                   </Box>
                 )
               }
