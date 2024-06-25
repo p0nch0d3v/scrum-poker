@@ -51,6 +51,7 @@ const RoomComponent = function () {
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
   const [error, setError] = useState<ErrorDTO>({});
+  const [debug, setDebug] = useState<boolean>(false);
   const [intervalId, setIntervalId] = useState<any>();
   const [wsServer, setWsServer] = useState(io(Config.SOCKET_SERVER, { autoConnect: false, reconnection: true }));
   const navigate = useNavigate();
@@ -238,10 +239,16 @@ const RoomComponent = function () {
         <>
           <Typography sx={{ fontSize: '1em', textAlign: 'center', marginTop: '1em' }}
             color="text.secondary"
-            gutterBottom>
+            gutterBottom
+            onClick={() => { setDebug(!debug) }}>
             ROOM: {room?.name}
             {!isUndefinedNullOrEmpty(room?.admin) ? <> | Admin: {room?.admin}</> : <></>}
           </Typography>
+
+          {debug === true &&
+          <Typography>
+            {JSON.stringify(room)}
+          </Typography>}
 
           {(!connected || isUndefinedNullOrEmpty(connectionId)) &&
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50%" }}>
@@ -268,7 +275,7 @@ const RoomComponent = function () {
                     <Button variant="contained"
                       onClick={onClearAllClick}>Clear All</Button>
                     <Button variant="contained"
-                      onClick={OnHideUnHideClick}>{room?.hide ? 'Unhide' : 'Hide'}</Button>
+                      onClick={OnHideUnHideClick}>{room?.hide === true ? 'Unhide' : 'Hide'}</Button>
                   </Box>
                 )
               }
