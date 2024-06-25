@@ -128,7 +128,7 @@ const RoomComponent = function () {
     if (data.roomId === id) {
       if (room) {
         let newRoom = {...room};
-        newRoom.hide = data.hide;
+        newRoom.hide = data.hide === true ? true : false;
         setTimeout(() => {
           setRoom(newRoom);
           });
