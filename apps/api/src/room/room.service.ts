@@ -71,8 +71,6 @@ export class RoomService {
       }
     });
 
-    savedRoom
-
     return (savedRoom !== undefined && savedRoom !== null) ? new RoomDTO(savedRoom.id,
       savedRoom.name,
       savedRoom.admin,
