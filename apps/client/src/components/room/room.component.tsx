@@ -49,6 +49,7 @@ const RoomComponent = function () {
   const [isUserAdmin, setIsUserAdmin] = useState<boolean>(false);
   const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
   const [cards, setCards] = useState<Array<CardDTO>>([]);
+  const [userVote, setUserVote] = useState<CardDTO | null | undefined>(null);
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
   const [error, setError] = useState<ErrorDTO>({});
@@ -163,6 +164,7 @@ const RoomComponent = function () {
   const onVoteClick = function (value: CardDTO) {
     console.log(`[${Messages.TO_SERVER.vote}]`, value);
     wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: value });
+    setUserVote(value);
   };
 
   const onClearAllClick = function () {
@@ -258,7 +260,9 @@ const RoomComponent = function () {
             <Box display={'flex'} flexDirection={'column'}>
               <Box style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
                 {cards.map((card) =>
-                  <CardComponent card={card} disabled={roomHide === false}
+                  <CardComponent card={card} 
+                    disabled={roomHide === false}
+                    selected={userVote?.value === card.value}
                     onClick={() => { onVoteClick(card); }} />
                 )}
               </Box>
