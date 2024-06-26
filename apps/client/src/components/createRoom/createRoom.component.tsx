@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, Card, CardActions, CardContent, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 
 import { createRoom } from '../../services/api.service';
-import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
+import { isUndefinedNullOrEmpty, sanitizeText } from "../../helpers/helpers";
 import useLocalStorage from '../../hooks/useLocalStorage ';
 import { CreateRoomDTO } from 'models';
 
@@ -14,7 +14,7 @@ export default function CreateRoomComponent() {
     const [password, setPassword] = useState<string>('');
     const [roomId, setRoomId] = useState<string>('');
     const [admin, setAdmin] = useState<string>('');
-    const [userName] = useLocalStorage('userName', null);
+    const [userName, setUserName] = useLocalStorage('userName', '');
 
     const fibonacciSerie = "1,2,3,5,8,13,21";
     const tShirtSerie = "XS,S,M,L,XL";
@@ -61,6 +61,10 @@ export default function CreateRoomComponent() {
     const disableCreateRoom = () => {
         return isUndefinedNullOrEmpty(roomName) || isUndefinedNullOrEmpty(cardsValues);
     };
+
+    useEffect(() => {
+        setUserName(sanitizeText(userName));
+    }, [])
 
     useEffect(() => {
         setAdmin(userName);
