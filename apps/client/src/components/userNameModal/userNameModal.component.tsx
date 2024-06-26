@@ -2,8 +2,9 @@ import useLocalStorage from '../../hooks/useLocalStorage ';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import { Button, Input } from '@mui/material';
+import { sanitizeText } from '../../helpers/helpers';
 
 type UserNameModalProps = {
     open: boolean,
@@ -11,7 +12,8 @@ type UserNameModalProps = {
 }
 
 const UserNameModalComponent: FunctionComponent<UserNameModalProps> = ({ open, onClose }) => {
-    const [userName, setUserName] = useLocalStorage('userName', null);
+    const [userName, setUserName] = useLocalStorage('userName', '');
+
     const style = {
         position: 'absolute' as 'absolute',
         top: '50%',
@@ -23,6 +25,11 @@ const UserNameModalComponent: FunctionComponent<UserNameModalProps> = ({ open, o
         boxShadow: 24,
         p: 4,
     };
+
+    useEffect(() => {
+        setUserName(sanitizeText(userName));
+    }, []);
+
     return (
         <Modal
             open={open}
@@ -39,7 +46,7 @@ const UserNameModalComponent: FunctionComponent<UserNameModalProps> = ({ open, o
                         sx={{ color: 'unset' }}
                         value={userName}
                         inputProps={{ maxLength: 15 }}
-                        onChange={(e) => setUserName(e.target.value)} />
+                        onChange={(e) => setUserName(sanitizeText(e.target.value))} />
                 </Box>
                 <Button variant="contained" sx={{ marginTop: 2 }}
                     onClick={() => { window.location.reload(); }}>Join</Button>

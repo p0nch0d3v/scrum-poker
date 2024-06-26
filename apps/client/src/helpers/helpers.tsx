@@ -1,4 +1,5 @@
 import Config from "../config/config";
+import DOMPurify from 'dompurify'
 
 const validateUUID = function (uuid: string | undefined): boolean {
     uuid = (uuid === undefined || uuid === null) ? '' : uuid;
@@ -10,6 +11,12 @@ const validateUUID = function (uuid: string | undefined): boolean {
 
     return regexV1.test(uuid) || regexV2.test(uuid) || regexV3.test(uuid) || regexV4.test(uuid) || regexV5.test(uuid)
 };
+
+const isUndefinedOrNull = function (value: any | undefined): boolean {
+    return typeof value === 'undefined'
+        || value === undefined
+        || value === null;
+}
 
 const isUndefinedNullOrEmpty = function (value: string | undefined): boolean {
     return typeof value === 'undefined'
@@ -30,6 +37,11 @@ const shuffleArray = (array: Array<any>) => {
     return array;
 }
 
+const sanitizeText = (input: any): any => {
+    const clean = DOMPurify.sanitize(input, { USE_PROFILES: { html: false } });
+    return clean
+}
+
 if (Config.IS_PRODUCTION) {
     window.console.log = () => { };
     window.console.debug = () => { };
@@ -38,6 +50,8 @@ if (Config.IS_PRODUCTION) {
 
 export {
     validateUUID,
+    isUndefinedOrNull,
     isUndefinedNullOrEmpty,
-    shuffleArray
+    shuffleArray,
+    sanitizeText
 };
