@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 
 import { getRoom, setRoomAdmin } from '../../services/api.service';
-import { isUndefinedNullOrEmpty, shuffleArray, validateUUID } from "../../helpers/helpers";
+import { isUndefinedOrNull, isUndefinedNullOrEmpty, shuffleArray, validateUUID, sanitizeText } from "../../helpers/helpers";
 import useLocalStorage from "../../hooks/useLocalStorage ";
 import Config from "../../config/config";
 import CardComponent from "../card/card.component";
@@ -38,9 +38,9 @@ const Messages = {
 
 const RoomComponent = function () {
   let { id } = useParams();
-  id = (id === undefined || id === null) ? '' : id;
+  id = isUndefinedOrNull(id) ? '' : id;
 
-  const [userName] = useLocalStorage('userName', null);
+  const [userName, setUserName] = useLocalStorage('userName', '');
   const [validRoom, setValidRoom] = useState<boolean>()
   const [validUserName, setValidUserName] = useState<boolean>()
   const [room, setRoom] = useState<RoomDTO | null | undefined>();
@@ -62,7 +62,7 @@ const RoomComponent = function () {
       let isValidRoom = false;
       if (validateUUID(id)) {
         const getRoomResult = await getRoom(id);
-        isValidRoom = typeof getRoomResult !== 'undefined' && getRoomResult !== null;
+        isValidRoom = !isUndefinedOrNull(getRoomResult);
         setValidRoom(isValidRoom);
         setRoom(getRoomResult);
         setRoomHide(true);
@@ -85,6 +85,7 @@ const RoomComponent = function () {
       }
     }
     useEffectAsync();
+    setUserName(sanitizeText(userName));
 
     return () => {
       if (wsServer.connected || !wsServer.disconnected) {

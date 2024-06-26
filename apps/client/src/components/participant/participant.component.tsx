@@ -1,6 +1,7 @@
 import { Button, Card, CardContent, Typography, Tooltip } from "@mui/material";
 import { FunctionComponent } from "react";
 import CardComponent from "../card/card.component";
+import { sanitizeText } from "../../helpers/helpers";
 
 type ParticipantProps = {
     participant: any
@@ -43,15 +44,15 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
         <Card sx={cardBoxStyle} >
             <CardContent sx={cardContentStyle}>
                 <Typography sx={userNameStyle(current)}>
-                    {participant.userName}
+                    {sanitizeText(participant.userName)}
                     {
-                      (isUserAdmin === true && current === false) || rommHasAdmin === false ? 
-                      <Tooltip disableFocusListener arrow 
-                               placement="bottom"
-                               title="Make Admin">
-                        <Button onClick={() => { onSetRoomAdmin(participant.userName) }}>⭐</Button> 
-                      </Tooltip>
-                      : null
+                        (isUserAdmin === true && current === false) || rommHasAdmin === false ?
+                            <Tooltip disableFocusListener arrow
+                                placement="bottom"
+                                title="Make Admin">
+                                <Button onClick={() => { onSetRoomAdmin(participant.userName) }}>⭐</Button>
+                            </Tooltip>
+                            : null
                     }
                 </Typography>
                 {!participant.vote && <CardComponent card={emptyCard} />}
