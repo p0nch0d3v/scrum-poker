@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: docker-hub
     steps:
+        - name: Dynamically set MY_DATE environment variable
+          run: |
+            echo "DATE_TAG=$(date +%Y%m%d-%H%M)" >> $GITHUB_ENV
+
         - name: Clone repository
           uses: actions/checkout@v3
           with:
@@ -31,7 +35,8 @@ jobs:
             tags: |
               type=schedule
               type=ref,event=branch
-              type=sha     
+              type=sha
+              ${{ env.DATE_TAG }}
 
         - name: Build and push Docker image
           id: push
