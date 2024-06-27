@@ -28,6 +28,10 @@ jobs:
           uses: docker/metadata-action@v5
           with:
             images: ${{ vars.DOCKER_USERNAME }}/${{ vars.DOCKER_REPOSITORY }}
+            tags: |
+              type=schedule
+              type=ref,event=branch
+              type=sha     
 
         - name: Build and push Docker image
           id: push
