@@ -2,12 +2,13 @@ import { AppBar, Box, Input, Toolbar, Tooltip, Typography } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu';
 import useLocalStorage from '../../hooks/useLocalStorage ';
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef } from 'react';
-import { sanitizeText } from '../../helpers/helpers';
+import { useEffect, useRef, useState } from 'react';
+import { reverseString, sanitizeText } from '../../helpers/helpers';
 import Config from '../../config/config';
 
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', '');
+    const [applicationTitle, setApplicationTitle] = useState<string>('');
 
     const userNameRef = useRef(userName);
     const navigate = useNavigate();
@@ -33,7 +34,10 @@ export default function HeaderComponent() {
     }
 
     useEffect(() => {
-        userNameRef.current.firstChild.value = userName
+        userNameRef.current.firstChild.value = userName;
+        const defaultTitle = "Scrum pokeR"
+        setApplicationTitle(Config.IS_PRODUCTION === false ? reverseString(defaultTitle) : defaultTitle);
+        window.document.title = applicationTitle;
     }, [])
 
     return (
@@ -42,8 +46,7 @@ export default function HeaderComponent() {
                 <MenuIcon />
                 <Typography variant="h6" component="div" marginLeft={1} width={'100%'} align='left'
                     onClick={backToHome} >
-                    Scrum pokeR
-                    <>{Config.IS_PRODUCTION === false ? ' [' + Config.MODE + ']' : ''}</>
+                    {applicationTitle}
                 </Typography>
                 <Box alignItems={'right'} alignContent={'right'} className='participant-name'>
                     <Tooltip disableFocusListener arrow

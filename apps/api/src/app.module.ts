@@ -5,6 +5,7 @@ import { join } from 'path';
 
 import { RoomModule } from './room/room.module';
 import { configService } from './config/config.service';
+import { ConfigModule } from './config/config.module';
 
 @Module({
   imports: [
@@ -12,7 +13,8 @@ import { configService } from './config/config.service';
       rootPath: join(__dirname, '../..', 'client', 'dist')
     }),
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
-    RoomModule
+    RoomModule,
+    ConfigModule
   ],
   controllers: [],
   providers: [],
