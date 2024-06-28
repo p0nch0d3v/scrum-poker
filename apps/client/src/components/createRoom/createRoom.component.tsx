@@ -44,7 +44,6 @@ export default function CreateRoomComponent() {
     }
 
     const onSeriesChange = function (e: any) {
-        console.log(e?.target?.value);
         setCardsValues(e?.target?.value);
     };
 

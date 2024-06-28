@@ -16,6 +16,5 @@ export default class Config {
     Config.IS_PRODUCTION = Config.MODE === 'production';
     Config.SOCKET_SERVER = Config.serverConfig?.socketServer;
     Config.isInitialized = true;
-    console.log('Config', Config);
   }
 }
