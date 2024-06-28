@@ -35,6 +35,14 @@ class ConfigService {
     public getTypeOrmConfig(): TypeOrmModuleOptions {
         return getOrmConfig(this.isProduction());
     }
+
+    public getEnvironment(): string {
+        return this.getValue('NODE_ENV', false);
+    }
+
+    public getSocketServer(): string {
+        return this.isProduction() === true ? "" : this.getValue("SOCKET_SERVER");
+    }
 }
 
 const configService = new ConfigService(process.env)

@@ -9,6 +9,7 @@ import { JoinRoomDTO } from './DTO/joinRoom.dto';
 import { RoomDTO } from './DTO/room.dto';
 import { ErrorDTO } from 'DTO/error.dto';
 import { SetAdminDTO } from 'DTO/setAdmin.dto';
+import { ServerConfigDTO } from 'DTO/serverConfig.dto';
 
 export {
     type CardDTO,
@@ -22,4 +23,5 @@ export {
     RoomDTO,
     type ErrorDTO,
     type SetAdminDTO,
+    type ServerConfigDTO
 };

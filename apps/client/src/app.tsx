@@ -5,11 +5,25 @@ import LayoutComponent from './components/layout/layout.component';
 import JoinRoomComponent from './components/JoinRoom/joinRoom.component';
 import CreateRoomComponent from './components/createRoom/createRoom.component';
 import RoomListComponent from './components/roomList/roomList.component';
+import Config from './config/config.tsx';
 
 import './app.css'
+import { useEffect, useState } from 'react';
 
 export function App() {
-  return (
+  const [configIsInitialized, setConfigIsInitialized] = useState<boolean>(false);
+
+  useEffect(() => {
+    async function useEffectAsync() {
+      if (!Config.isInitialized) {
+        await Config.initialize();
+        setConfigIsInitialized(Config.isInitialized);
+      }
+    }
+    useEffectAsync();
+  }, []);
+
+  return configIsInitialized === true && (
     <LayoutComponent>
       <Routes>
         <Route path="/" element={<HomeComponent />} />

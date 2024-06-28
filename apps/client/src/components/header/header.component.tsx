@@ -3,7 +3,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import useLocalStorage from '../../hooks/useLocalStorage ';
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from 'react';
-import { sanitizeText } from '../../helpers/helpers';
+import { reverseString, sanitizeText } from '../../helpers/helpers';
 import Config from '../../config/config';
 
 export default function HeaderComponent() {
@@ -33,7 +33,7 @@ export default function HeaderComponent() {
     }
 
     useEffect(() => {
-        userNameRef.current.firstChild.value = userName
+        userNameRef.current.firstChild.value = userName;
     }, [])
 
     return (
@@ -42,8 +42,7 @@ export default function HeaderComponent() {
                 <MenuIcon />
                 <Typography variant="h6" component="div" marginLeft={1} width={'100%'} align='left'
                     onClick={backToHome} >
-                    Scrum pokeR
-                    <>{Config.IS_PRODUCTION === false ? ' [' + Config.MODE + ']' : ''}</>
+                    {Config.IS_PRODUCTION === false ? reverseString("Scrum pokeR") : "Scrum pokeR"}
                 </Typography>
                 <Box alignItems={'right'} alignContent={'right'} className='participant-name'>
                     <Tooltip disableFocusListener arrow
