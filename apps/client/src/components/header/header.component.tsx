@@ -4,6 +4,7 @@ import useLocalStorage from '../../hooks/useLocalStorage ';
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from 'react';
 import { sanitizeText } from '../../helpers/helpers';
+import Config from '../../config/config';
 
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', '');
@@ -42,6 +43,7 @@ export default function HeaderComponent() {
                 <Typography variant="h6" component="div" marginLeft={1} width={'100%'} align='left'
                     onClick={backToHome} >
                     Scrum pokeR
+                    <>{Config.IS_PRODUCTION === false ? ' [' + Config.MODE + ']' : ''}</>
                 </Typography>
                 <Box alignItems={'right'} alignContent={'right'} className='participant-name'>
                     <Tooltip disableFocusListener arrow
