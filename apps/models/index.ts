@@ -10,6 +10,7 @@ import { RoomDTO } from './DTO/room.dto';
 import { ErrorDTO } from 'DTO/error.dto';
 import { SetAdminDTO } from 'DTO/setAdmin.dto';
 import { ServerConfigDTO } from 'DTO/serverConfig.dto';
+import Constants from 'constants';
 
 export {
     type CardDTO,
@@ -23,5 +24,6 @@ export {
     RoomDTO,
     type ErrorDTO,
     type SetAdminDTO,
-    type ServerConfigDTO
+    type ServerConfigDTO,
+    Constants
 };
