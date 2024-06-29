@@ -24,6 +24,7 @@ docker run \
     --env MODE=$MODE \
     --env NODE_ENV=$NODE_ENV \
     --env SOCKET_SERVER=$SOCKET_SERVER \
+    --env APP_PORT=$APP_PORT \
     --env POSTGRES_HOST=$POSTGRES_HOST \
     --env POSTGRES_PORT=$POSTGRES_PORT \
     --env POSTGRES_USER=$POSTGRES_USER \

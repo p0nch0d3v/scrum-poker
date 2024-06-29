@@ -47,6 +47,11 @@ class ConfigService {
     public getSocketServer(): string {
         return this.isProduction() === true ? "" : this.getValue("SOCKET_SERVER");
     }
+
+    public getAppPort(): string {
+        const app_port = this.getValue("APP_PORT");
+        return app_port !== undefined && app_port !== null ? app_port : "80";
+    }
 }
 
 const configService = new ConfigService(process.env)
@@ -54,6 +59,7 @@ const configService = new ConfigService(process.env)
         'NODE_ENV',
         'MODE',
         'SOCKET_SERVER',
+        'APP_PORT',
         'POSTGRES_HOST',
         'POSTGRES_PORT',
         'POSTGRES_USER',
