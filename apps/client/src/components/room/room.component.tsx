@@ -10,12 +10,7 @@ import Config from "../../config/config";
 import CardComponent from "../card/card.component";
 import ParticipantComponent from "../participant/participant.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
-import { CardDTO } from "models/DTO/card.dto";
-import { NofityCardsDTO } from "models/DTO/nofityCards.dto";
-import { NotifyPeopleDTO } from "models/DTO/notifyPeople.dto";
-import { RoomDTO } from "models/DTO/room.dto";
-import { ErrorDTO } from "models/DTO/error.dto";
-import { ParticipantDTO } from "models/DTO/participant.dto";
+import { CardDTO, NofityCardsDTO, NotifyPeopleDTO, RoomDTO, ErrorDTO, ParticipantDTO } from "models";
 import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
 
 const Messages = {

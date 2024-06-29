@@ -1,5 +1,4 @@
-import { ServerConfigDTO } from "models";
-import Constants from "models/constants";
+import { ServerConfigDTO, Environments } from "models/index";
 import { getServerConfig } from "../services/api.service";
 
 export default class Config {
@@ -14,7 +13,7 @@ export default class Config {
     Config.serverConfig = await getServerConfig();
 
     Config.MODE = Config.serverConfig?.environment;
-    Config.IS_PRODUCTION = Config.MODE === Constants.Environments.production;
+    Config.IS_PRODUCTION = Config.MODE === Environments.PRODUCTION;
     Config.SOCKET_SERVER = Config.serverConfig?.socketServer;
     Config.isInitialized = true;
   }

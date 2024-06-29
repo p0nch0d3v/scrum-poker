@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { get } from 'http';
 import { configService } from './config.service';
-import { ServerConfigDTO } from 'models/DTO/serverConfig.dto';
+import { ServerConfigDTO } from 'models';
 
 @Controller('config')
 export class ConfigController {

@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { getOrmConfig } from './orm.config';
-import Constants from 'models/constants';
+import { Environments } from 'models';
 
 require('dotenv').config();
 
@@ -28,10 +28,10 @@ class ConfigService {
 
     public isProduction(): boolean {
         const node_env = this.getValue('NODE_ENV', false);
-        const value = node_env.toLocaleLowerCase() == Constants.Environments.production 
+        const value = node_env.toLocaleLowerCase() == Environments.PRODUCTION 
         || (
-            node_env.toLocaleLowerCase() !== Constants.Environments.development 
-            && node_env.toLocaleLowerCase() !== Constants.Environments.local);
+            node_env.toLocaleLowerCase() !== Environments.DEVELOPMENT 
+            && node_env.toLocaleLowerCase() !== Environments.LOCAL);
         console.debug('is Production =', value);
         return value;
     }
