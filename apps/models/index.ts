@@ -7,10 +7,11 @@ import { NotifyPeopleDTO } from './DTO/notifyPeople.dto';
 import { CreateRoomDTO } from './DTO/create-room.dto';
 import { JoinRoomDTO } from './DTO/joinRoom.dto';
 import { RoomDTO } from './DTO/room.dto';
-import { ErrorDTO } from 'DTO/error.dto';
-import { SetAdminDTO } from 'DTO/setAdmin.dto';
-import { ServerConfigDTO } from 'DTO/serverConfig.dto';
-import Constants from 'constants';
+import { ParticipantDTO } from './DTO/participant.dto';
+import { ErrorDTO } from './DTO/error.dto';
+import { SetAdminDTO } from './DTO/setAdmin.dto';
+import { ServerConfigDTO } from './DTO/serverConfig.dto';
+import { AppConstants, Environments } from './app.constants';
 
 export {
     type CardDTO,
@@ -22,8 +23,10 @@ export {
     type CreateRoomDTO,
     type JoinRoomDTO,
     RoomDTO,
+    type ParticipantDTO,
     type ErrorDTO,
     type SetAdminDTO,
     type ServerConfigDTO,
-    Constants
+    AppConstants,
+    Environments
 };

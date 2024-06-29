@@ -1,4 +1,4 @@
 export type SetAdminDTO = {
-    roomId: string,
-    admin: string,
+    roomId: string | undefined,
+    admin: string | undefined,
 }

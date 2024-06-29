@@ -4,6 +4,7 @@ import useLocalStorage from '../../hooks/useLocalStorage ';
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from 'react';
 import { reverseString, sanitizeText } from '../../helpers/helpers';
+import { AppConstants } from 'models/index';
 import Config from '../../config/config';
 
 export default function HeaderComponent() {
@@ -35,8 +36,7 @@ export default function HeaderComponent() {
 
     useEffect(() => {
         userNameRef.current.firstChild.value = userName;
-        const defaultTitle = "Scrum pokeR"
-        setApplicationTitle(Config.IS_PRODUCTION === false ? reverseString(defaultTitle) : defaultTitle);
+        setApplicationTitle(Config.IS_PRODUCTION === false ? reverseString(AppConstants.APP_TITLE) : AppConstants.APP_TITLE);
         window.document.title = applicationTitle;
     }, [])
 

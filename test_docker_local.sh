@@ -11,8 +11,6 @@ docker image rm $image_name
 docker build \
     --progress plain \
     --no-cache \
-    --build-arg MODE=$MODE \
-    --build-arg NODE_ENV=$NODE_ENV \
     --tag $image_name \
     .
 
@@ -25,6 +23,7 @@ docker run \
     --publish 3000:80 \
     --env MODE=$MODE \
     --env NODE_ENV=$NODE_ENV \
+    --env SOCKET_SERVER=$SOCKET_SERVER \
     --env POSTGRES_HOST=$POSTGRES_HOST \
     --env POSTGRES_PORT=$POSTGRES_PORT \
     --env POSTGRES_USER=$POSTGRES_USER \

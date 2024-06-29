@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { RoomService } from './room.service';
 import { CardDTO, NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO, ErrorDTO } from 'models'
-import { ParticipantDTO } from 'models/DTO/participant.dto';
+import { ParticipantDTO } from 'models';
 
 const Messages = {
   TO_CLIENT: {
