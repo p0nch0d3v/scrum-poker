@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { getOrmConfig } from './orm.config';
+import { Environments } from 'models';
 
 require('dotenv').config();
 
@@ -27,7 +28,10 @@ class ConfigService {
 
     public isProduction(): boolean {
         const node_env = this.getValue('NODE_ENV', false);
-        const value = node_env == 'production' || (node_env != 'development' && node_env != 'local');
+        const value = node_env.toLocaleLowerCase() == Environments.PRODUCTION 
+        || (
+            node_env.toLocaleLowerCase() !== Environments.DEVELOPMENT 
+            && node_env.toLocaleLowerCase() !== Environments.LOCAL);
         console.debug('is Production =', value);
         return value;
     }
@@ -35,11 +39,27 @@ class ConfigService {
     public getTypeOrmConfig(): TypeOrmModuleOptions {
         return getOrmConfig(this.isProduction());
     }
+
+    public getEnvironment(): string {
+        return this.getValue('NODE_ENV', false);
+    }
+
+    public getSocketServer(): string {
+        return this.isProduction() === true ? "" : this.getValue("SOCKET_SERVER");
+    }
+
+    public getAppPort(): string {
+        const app_port = this.getValue("APP_PORT");
+        return app_port !== undefined && app_port !== null ? app_port : "80";
+    }
 }
 
 const configService = new ConfigService(process.env)
     .ensureValues([
         'NODE_ENV',
+        'MODE',
+        'SOCKET_SERVER',
+        'APP_PORT',
         'POSTGRES_HOST',
         'POSTGRES_PORT',
         'POSTGRES_USER',

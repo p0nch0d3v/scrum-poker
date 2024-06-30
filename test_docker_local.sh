@@ -11,8 +11,6 @@ docker image rm $image_name
 docker build \
     --progress plain \
     --no-cache \
-    --build-arg VITE_NODE_ENV='production' \
-    --build-arg VITE_SOCKET_SERVER='' \
     --tag $image_name \
     .
 
@@ -23,7 +21,10 @@ docker run \
     --rm \
     --network host \
     --publish 3000:80 \
-    --env NODE_ENV='production' \
+    --env MODE=$MODE \
+    --env NODE_ENV=$NODE_ENV \
+    --env SOCKET_SERVER=$SOCKET_SERVER \
+    --env APP_PORT=$APP_PORT \
     --env POSTGRES_HOST=$POSTGRES_HOST \
     --env POSTGRES_PORT=$POSTGRES_PORT \
     --env POSTGRES_USER=$POSTGRES_USER \

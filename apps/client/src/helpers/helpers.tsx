@@ -42,6 +42,10 @@ const sanitizeText = (input: any): any => {
     return clean
 }
 
+function reverseString(input: string): string {
+    return input.split("").reverse().join("");
+}
+
 if (Config.IS_PRODUCTION) {
     window.console.log = () => { };
     window.console.debug = () => { };
@@ -53,5 +57,6 @@ export {
     isUndefinedOrNull,
     isUndefinedNullOrEmpty,
     shuffleArray,
-    sanitizeText
+    sanitizeText,
+    reverseString
 };
