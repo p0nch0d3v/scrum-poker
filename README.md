@@ -15,18 +15,4 @@ Created with:
 
 ---
 
-## How to run with node-js it:
-
-```bash
-npm install --legacy-peer-deps
-```
-
-```bash
-npm run dev
-```
-
-## How to ruin with Docker:
-
-```bash
-docker compose up --detach
-```
+[How to run it](/docs/README.md)
