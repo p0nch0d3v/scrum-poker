@@ -28,7 +28,7 @@ APP_PORT=3000
 npm run build; npm run dev
 ```
 
-## How to ruin with Docker:
+## How to ruin with Docker Compose:
 
 Suggested environment values (API)
 > /.env.docker
@@ -50,3 +50,26 @@ APP_PORT=3000
 docker compose up --detach
 ```
 
+## Use the generated images
+
+```bash
+docker pull p0nch0d3v/scrum-poker:master
+```
+
+```bash
+docker run \
+    --rm \
+    --publish 3000:80 \
+    --env MODE=Production \
+    --env NODE_ENV=Production \
+    --env SOCKET_SERVER=localhost \
+    --env APP_PORT=80 \
+    --env POSTGRES_HOST=TBD \
+    --env POSTGRES_PORT=TBD \
+    --env POSTGRES_USER=TBD \
+    --env POSTGRES_PASSWORD=TBD \
+    --env POSTGRES_DATABASE=TBD \
+    --env POSTGRES_URI=TBD \
+    --name "scrum-poker" \
+    p0nch0d3v/scrum-poker:master
+```

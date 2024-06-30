@@ -15,4 +15,4 @@ Created with:
 
 ---
 
-[How to run](/docs/README.md)
+[How to run it](/docs/README.md)
