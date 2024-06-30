@@ -11,9 +11,10 @@ export default class Config {
 
   public static async initialize() {
     Config.serverConfig = await getServerConfig();
+    localStorage.setItem("serverConfig", JSON.stringify(Config.serverConfig));
 
     Config.MODE = Config.serverConfig?.environment;
-    Config.IS_PRODUCTION = Config.MODE === Environments.PRODUCTION;
+    Config.IS_PRODUCTION = Config.serverConfig?.isProduction;
     Config.SOCKET_SERVER = Config.serverConfig?.socketServer;
     Config.isInitialized = true;
   }
