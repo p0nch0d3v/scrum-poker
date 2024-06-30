@@ -1,4 +1,4 @@
-import { ServerConfigDTO, Environments } from "models/index";
+import { ServerConfigDTO } from "models/index";
 import { getServerConfig } from "../services/api.service";
 
 export default class Config {
@@ -11,7 +11,7 @@ export default class Config {
 
   public static async initialize() {
     Config.serverConfig = await getServerConfig();
-    localStorage.setItem("serverConfig", JSON.stringify(Config.serverConfig));
+    sessionStorage.setItem("serverConfig", JSON.stringify(Config.serverConfig));
 
     Config.MODE = Config.serverConfig?.environment;
     Config.IS_PRODUCTION = Config.serverConfig?.isProduction;
