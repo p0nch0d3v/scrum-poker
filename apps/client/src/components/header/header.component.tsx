@@ -42,7 +42,7 @@ export default function HeaderComponent() {
         userNameRef.current.firstChild.value = userName;
         setApplicationTitle(Config.IS_PRODUCTION === false ? reverseString(AppConstants.APP_TITLE) : AppConstants.APP_TITLE);
         window.document.title = applicationTitle;
-        setVersionLink(`${AppConstants.REPO_URL}/${Config.GIT_REV}`);
+        setVersionLink(`${AppConstants.REPO_URL}/${Config.GIT_BRANCH}`);
     }, [])
 
     return (
