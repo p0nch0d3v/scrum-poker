@@ -52,6 +52,11 @@ class ConfigService {
         const app_port = this.getValue("APP_PORT");
         return app_port !== undefined && app_port !== null ? app_port : "80";
     }
+
+    public getGitRev(): string {
+        const git_rev = this.getValue("GIT_REV");
+        return git_rev !== undefined && git_rev !== null ? git_rev : "";
+    }
 }
 
 const configService = new ConfigService(process.env)
@@ -65,7 +70,8 @@ const configService = new ConfigService(process.env)
         'POSTGRES_USER',
         'POSTGRES_PASSWORD',
         'POSTGRES_DATABASE',
-        'POSTGRES_URI'
+        'POSTGRES_URI', 
+        'GIT_REV'
     ]);
 
 export { configService };
