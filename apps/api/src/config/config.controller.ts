@@ -11,7 +11,7 @@ export class ConfigController {
             environment: configService.getEnvironment(),
             isProduction: configService.isProduction(),
             socketServer: configService.getSocketServer(),
-            gitRev: configService.getGitRev()
+            gitBranch: configService.getGitBranch()
         }
     }
 }
