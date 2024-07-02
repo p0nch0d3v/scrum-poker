@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { execSync } from 'child_process';
 import { getOrmConfig } from './orm.config';
 import { Environments } from 'models';
 
@@ -55,7 +56,14 @@ class ConfigService {
 
     public getGitRev(): string {
         const git_rev = this.getValue("GIT_REV");
-        return git_rev !== undefined && git_rev !== null ? git_rev : "";
+
+        if (git_rev !== undefined && git_rev !== null) {
+            return git_rev;
+        }
+        else {
+            const current_branch = execSync("git rev-parse --abbrev-ref HEAD").toString();
+            return current_branch !== undefined && current_branch !== null ? current_branch : "";
+        }
     }
 }
 

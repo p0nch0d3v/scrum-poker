@@ -8,6 +8,7 @@ export default class Config {
   public static SOCKET_SERVER: string = ""
   public static IS_PRODUCTION: boolean | null | undefined = null;
   public static isInitialized: boolean = false;
+  public static GIT_REV: string = "";
 
   public static async initialize() {
     Config.serverConfig = await getServerConfig();
@@ -16,6 +17,7 @@ export default class Config {
     Config.MODE = Config.serverConfig?.environment;
     Config.IS_PRODUCTION = Config.serverConfig?.isProduction;
     Config.SOCKET_SERVER = Config.serverConfig?.socketServer;
+    Config.GIT_REV = Config.serverConfig?.gitRev;
     Config.isInitialized = true;
   }
 }

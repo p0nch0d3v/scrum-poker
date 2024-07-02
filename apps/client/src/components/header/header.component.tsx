@@ -1,8 +1,11 @@
-import { AppBar, Box, Input, Toolbar, Tooltip, Typography } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import useLocalStorage from '../../hooks/useLocalStorage ';
-import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+
+import { AppBar, Box, Input, Toolbar, Tooltip, Typography } from '@mui/material';
+import { GitHub } from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/Menu';
+
+import useLocalStorage from '../../hooks/useLocalStorage ';
 import { reverseString, sanitizeText } from '../../helpers/helpers';
 import { AppConstants } from 'models/index';
 import Config from '../../config/config';
@@ -10,7 +13,8 @@ import Config from '../../config/config';
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', '');
     const [applicationTitle, setApplicationTitle] = useState<string>('');
-
+    const [versionLink, setVersionLink] = useState<string>('');
+    
     const userNameRef = useRef(userName);
     const navigate = useNavigate();
 
@@ -38,6 +42,7 @@ export default function HeaderComponent() {
         userNameRef.current.firstChild.value = userName;
         setApplicationTitle(Config.IS_PRODUCTION === false ? reverseString(AppConstants.APP_TITLE) : AppConstants.APP_TITLE);
         window.document.title = applicationTitle;
+        setVersionLink(`${AppConstants.REPO_URL}/${Config.GIT_REV}`);
     }, [])
 
     return (
@@ -48,7 +53,7 @@ export default function HeaderComponent() {
                     onClick={backToHome} >
                     {applicationTitle}
                 </Typography>
-                <Box alignItems={'right'} alignContent={'right'} className='participant-name'>
+                <Box alignItems={'right'} alignContent={'right'} className='participant-name' display={'flex'}>
                     <Tooltip disableFocusListener arrow
                         placement="left"
                         title="Press [ENTER] to update the Participant name" >
@@ -58,6 +63,7 @@ export default function HeaderComponent() {
                             ref={userNameRef}
                             onKeyUp={onUserNameKeyUp} />
                     </Tooltip>
+                    <a style={{alignSelf: 'flex-end'}} target="_blank" href={versionLink}><GitHub /></a>
                 </Box>
             </Toolbar>
         </AppBar>
