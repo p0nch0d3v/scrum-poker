@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { io, Socket } from 'socket.io-client';
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Socket, io } from 'socket.io-client';
 
-import { getRoom, setRoomAdmin } from '../../services/api.service';
-import { isUndefinedOrNull, isUndefinedNullOrEmpty, shuffleArray, validateUUID, sanitizeText } from "../../helpers/helpers";
-import useLocalStorage from "../../hooks/useLocalStorage ";
+import { CardDTO, ErrorDTO, NofityCardsDTO, NotifyPeopleDTO, ParticipantDTO, RoomDTO } from "models";
 import Config from "../../config/config";
+import { isUndefinedNullOrEmpty, isUndefinedOrNull, sanitizeText, shuffleArray, validateUUID } from "../../helpers/helpers";
+import useLocalStorage from "../../hooks/useLocalStorage ";
+import { getRoom, setRoomAdmin } from '../../services/api.service';
 import CardComponent from "../card/card.component";
+import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
 import ParticipantComponent from "../participant/participant.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
-import { CardDTO, NofityCardsDTO, NotifyPeopleDTO, RoomDTO, ErrorDTO, ParticipantDTO } from "models";
-import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
 
 const Messages = {
   FROM_SERVER: {
@@ -211,7 +211,7 @@ const RoomComponent = function () {
   }
 
   return (
-    <Box width={'100vw'} height={'100vh'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
+    <Box width={'100vw'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
 
       {Config.IS_PRODUCTION === false && debug === true &&
         <>

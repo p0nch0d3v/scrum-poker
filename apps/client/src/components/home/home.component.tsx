@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import { Box, Button } from '@mui/material'
-import SendIcon from '@mui/icons-material/Send';
 import AddIcon from '@mui/icons-material/Add';
 import ListIcon from '@mui/icons-material/List';
+import SendIcon from '@mui/icons-material/Send';
+import { Box, Button } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 export default function HomeComponent() {
   const navigate = useNavigate();
@@ -12,8 +12,7 @@ export default function HomeComponent() {
       flexDirection={'column'}
       alignItems={'center'}
       justifyContent={'space-evenly'}
-      width={'100vw'}
-      height={'100vh'}>
+      >
       <Button
         variant='contained' 
         size='large'
