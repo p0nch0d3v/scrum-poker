@@ -52,19 +52,7 @@ class ConfigService {
     public getAppPort(): string {
         const app_port = this.getValue("APP_PORT");
         return app_port !== undefined && app_port !== null ? app_port : "80";
-    }
-
-    public getGitBranch(): string {
-        const git_branch = this.getValue("GIT_BRANCH");
-
-        if (git_branch !== undefined && git_branch !== null) {
-            return git_branch;
-        }
-        else {
-            const current_branch = execSync("git rev-parse --abbrev-ref HEAD").toString();
-            return current_branch !== undefined && current_branch !== null ? current_branch : "";
-        }
-    }
+    }    
 }
 
 const configService = new ConfigService(process.env)
@@ -78,8 +66,7 @@ const configService = new ConfigService(process.env)
         'POSTGRES_USER',
         'POSTGRES_PASSWORD',
         'POSTGRES_DATABASE',
-        'POSTGRES_URI', 
-        'GIT_BRANCH'
+        'POSTGRES_URI'
     ]);
 
 export { configService };
