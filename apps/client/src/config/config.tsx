@@ -8,7 +8,6 @@ export default class Config {
   public static SOCKET_SERVER: string = ""
   public static IS_PRODUCTION: boolean | null | undefined = null;
   public static isInitialized: boolean = false;
-  public static GIT_BRANCH: string = "";
 
   public static async initialize() {
     Config.serverConfig = await getServerConfig();
@@ -17,7 +16,6 @@ export default class Config {
     Config.MODE = Config.serverConfig?.environment;
     Config.IS_PRODUCTION = Config.serverConfig?.isProduction;
     Config.SOCKET_SERVER = Config.serverConfig?.socketServer;
-    Config.GIT_BRANCH = Config.serverConfig?.gitBranch;
     Config.isInitialized = true;
   }
 }
