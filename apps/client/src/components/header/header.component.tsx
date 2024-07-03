@@ -14,7 +14,6 @@ import themeOptions from '../../theme';
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', '');
     const [applicationTitle, setApplicationTitle] = useState<string>('');
-    const [versionLink, setVersionLink] = useState<string>('');
 
     const userNameRef = useRef(userName);
     const navigate = useNavigate();
@@ -43,7 +42,6 @@ export default function HeaderComponent() {
         userNameRef.current.firstChild.value = userName;
         setApplicationTitle(Config.IS_PRODUCTION === false ? reverseString(AppConstants.APP_TITLE) : AppConstants.APP_TITLE);
         window.document.title = applicationTitle;
-        setVersionLink(`${AppConstants.REPO_URL}/${Config.GIT_BRANCH}`);
     }, [])
 
     return (
@@ -64,12 +62,6 @@ export default function HeaderComponent() {
                             ref={userNameRef}
                             onKeyUp={onUserNameKeyUp} />
                     </Tooltip>
-                    <a style={{ 
-                        alignSelf: 'flex-end',
-                        marginLeft:'0.5rem', 
-                        color: themeOptions.palette.primary.contrastText 
-                    }} 
-                    target="_blank" href={versionLink}><GitHub /></a>
                 </Box>
             </Toolbar>
         </AppBar>
