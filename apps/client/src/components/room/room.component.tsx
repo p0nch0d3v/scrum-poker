@@ -6,7 +6,7 @@ import { Socket, io } from 'socket.io-client';
 import { CardDTO, ErrorDTO, NofityCardsDTO, NotifyPeopleDTO, ParticipantDTO, RoomDTO } from "models";
 import Config from "../../config/config";
 import { isUndefinedNullOrEmpty, isUndefinedOrNull, sanitizeText, shuffleArray, validateUUID } from "../../helpers/helpers";
-import useLocalStorage from "../../hooks/useLocalStorage ";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import { getRoom, setRoomAdmin } from '../../services/api.service';
 import CardComponent from "../card/card.component";
 import ErrorModalComponent from "../invalidRoomModal/errorModal.component";

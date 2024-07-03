@@ -12,6 +12,7 @@ export default function HomeComponent() {
       flexDirection={'column'}
       alignItems={'center'}
       justifyContent={'space-evenly'}
+      height={'100vh'}
       >
       <Button
         variant='contained' 
