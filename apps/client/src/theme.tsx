@@ -1,8 +1,5 @@
-import { ThemeOptions, createTheme } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
-import { useMediaQuery } from '@mui/material';
-import { useMemo } from 'react';
-
+import { ThemeOptions, createTheme } from '@mui/material/styles';
 export const themeOptions: ThemeOptions = {
   palette: {
     primary: {

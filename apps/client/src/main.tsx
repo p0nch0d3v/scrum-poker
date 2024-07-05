@@ -7,14 +7,15 @@ import theme from './theme';
 
 import { App } from './app.tsx'
 import './index.css'
+import { ThemeContextProvider } from './contexts/themeContext.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
+    <ThemeContextProvider>
       <BrowserRouter>
         <CssBaseline />
         <App />
       </BrowserRouter>
-    </ThemeProvider>
+    </ThemeContextProvider>
   </React.StrictMode>
 );

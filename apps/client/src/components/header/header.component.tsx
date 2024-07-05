@@ -1,20 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
-import { AppBar, Box, Input, Toolbar, Tooltip, Typography } from '@mui/material';
-import { GitHub } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { AppBar, Box, IconButton, Input, Toolbar, Tooltip, Typography } from '@mui/material';
 
-import useLocalStorage from '../../hooks/useLocalStorage ';
-import { reverseString, sanitizeText } from '../../helpers/helpers';
+import { Brightness4, Brightness7 } from '@mui/icons-material';
 import { AppConstants } from 'models/index';
 import Config from '../../config/config';
-import themeOptions from '../../theme';
+import { reverseString, sanitizeText } from '../../helpers/helpers';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import { ThemeContext } from '../../contexts/themeContext';
 
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', '');
+    const [themeColor, setThemeColor] = useLocalStorage('theme', 'light');
     const [applicationTitle, setApplicationTitle] = useState<string>('');
 
+    const { switchColorMode } = useContext(ThemeContext)
     const userNameRef = useRef(userName);
     const navigate = useNavigate();
 
@@ -28,6 +30,10 @@ export default function HeaderComponent() {
             window.location.reload();
         }, 1);
     };
+
+    const handleThemeToggle = () => {
+        setThemeColor(themeColor === 'dark' ? 'light' : 'dark');
+    }
 
     const onUserNameKeyUp = (e: any) => {
         if (e.keyCode === 13) {
@@ -63,6 +69,9 @@ export default function HeaderComponent() {
                             onKeyUp={onUserNameKeyUp} />
                     </Tooltip>
                 </Box>
+                    <IconButton sx={{ ml: 1 }} onClick={switchColorMode} color="inherit">
+                        {themeColor === 'dark' ? <Brightness7 /> : <Brightness4 />}
+                    </IconButton>
             </Toolbar>
         </AppBar>
     );
