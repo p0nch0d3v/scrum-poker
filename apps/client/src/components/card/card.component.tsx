@@ -1,6 +1,6 @@
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Typography, useTheme } from "@mui/material";
 import { FunctionComponent } from "react";
-import themeOptions from '../../theme';
+
 
 type CardProps = {
     card: any,
@@ -10,6 +10,7 @@ type CardProps = {
 }
 
 const cardStyle = (disabled?: boolean, selected?: boolean) => {
+    const themeOptions = useTheme();
     return {
         margin: '1em',
         width: '4em',
