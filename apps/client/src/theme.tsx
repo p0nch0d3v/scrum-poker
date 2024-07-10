@@ -20,14 +20,14 @@ const lightPalette = {
 
 const darkPalette = {
     primary: {
-      light: '#757ce8',
-      main: '#3f50b5',
-      dark: '#002884',
+      light: '#62B6CB',
+      main: '#BEE9E8',
+      dark: '#CAE9FF',
     },
     secondary: {
-      light: '#ff7961',
-      main: '#f44336',
-      dark: '#ba000d',
+      light: '#62B6CB',
+      main: '#BEE9E8',
+      dark: '#CAE9FF',
     },
 }
 
