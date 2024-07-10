@@ -1,22 +1,27 @@
 import { ThemeProvider, createTheme } from "@mui/material";
 import React from "react";
-import { darkPalette, lightPalette } from "../theme";
+import theme from "../theme";
+import useLocalStorage from "../hooks/useLocalStorage";
 
-type ThemeContextType = {
+interface ThemeContextType {
     switchColorMode: () => void;
+    mode: 'light' | 'dark';
 };
 
 type ThemeProviderProps = {
     children: React.ReactNode;
 };
 
-export const ThemeContext = React.createContext<ThemeContextType | undefined>({ switchColorMode: () => { } });
+export const ThemeContext = React.createContext<ThemeContextType>({
+  switchColorMode: () => {},
+  mode: localStorage.getItem('theme') as 'light' | 'dark',
+})
 
 export function ThemeContextProvider({ children }: ThemeProviderProps) {
-  const [mode, setMode] = React.useState<'light' | 'dark'>('light');
+  const [mode, setMode] = useLocalStorage('theme', 'light');
 
   const switchColorMode = () => {
-    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    setMode(mode === 'light' ? 'dark' : 'light');
     console.log('switchColorMode', mode)
   }
 
@@ -27,10 +32,10 @@ export function ThemeContextProvider({ children }: ThemeProviderProps) {
         palette: {
           mode,
           ...(mode === 'light') ? {
-            ...lightPalette
+            ...theme.lightPalette
           }
           : {
-            ...darkPalette
+            ...theme.darkPalette
         },
       }
       }),
@@ -38,7 +43,7 @@ export function ThemeContextProvider({ children }: ThemeProviderProps) {
   );
 
   return (
-    <ThemeContext.Provider value={{ switchColorMode }}>
+    <ThemeContext.Provider value={{ switchColorMode, mode }}>
       <ThemeProvider theme={contextTheme}>{children}</ThemeProvider>
     </ThemeContext.Provider>
   );

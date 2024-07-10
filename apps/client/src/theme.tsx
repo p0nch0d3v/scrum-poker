@@ -1,6 +1,6 @@
 import { red } from '@mui/material/colors';
 
-export const lightPalette = {
+const lightPalette = {
     primary: {
       light: '#757ce8',
       main: '#3f50b5',
@@ -18,7 +18,7 @@ export const lightPalette = {
     }
 };
 
-export const darkPalette = {
+const darkPalette = {
     primary: {
       light: '#757ce8',
       main: '#3f50b5',
@@ -30,4 +30,11 @@ export const darkPalette = {
       dark: '#ba000d',
     },
 }
+
+const theme = {
+  darkPalette,
+  lightPalette
+}
+
+export default theme;
 

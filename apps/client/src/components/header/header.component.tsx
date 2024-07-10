@@ -13,10 +13,9 @@ import { ThemeContext } from '../../contexts/themeContext';
 
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', '');
-    const [themeColor, setThemeColor] = useLocalStorage('theme', 'light');
     const [applicationTitle, setApplicationTitle] = useState<string>('');
 
-    const { switchColorMode } = useContext(ThemeContext)
+    const { switchColorMode, mode } = useContext(ThemeContext)
     const userNameRef = useRef(userName);
     const navigate = useNavigate();
 
@@ -30,10 +29,6 @@ export default function HeaderComponent() {
             window.location.reload();
         }, 1);
     };
-
-    const handleThemeToggle = () => {
-        setThemeColor(themeColor === 'dark' ? 'light' : 'dark');
-    }
 
     const onUserNameKeyUp = (e: any) => {
         if (e.keyCode === 13) {
@@ -70,7 +65,7 @@ export default function HeaderComponent() {
                     </Tooltip>
                 </Box>
                     <IconButton sx={{ ml: 1 }} onClick={switchColorMode} color="inherit">
-                        {themeColor === 'dark' ? <Brightness7 /> : <Brightness4 />}
+                        {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
                     </IconButton>
             </Toolbar>
         </AppBar>
