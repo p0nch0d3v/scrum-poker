@@ -1,10 +1,6 @@
-import { ThemeOptions, createTheme } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
-import { useMediaQuery } from '@mui/material';
-import { useMemo } from 'react';
 
-export const themeOptions: ThemeOptions = {
-  palette: {
+const lightPalette = {
     primary: {
       light: '#757ce8',
       main: '#3f50b5',
@@ -20,11 +16,25 @@ export const themeOptions: ThemeOptions = {
     error: {
       main: red.A400,
     }
-  },
 };
 
+const darkPalette = {
+    primary: {
+      light: '#62B6CB',
+      main: '#BEE9E8',
+      dark: '#CAE9FF',
+    },
+    secondary: {
+      light: '#62B6CB',
+      main: '#BEE9E8',
+      dark: '#CAE9FF',
+    },
+}
 
-const theme = createTheme(themeOptions);
+const theme = {
+  darkPalette,
+  lightPalette
+}
 
 export default theme;
 

@@ -1,7 +1,7 @@
-import { Button, Card, CardContent, Typography, Tooltip } from "@mui/material";
+import { Button, Card, CardContent, Tooltip, Typography } from "@mui/material";
 import { FunctionComponent } from "react";
-import CardComponent from "../card/card.component";
 import { sanitizeText } from "../../helpers/helpers";
+import CardComponent from "../card/card.component";
 
 type ParticipantProps = {
     participant: any
@@ -12,7 +12,8 @@ type ParticipantProps = {
 }
 
 const cardBoxStyle = {
-    minWidth: '15em',
+    minWidth: '16em',
+    margin: '0.5em',
     paddingTop: '0',
     paddingBottom: '0',
     minHeight: '7.5em'
