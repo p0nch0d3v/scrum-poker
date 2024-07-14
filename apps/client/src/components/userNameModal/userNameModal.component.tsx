@@ -1,10 +1,10 @@
-import useLocalStorage from '../../hooks/useLocalStorage ';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import { FunctionComponent, useEffect } from 'react';
 import { Button, Input } from '@mui/material';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Typography from '@mui/material/Typography';
+import { FunctionComponent, useEffect } from 'react';
 import { sanitizeText } from '../../helpers/helpers';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 type UserNameModalProps = {
     open: boolean,
