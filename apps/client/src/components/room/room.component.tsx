@@ -135,6 +135,9 @@ const RoomComponent = function () {
         data.people = sortedArray;
       }
       setUsers(data.people);
+      if (data.people.some((p) => p.userName === userName && p.vote === null)) {
+        setUserVote(null);
+      }
     }
   };
 
