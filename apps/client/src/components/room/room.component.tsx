@@ -152,7 +152,6 @@ const RoomComponent = function () {
         });
         console.log('voteSummary', xVoteSummary);
         setVoteSummary(xVoteSummary);
-        // console.log('voteValues', voteValues);
       }
       setUsers(data.people);
     }
