@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, LinearProgress, Paper, Table, TableContainer, TableHead, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Socket, io } from 'socket.io-client';
@@ -12,6 +12,11 @@ import CardComponent from "../card/card.component";
 import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
 import ParticipantComponent from "../participant/participant.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
+
+type VoteSummary = {
+  Estimation: string | undefined;
+  Times: number;
+};
 
 const Messages = {
   FROM_SERVER: {
@@ -50,6 +55,7 @@ const RoomComponent = function () {
   const [error, setError] = useState<ErrorDTO>({});
   const [debug, setDebug] = useState<boolean>(false);
   const [intervalId, setIntervalId] = useState<any>();
+  const [voteSummary, setVoteSummary] = useState<Array<VoteSummary>>();
   const [wsServer, setWsServer] = useState(io(Config.SOCKET_SERVER, { autoConnect: false, reconnection: true }));
   const navigate = useNavigate();
 
@@ -133,6 +139,20 @@ const RoomComponent = function () {
             - (isNaN(Number(n1.vote?.value)) ? -1 : Number(n1.vote?.value))
         });
         data.people = sortedArray;
+        const voteValues = sortedArray.map((participant) => participant.vote?.value);
+        const xVoteSummary: VoteSummary[] = [];
+
+        voteValues.forEach((value) => {
+          const existingVote = xVoteSummary.find((vote) => vote.Estimation === value);
+          if (existingVote) {
+            existingVote.Times++;
+          } else {
+            xVoteSummary.push({ Estimation: value, Times: 1 });
+          }
+        });
+        console.log('voteSummary', xVoteSummary);
+        setVoteSummary(xVoteSummary);
+        // console.log('voteValues', voteValues);
       }
       setUsers(data.people);
     }
@@ -250,6 +270,26 @@ const RoomComponent = function () {
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50%" }}>
               <CircularProgress size={100} />
             </Box>}
+
+          {
+            !roomHide && voteSummary && voteSummary.length > 0 &&
+            <Box display={'flex'} flexDirection={'column'} marginTop={2}>
+              <Typography sx={{ fontSize: '1.5em', textAlign: 'center' }} color="text.secondary" gutterBottom>
+                Vote Summary
+              </Typography>
+              <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} flexWrap={'wrap'}>
+                {voteSummary?.map((vote: VoteSummary) =>
+                  <Box display={'flex'} flexDirection={'column'} alignItems={'center'} margin={1}>
+                    <Typography sx={{ fontWeight: 'bold'}}>{vote.Estimation ?? 'N/A'}</Typography>
+                    <Typography>{vote.Times}</Typography>
+                  </Box>
+                )}
+              </Box>
+              <Box textAlign='center'>
+                Total Votes: {voteSummary?.reduce((total, vote) => total + vote.Times, 0)}
+              </Box>
+            </Box>
+          }
 
           {connected && !isUndefinedNullOrEmpty(connectionId) &&
             <Box display={'flex'} flexDirection={'column'}>
