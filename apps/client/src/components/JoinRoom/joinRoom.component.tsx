@@ -48,10 +48,10 @@ export default function JoinRoomComponent() {
     // TEMPORARY DISABLED
     // const disableJoinButton = function (): boolean {
     //     const noUserName = isUndefinedNullOrEmpty(userName);
-    //     const noRomm = isUndefinedNullOrEmpty(roomId);
+    //     const noRoom = isUndefinedNullOrEmpty(roomId);
     //     const noPass = isUndefinedNullOrEmpty(password);
 
-    //     return noUserName || noRomm || (roomNeedsPassword && noPass);
+    //     return noUserName || noRoom || (roomNeedsPassword && noPass);
     // }
 
     return (

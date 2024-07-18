@@ -12,6 +12,7 @@ import CardComponent from "../card/card.component";
 import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
 import ParticipantComponent from "../participant/participant.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
+import ResultsComponent from "../results/results.component";
 
 type VoteSummary = {
   Estimation: string | undefined;
@@ -45,7 +46,7 @@ const RoomComponent = function () {
   const [validUserName, setValidUserName] = useState<boolean>()
   const [room, setRoom] = useState<RoomDTO | null | undefined>();
   const [roomHide, setRoomHide] = useState<boolean | null | undefined>();
-  const [rommHasAdmin, setRoomHasAdmin] = useState<boolean>(false);
+  const [roomHasAdmin, setRoomHasAdmin] = useState<boolean>(false);
   const [isUserAdmin, setIsUserAdmin] = useState<boolean>(false);
   const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
   const [cards, setCards] = useState<Array<CardDTO>>([]);
@@ -302,7 +303,7 @@ const RoomComponent = function () {
               </Box>
 
               {
-                rommHasAdmin === true && room?.admin === userName
+                roomHasAdmin === true && room?.admin === userName
                 && (
                   <Box width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }}
                     marginTop={2}
@@ -316,19 +317,8 @@ const RoomComponent = function () {
                   </Box>
                 )
               }
-
-              <Box
-                sx={participantListWrapperStyle}
-                width={{ xs: '100%', s: '100%', md: '75%', l: '75%', xl: '75%' }}>
-                {[...new Set(users)].map((user) =>
-                  <ParticipantComponent
-                    participant={user}
-                    current={user.socketId === connectionId ? true : false}
-                    rommHasAdmin={rommHasAdmin}
-                    isUserAdmin={isUserAdmin}
-                    onSetRoomAdmin={onSetRoomAdmin}
-                  />
-                )}
+              <Box display='flex' justifyContent={'center'} mt={3}>
+                <ResultsComponent onSetRoomAdmin={onSetRoomAdmin} roomHasAdmin={roomHasAdmin} isUserAdmin={isUserAdmin} connectionId={connectionId} users={[...new Set(users)]} />
               </Box>
             </Box>
           }

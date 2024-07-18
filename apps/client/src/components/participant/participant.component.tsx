@@ -6,7 +6,7 @@ import CardComponent from "../card/card.component";
 type ParticipantProps = {
     participant: any
     current: boolean
-    rommHasAdmin: boolean
+    roomHasAdmin: boolean
     onSetRoomAdmin: any
     isUserAdmin: boolean
 }
@@ -40,14 +40,14 @@ const userNameStyle = (current: boolean) => {
 const emptyCard = { 'text': '', 'value': '' };
 const hiddenCard = { 'text': '*', 'value': '*' };
 
-const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, current, rommHasAdmin, onSetRoomAdmin, isUserAdmin }) => {
+const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, current, roomHasAdmin, onSetRoomAdmin, isUserAdmin }) => {
     return (
         <Card sx={cardBoxStyle} >
             <CardContent sx={cardContentStyle}>
                 <Typography sx={userNameStyle(current)}>
                     {sanitizeText(participant.userName)}
                     {
-                        (isUserAdmin === true && current === false) || rommHasAdmin === false ?
+                        (isUserAdmin === true && current === false) || roomHasAdmin === false ?
                             <Tooltip disableFocusListener arrow
                                 placement="bottom"
                                 title="Make Admin">
