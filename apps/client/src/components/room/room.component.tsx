@@ -272,7 +272,7 @@ const RoomComponent = function () {
             </Box>}
 
           {
-            !roomHide && voteSummary && voteSummary.length > 0 &&
+            
             <Box display={'flex'} flexDirection={'column'} marginTop={2}>
               <Typography sx={{ fontSize: '1.5em', textAlign: 'center' }} color="text.secondary" gutterBottom>
                 Vote Summary
@@ -280,8 +280,8 @@ const RoomComponent = function () {
               <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} flexWrap={'wrap'}>
                 {voteSummary?.map((vote: VoteSummary) =>
                   <Box display={'flex'} flexDirection={'column'} alignItems={'center'} margin={1}>
-                    <Typography sx={{ fontWeight: 'bold'}}>{vote.Estimation ?? 'N/A'}</Typography>
-                    <Typography>{vote.Times}</Typography>
+                    <Typography sx={{ fontWeight: 'bold'}}>{roomHide ? '-' : vote.Estimation ?? 'N/A'}</Typography>
+                    <Typography>{roomHide ? '-' : vote.Times}</Typography>
                   </Box>
                 )}
               </Box>
