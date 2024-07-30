@@ -4,7 +4,12 @@ import { configService } from './config/config.service'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const corsOrigin = configService.getCorsOrigin();
+  const isProduction = configService.isProduction();
+  const appPort = configService.getAppPort();
+
   app.setGlobalPrefix('api');
-  await app.listen(configService.isProduction() ? 80 : configService.getAppPort());
+  app.enableCors({ origin: corsOrigin, methods: "GET,HEAD,POST", });
+  await app.listen(isProduction ? 80 : appPort);
 }
 bootstrap();
