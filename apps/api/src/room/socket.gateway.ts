@@ -2,7 +2,7 @@ import { WebSocketGateway, OnGatewayConnection, WebSocketServer, SubscribeMessag
 import { Socket } from 'socket.io';
 import { SocketService } from './socket.service';
 
-@WebSocketGateway({ cors: { origin: '*' }, namespace: '/' })
+@WebSocketGateway({ cors: { origin: true }, namespace: '/' })
 export class SocketGateway implements OnGatewayConnection {
   @WebSocketServer()
   private server: Socket;
