@@ -53,6 +53,11 @@ class ConfigService {
         const app_port = this.getValue("APP_PORT");
         return app_port !== undefined && app_port !== null ? app_port : "80";
     }    
+
+    public getCorsOrigin(): string {
+        const cors_origin = this.getValue("CORS_ORIGIN");
+        return cors_origin !== undefined && cors_origin !== null ? cors_origin : "*"; 
+    }
 }
 
 const configService = new ConfigService(process.env)
@@ -61,6 +66,7 @@ const configService = new ConfigService(process.env)
         'MODE',
         'SOCKET_SERVER',
         'APP_PORT',
+        'CORS_ORIGIN',
         'POSTGRES_HOST',
         'POSTGRES_PORT',
         'POSTGRES_USER',
