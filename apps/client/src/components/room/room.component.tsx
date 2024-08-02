@@ -10,8 +10,8 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import { getRoom, setRoomAdmin } from '../../services/api.service';
 import CardComponent from "../card/card.component";
 import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
-import ParticipantComponent from "../participant/participant.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
+import ParticipantListComponent from "../participantList/participantList.component";
 
 const Messages = {
   FROM_SERVER: {
@@ -204,17 +204,8 @@ const RoomComponent = function () {
     window.location.reload();
   };
 
-  const participantListWrapperStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
-    alignSelf: 'center',
-    marginTop: '1rem'
-  }
-
   return (
-    <Box width={'100vw'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
+    <Box width={'100vw'} height={'calc(100vh - 64px)'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
 
       {Config.IS_PRODUCTION === false && debug === true &&
         <>
@@ -258,7 +249,7 @@ const RoomComponent = function () {
             <Box display={'flex'} flexDirection={'column'}>
               <Box style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
                 {cards.map((card) =>
-                  <CardComponent card={card} 
+                  <CardComponent card={card}
                     disabled={roomHide === false}
                     selected={userVote?.value === card.value}
                     onClick={() => { onVoteClick(card); }} />
@@ -266,34 +257,29 @@ const RoomComponent = function () {
               </Box>
 
               {
-                rommHasAdmin === true && room?.admin === userName
-                && (
-                  <Box width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }}
-                    marginTop={2}
-                    display={'flex'}
-                    justifyContent={'space-between'}
-                    alignSelf={'center'}>
-                    <Button variant="contained"
-                      onClick={onClearAllClick}>Clear All</Button>
-                    <Button variant="contained"
-                      onClick={OnHideUnHideClick}>{roomHide === true ? 'Unhide' : 'Hide'}</Button>
-                  </Box>
-                )
+                <Box width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }}
+                  marginTop={2}
+                  display={'flex'}
+                  justifyContent={'space-between'}
+                  alignSelf={'center'}>
+                  <Button variant="contained"
+                    onClick={onClearAllClick}
+                    disabled={rommHasAdmin !== true || room?.admin !== userName}>
+                    Clear All
+                  </Button>
+                  <Button variant="contained"
+                    onClick={OnHideUnHideClick}
+                    disabled={rommHasAdmin !== true || room?.admin !== userName}>
+                    {roomHide === true ? 'Unhide' : 'Hide'}
+                  </Button>
+                </Box>
               }
-
-              <Box
-                sx={participantListWrapperStyle}
-                width={{ xs: '100%', s: '100%', md: '75%', l: '75%', xl: '75%' }}>
-                {[...new Set(users)].map((user) =>
-                  <ParticipantComponent
-                    participant={user}
-                    current={user.socketId === connectionId ? true : false}
-                    rommHasAdmin={rommHasAdmin}
-                    isUserAdmin={isUserAdmin}
-                    onSetRoomAdmin={onSetRoomAdmin}
-                  />
-                )}
-              </Box>
+              <ParticipantListComponent
+                users={users}
+                connectionId={connectionId}
+                rommHasAdmin={rommHasAdmin}
+                isUserAdmin={isUserAdmin}
+                onSetRoomAdmin={onSetRoomAdmin} />
             </Box>
           }
         </>

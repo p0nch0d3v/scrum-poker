@@ -113,6 +113,11 @@ export class RoomService {
     return updateResult.affected === 1;
   }
 
+  async getAdmin(id: string): Promise<string | null | undefined> {
+    const room = await this.getByUniqueId(id);
+    return room?.admin;
+  }
+
   private async query(): Promise<SelectQueryBuilder<Room>> {
     return await this.roomsRepository
       .createQueryBuilder('room')

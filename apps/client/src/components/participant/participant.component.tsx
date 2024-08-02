@@ -1,6 +1,6 @@
-import { Button, Card, CardContent, Tooltip, Typography } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { FunctionComponent } from "react";
-import { sanitizeText } from "../../helpers/helpers";
+import { getShortName, isUndefinedOrNull, sanitizeText } from "../../helpers/helpers";
 import CardComponent from "../card/card.component";
 
 type ParticipantProps = {
@@ -11,56 +11,49 @@ type ParticipantProps = {
     isUserAdmin: boolean
 }
 
-const cardBoxStyle = {
-    minWidth: '16em',
-    margin: '0.5em',
-    paddingTop: '0',
-    paddingBottom: '0',
-    minHeight: '7.5em'
-};
-
-const cardContentStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: '0',
-    paddingBottom: '0'
-};
-
-const userNameStyle = (current: boolean) => {
+const cardContentStyle = (vote: boolean): any => {
+    const themeOptions = useTheme();
     return {
-        fontSize: '1em',
-        textDecoration: current ? 'underline' : '',
-        textWrap: 'wrap',
-        maxWidth: '50%'
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 !important',
+        marginRight: '1em',
+        marginBottom: '1rem',
+        border: `1px solid ${vote ? themeOptions.palette.primary.main : 'transparent'}`
     }
 };
 
-const emptyCard = { 'text': '', 'value': '' };
-const hiddenCard = { 'text': '*', 'value': '*' };
-
 const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, current, rommHasAdmin, onSetRoomAdmin, isUserAdmin }) => {
-    return (
-        <Card sx={cardBoxStyle} >
-            <CardContent sx={cardContentStyle}>
-                <Typography sx={userNameStyle(current)}>
-                    {sanitizeText(participant.userName)}
-                    {
-                        (isUserAdmin === true && current === false) || rommHasAdmin === false ?
-                            <Tooltip disableFocusListener arrow
-                                placement="bottom"
-                                title="Make Admin">
-                                <Button onClick={() => { onSetRoomAdmin(participant.userName) }}>⭐</Button>
-                            </Tooltip>
-                            : null
-                    }
-                </Typography>
-                {!participant.vote && <CardComponent card={emptyCard} />}
-                {participant.vote && <CardComponent card={participant.hide ? hiddenCard : participant.vote} />}
+    const emptyCard = { 'text': getShortName(sanitizeText(participant.userName)), 'value': '' };
+    const hiddenCard = { 'text': '*', 'value': '*' };
+    const card = participant.vote ? (participant.hide ? hiddenCard : participant.vote) : emptyCard;
 
-            </CardContent>
-        </Card>
+    let onParticipantClick = undefined;
+    let toolTipText = '';
+    let innerTextStyle: any = { 'fontSize': '2em', 'font-style': 'normal' };
+
+    if ((isUserAdmin === true && current === false) || rommHasAdmin === false) {
+        onParticipantClick = () => { onSetRoomAdmin(participant.userName) };
+        toolTipText = `${sanitizeText(participant.userName)} | Make Admin`;
+        innerTextStyle = { ...innerTextStyle };
+    }
+    if (!participant.vote || !participant.hide || (participant.vote && participant.hide)) {
+        toolTipText = toolTipText || sanitizeText(participant.userName);
+        innerTextStyle = { ...innerTextStyle };
+    }
+    if (!participant.vote || !participant.hide) {
+        innerTextStyle = { ...innerTextStyle, 'font-style': 'italic' };
+    }
+    if (participant.vote && participant.hide && isUserAdmin) {
+        toolTipText = toolTipText || `${sanitizeText(participant.userName)} | ${participant.vote.text}`;
+    }
+
+    return (
+        <span style={cardContentStyle(!isUndefinedOrNull(participant.vote))}>
+            <CardComponent card={card} onClick={onParticipantClick} toolTipText={toolTipText} innerTextStyle={innerTextStyle} />
+        </span>
     );
 }
 
