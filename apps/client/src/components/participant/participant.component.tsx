@@ -1,14 +1,16 @@
 import { useTheme } from "@mui/material";
 import { FunctionComponent } from "react";
-import { getShortName, isUndefinedOrNull, sanitizeText } from "../../helpers/helpers";
+import { getShortName, isUndefinedNullOrEmpty, isUndefinedOrNull, sanitizeText } from "../../helpers/helpers";
 import CardComponent from "../card/card.component";
+import { ParticipantDTO } from "models";
+import { act } from "react-dom/test-utils";
 
 type ParticipantProps = {
-    participant: any
+    participant: ParticipantDTO
     current: boolean
     rommHasAdmin: boolean
-    onSetRoomAdmin: any
-    isUserAdmin: boolean
+    onSetRoomAdmin: Function
+    isCurrentUserAdmin: boolean
 }
 
 const cardContentStyle = (vote: boolean): any => {
@@ -25,30 +27,62 @@ const cardContentStyle = (vote: boolean): any => {
     }
 };
 
-const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, current, rommHasAdmin, onSetRoomAdmin, isUserAdmin }) => {
-    const emptyCard = { 'text': getShortName(sanitizeText(participant.userName)), 'value': '' };
+const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, current, rommHasAdmin, onSetRoomAdmin, isCurrentUserAdmin }) => {
+    const initialsCard = { 'text': getShortName(sanitizeText(participant.userName)), 'value': '' };
     const hiddenCard = { 'text': '*', 'value': '*' };
-    const card = participant.vote ? (participant.hide ? hiddenCard : participant.vote) : emptyCard;
 
-    let onParticipantClick = undefined;
-    let toolTipText = '';
-    let innerTextStyle: any = { 'fontSize': '2em', 'font-style': 'normal' };
+    console.debug('isCurrentUserAdmin', isCurrentUserAdmin);
+    console.debug('participant.isAdmin', participant.isAdmin);
+    console.debug('participant.vote', participant.vote, !isUndefinedOrNull(participant?.vote));
+    console.debug('participant.hide', participant.hide);
 
-    if ((isUserAdmin === true && current === false) || rommHasAdmin === false) {
-        onParticipantClick = () => { onSetRoomAdmin(participant.userName) };
-        toolTipText = `${sanitizeText(participant.userName)} | Make Admin`;
-        innerTextStyle = { ...innerTextStyle };
+    // ----------
+    let card = undefined;
+    if (!isUndefinedOrNull(participant?.vote)) {
+        card = participant.vote;
+        if (participant.hide) {
+            card = hiddenCard;
+        }
     }
-    if (!participant.vote || !participant.hide || (participant.vote && participant.hide)) {
-        toolTipText = toolTipText || sanitizeText(participant.userName);
-        innerTextStyle = { ...innerTextStyle };
+    else if (!participant.vote) {
+        card = initialsCard;
     }
-    if (!participant.vote || !participant.hide) {
+
+    // ----------
+    let innerTextStyle: any = { 'fontSize': '2em' };
+    if (participant.isAdmin) {
+        innerTextStyle = { ...innerTextStyle, 'font-weight': '900' };
+    }
+    else {
         innerTextStyle = { ...innerTextStyle, 'font-style': 'italic' };
     }
-    if (participant.vote && participant.hide && isUserAdmin) {
-        toolTipText = toolTipText || `${sanitizeText(participant.userName)} | ${participant.vote.text}`;
+
+    // ----------
+    let onParticipantClick = () => { };
+    if ((!isCurrentUserAdmin && !participant.isAdmin) || (isCurrentUserAdmin && !participant.isAdmin)) {
+        onParticipantClick = () => {onSetRoomAdmin(participant.userName)};
     }
+
+    // ----------
+    let toolTipText = ""
+    /*if (participant.isAdmin) {
+        toolTipText = "Admin";
+    }
+    else if (isCurrentUserAdmin && participant.isAdmin && !isUndefinedOrNull(participant.vote) && participant.hide) {
+        toolTipText = `Admin | ${participant.vote?.text}`;
+    }
+    else if (isCurrentUserAdmin && !participant.isAdmin) {
+        toolTipText = "Make Admin";
+    }
+    else if (isCurrentUserAdmin && !participant.isAdmin && !isUndefinedOrNull(participant.vote) && participant.hide) {
+        toolTipText = `Make Admin | ${participant.vote?.text}`;
+    }
+    else if (!isCurrentUserAdmin && !participant.isAdmin) {
+        toolTipText
+    }
+    else {
+        toolTipText = sanitizeText(participant.userName);
+    }*/
 
     return (
         <span style={cardContentStyle(!isUndefinedOrNull(participant.vote))}>

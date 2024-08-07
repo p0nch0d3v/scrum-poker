@@ -115,7 +115,7 @@ export class SocketService {
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
 
-      this.setHideVotesRoom(roomId, !this.getHideVotesRoom(roomId))
+      this.setHideVotesRoom(roomId, await this.getHideVotesRoom(roomId) === true ? false : true)
       const currentHide = await this.getHideVotesRoom(roomId);
 
       for (let i = 0; i < room.length; i++) {

@@ -7,7 +7,7 @@ type ParticipantListProps = {
     users: Array<ParticipantDTO>
     connectionId: string | undefined
     rommHasAdmin: boolean
-    isUserAdmin: boolean
+    isCurrentUserAdmin: boolean
     onSetRoomAdmin: any
 }
 
@@ -20,7 +20,7 @@ const participantListWrapperStyle = {
   marginTop: '1rem'
 }
 
-const ParticipantListComponent: FunctionComponent<ParticipantListProps> = ({ users, connectionId, rommHasAdmin, isUserAdmin, onSetRoomAdmin }) => {
+const ParticipantListComponent: FunctionComponent<ParticipantListProps> = ({ users, connectionId, rommHasAdmin, isCurrentUserAdmin, onSetRoomAdmin }) => {
     return (
       <Box
         sx={participantListWrapperStyle}
@@ -30,7 +30,7 @@ const ParticipantListComponent: FunctionComponent<ParticipantListProps> = ({ use
               participant={user}
               current={user.socketId === connectionId ? true : false}
               rommHasAdmin={rommHasAdmin}
-              isUserAdmin={isUserAdmin}
+              isCurrentUserAdmin={isCurrentUserAdmin}
               onSetRoomAdmin={onSetRoomAdmin}
             />
             )}
