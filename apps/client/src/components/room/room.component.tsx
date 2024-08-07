@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Socket, io } from 'socket.io-client';
 
-import { CardDTO, ErrorDTO, NofityCardsDTO, NotifyPeopleDTO, ParticipantDTO, RoomDTO } from "models";
+import { CardDTO, ErrorDTO, NofityCardsDTO, NotifyPeopleDTO, ParticipantDTO, RoomDTO, SetAdminDTO } from "models";
 import Config from "../../config/config";
 import { isUndefinedNullOrEmpty, isUndefinedOrNull, sanitizeText, shuffleArray, validateUUID } from "../../helpers/helpers";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -173,8 +173,8 @@ const RoomComponent = function () {
     wsServer.emit(Messages.TO_SERVER.hide_unHide, { roomId: id });
   }
 
-  const onSetRoomAdmin = function (e: any) {
-    setRoomAdmin({ roomId: id, admin: e })
+  const onSetRoomAdmin = function (e: string) {
+    setRoomAdmin({ roomId: id, admin: e } as SetAdminDTO)
       .then((r) => {
         if (r === true) {
           wsServer.emit(Messages.TO_SERVER.set_admin, { roomId: id });
@@ -276,8 +276,6 @@ const RoomComponent = function () {
               }
               <ParticipantListComponent
                 users={users}
-                connectionId={connectionId}
-                rommHasAdmin={rommHasAdmin}
                 isCurrentUserAdmin={isCurrentUserAdmin}
                 onSetRoomAdmin={onSetRoomAdmin} />
             </Box>

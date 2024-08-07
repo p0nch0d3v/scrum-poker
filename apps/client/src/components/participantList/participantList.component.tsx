@@ -5,8 +5,6 @@ import { ParticipantDTO } from "models";
 
 type ParticipantListProps = {
     users: Array<ParticipantDTO>
-    connectionId: string | undefined
-    rommHasAdmin: boolean
     isCurrentUserAdmin: boolean
     onSetRoomAdmin: any
 }
@@ -20,7 +18,7 @@ const participantListWrapperStyle = {
   marginTop: '1rem'
 }
 
-const ParticipantListComponent: FunctionComponent<ParticipantListProps> = ({ users, connectionId, rommHasAdmin, isCurrentUserAdmin, onSetRoomAdmin }) => {
+const ParticipantListComponent: FunctionComponent<ParticipantListProps> = ({ users, isCurrentUserAdmin, onSetRoomAdmin }) => {
     return (
       <Box
         sx={participantListWrapperStyle}
@@ -28,8 +26,6 @@ const ParticipantListComponent: FunctionComponent<ParticipantListProps> = ({ use
           {[...new Set(users)].map((user) =>
             <ParticipantComponent
               participant={user}
-              current={user.socketId === connectionId ? true : false}
-              rommHasAdmin={rommHasAdmin}
               isCurrentUserAdmin={isCurrentUserAdmin}
               onSetRoomAdmin={onSetRoomAdmin}
             />
