@@ -89,7 +89,7 @@ export class SocketService {
 
       const index = room.findIndex((e) => { return e.socketId == data.userId });
       if (index > -1) {
-        room[index]['vote'] = data.vote.value !== null ? data.vote : null;
+        room[index]['vote'] = data.vote != null && data.vote.value !== null ? data.vote : null;
         this.emitPeople(socket, roomId, hide, this.allRooms.get(roomId));
       }
     });

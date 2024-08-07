@@ -159,7 +159,7 @@ const RoomComponent = function () {
     }
   }
 
-  const onVoteClick = function (value: CardDTO) {
+  const onVoteClick = function (value: CardDTO | null) {
     console.log(`[${Messages.TO_SERVER.vote}]`, value);
     wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: value });
     setUserVote(value);
@@ -252,7 +252,7 @@ const RoomComponent = function () {
                   <CardComponent card={card}
                     disabled={roomHide === false}
                     selected={userVote?.value === card.value}
-                    onClick={() => { onVoteClick(card); }} />
+                    onClick={() => { userVote?.value === card.value ? onVoteClick(null) : onVoteClick(card); }} />
                 )}
               </Box>
 
