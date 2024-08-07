@@ -1,12 +1,13 @@
 import { Card, CardContent, Tooltip, Typography, useTheme } from "@mui/material";
 import { FunctionComponent } from "react";
+import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
 
 type CardProps = {
     card: any,
     onClick?: any,
     disabled?: boolean,
     selected?: boolean,
-    toolTipText?: string | undefined, 
+    toolTipText?: string | undefined,
     innerTextStyle?: any | undefined
 }
 
@@ -23,17 +24,20 @@ const cardStyle = (disabled?: boolean, selected?: boolean) => {
 }
 
 const CardComponent: FunctionComponent<CardProps> = ({ card, onClick, disabled, selected, toolTipText, innerTextStyle }) => {
+    const innerCardContent = <Typography sx={{ fontSize: '2em' }} style={innerTextStyle}>
+        {card.text && card.text.length > 0 ? card?.text : <>&nbsp;</>}
+    </Typography>;
+
     return (
         card.value !== null ? (
             <Card sx={cardStyle(disabled, selected)} onClick={disabled === true ? undefined : onClick}>
                 <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', alignContent: 'center' }}>
-                    <Tooltip arrow
+                    {!isUndefinedNullOrEmpty(toolTipText) && <Tooltip arrow
                         placement="bottom"
                         title={<Typography variant="h5">{toolTipText}</Typography>}>
-                        <Typography sx={{ fontSize: '2em' }} style={innerTextStyle}>
-                            {card.text && card.text.length > 0 ? card?.text : <>&nbsp;</>}
-                        </Typography>
-                    </Tooltip>
+                        {innerCardContent}
+                    </Tooltip>}
+                    {isUndefinedNullOrEmpty(toolTipText) && innerCardContent}
                 </CardContent>
             </Card>
         ) : <></>
