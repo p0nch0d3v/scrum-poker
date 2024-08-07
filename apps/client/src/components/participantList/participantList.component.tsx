@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { backdropClasses, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import ParticipantComponent from "../participant/participant.component";
 import { ParticipantDTO } from "models";
 

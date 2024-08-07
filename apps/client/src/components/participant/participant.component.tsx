@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { FunctionComponent } from "react";
-import { getShortName, isUndefinedNullOrEmpty, isUndefinedOrNull, sanitizeText } from "../../helpers/helpers";
+import { getShortName, isUndefinedOrNull, sanitizeText } from "../../helpers/helpers";
 import CardComponent from "../card/card.component";
 import { ParticipantDTO } from "models";
 
