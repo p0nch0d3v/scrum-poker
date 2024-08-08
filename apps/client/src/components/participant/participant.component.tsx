@@ -25,7 +25,7 @@ const cardContentStyle = (vote: boolean): any => {
 };
 
 const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, onSetRoomAdmin, isCurrentUserAdmin }) => {
-    const initialsCard = { 'text': getShortName(sanitizeText(participant.userName)), 'value': '' };
+    const initialsCard = { 'text': getShortName(sanitizeText(participant.userName), 2), 'value': '' };
     const hiddenCard = { 'text': '*', 'value': '*' };
 
     console.debug('isCurrentUserAdmin', isCurrentUserAdmin);
@@ -46,7 +46,7 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
     }
 
     // ----------
-    let innerTextStyle: any = { 'fontSize': '2em' };
+    let innerTextStyle: any = { 'fontSize': '1.8em', 'text-align': 'center' };
     if (participant.isAdmin) {
         innerTextStyle = { ...innerTextStyle, 'font-weight': '900' };
     }
