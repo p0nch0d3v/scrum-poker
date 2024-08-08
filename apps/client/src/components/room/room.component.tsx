@@ -275,7 +275,7 @@ const RoomComponent = function () {
                 </Button>
               </Box>
 
-              {!roomHide && <VoteSummaryComponent users={users} />}
+              {(!roomHide || isCurrentUserAdmin) && <VoteSummaryComponent users={users} />}
 
               <ParticipantListComponent
                 users={users}

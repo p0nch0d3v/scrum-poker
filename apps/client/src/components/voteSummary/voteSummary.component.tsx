@@ -56,7 +56,7 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
             }
         });
         setSummary(summaryTmp);
-    }, [])
+    }, [users])
 
     return (
         <Box sx={mainStyle}>
