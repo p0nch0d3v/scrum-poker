@@ -28,11 +28,6 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
     const initialsCard = { 'text': getShortName(sanitizeText(participant.userName), 2), 'value': '' };
     const hiddenCard = { 'text': '*', 'value': '*' };
 
-    console.debug('isCurrentUserAdmin', isCurrentUserAdmin);
-    console.debug('participant.isAdmin', participant.isAdmin);
-    console.debug('participant.vote', participant.vote, !isUndefinedOrNull(participant?.vote));
-    console.debug('participant.hide', participant.hide);
-
     // ----------
     let card = undefined;
     if (!isUndefinedOrNull(participant?.vote)) {
