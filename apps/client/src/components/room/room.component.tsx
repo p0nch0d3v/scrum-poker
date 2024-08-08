@@ -12,6 +12,7 @@ import CardComponent from "../card/card.component";
 import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
 import ParticipantListComponent from "../participantList/participantList.component";
+import VoteSummaryComponent from "../voteSummary/voteSummary.component";
 
 const Messages = {
   FROM_SERVER: {
@@ -211,6 +212,7 @@ const RoomComponent = function () {
         <>
           <Typography>{validRoom ? 'valid' : 'invalid'}</Typography>
           <Typography>{roomHide ? 'hide' : 'no hide'}</Typography>
+          <Typography>{isCurrentUserAdmin === true ? 'isCurrentUserAdmin' : ''}</Typography>
           <Typography>
             {JSON.stringify(room)}
           </Typography>
@@ -256,24 +258,25 @@ const RoomComponent = function () {
                 )}
               </Box>
 
-              {
-                <Box width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }}
-                  marginTop={2}
-                  display={'flex'}
-                  justifyContent={'space-between'}
-                  alignSelf={'center'}>
-                  <Button variant="contained"
-                    onClick={onClearAllClick}
-                    disabled={rommHasAdmin !== true || room?.admin !== userName}>
-                    Clear All
-                  </Button>
-                  <Button variant="contained"
-                    onClick={OnHideUnHideClick}
-                    disabled={rommHasAdmin !== true || room?.admin !== userName}>
-                    {roomHide === true ? 'Unhide' : 'Hide'}
-                  </Button>
-                </Box>
-              }
+              <Box width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }}
+                marginTop={2}
+                display={'flex'}
+                justifyContent={'space-between'}
+                alignSelf={'center'}>
+                <Button variant="contained"
+                  onClick={onClearAllClick}
+                  disabled={rommHasAdmin !== true || room?.admin !== userName}>
+                  Clear All
+                </Button>
+                <Button variant="contained"
+                  onClick={OnHideUnHideClick}
+                  disabled={rommHasAdmin !== true || room?.admin !== userName}>
+                  {roomHide === true ? 'Unhide' : 'Hide'}
+                </Button>
+              </Box>
+
+              {!roomHide && <VoteSummaryComponent users={users} />}
+
               <ParticipantListComponent
                 users={users}
                 isCurrentUserAdmin={isCurrentUserAdmin}
