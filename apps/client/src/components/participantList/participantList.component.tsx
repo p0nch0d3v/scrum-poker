@@ -7,6 +7,7 @@ type ParticipantListProps = {
     users: Array<ParticipantDTO>
     isCurrentUserAdmin: boolean
     onSetRoomAdmin: any
+    roomHasAdmin: boolean
 }
 
 const participantListWrapperStyle = {
@@ -18,7 +19,7 @@ const participantListWrapperStyle = {
   marginTop: '1rem'
 }
 
-const ParticipantListComponent: FunctionComponent<ParticipantListProps> = ({ users, isCurrentUserAdmin, onSetRoomAdmin }) => {
+const ParticipantListComponent: FunctionComponent<ParticipantListProps> = ({ users, isCurrentUserAdmin, onSetRoomAdmin, roomHasAdmin }) => {
     return (
       <Box
         sx={participantListWrapperStyle}
@@ -28,6 +29,7 @@ const ParticipantListComponent: FunctionComponent<ParticipantListProps> = ({ use
               participant={user}
               isCurrentUserAdmin={isCurrentUserAdmin}
               onSetRoomAdmin={onSetRoomAdmin}
+              roomHasAdmin={roomHasAdmin}
             />
             )}
         </Box>

@@ -13,6 +13,7 @@ import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
 import ParticipantListComponent from "../participantList/participantList.component";
 import VoteSummaryComponent from "../voteSummary/voteSummary.component";
+import ShowSetAdminModalComponent from "../setAdminModal/setAdminModal.component";
 
 const Messages = {
   FROM_SERVER: {
@@ -46,6 +47,8 @@ const RoomComponent = function () {
   const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
   const [cards, setCards] = useState<Array<CardDTO>>([]);
   const [userVote, setUserVote] = useState<CardDTO | null | undefined>(null);
+  const [showSetAdminModal, setShowSetAdminModal] = useState<boolean>(false);
+  const [newAdminName, setNewAdminName] = useState<string>("");
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
   const [error, setError] = useState<ErrorDTO>({});
@@ -175,13 +178,18 @@ const RoomComponent = function () {
   }
 
   const onSetRoomAdmin = function (e: string) {
+    setShowSetAdminModal(true);
+    setNewAdminName(e);
+  }
+
+  const onConfirmSetRoomAdmin = function (e: string) {
     setRoomAdmin({ roomId: id, admin: e } as SetAdminDTO)
       .then((r) => {
         if (r === true) {
           wsServer.emit(Messages.TO_SERVER.set_admin, { roomId: id });
         }
-      })
-  }
+      });
+  };
 
   /* ---------- */
 
@@ -234,6 +242,14 @@ const RoomComponent = function () {
 
       {validRoom === true && !isUndefinedNullOrEmpty(userName) && !error.message &&
         <>
+          {showSetAdminModal &&
+            <ShowSetAdminModalComponent
+              open={showSetAdminModal}
+              newAdminName={newAdminName}
+              onYes={onConfirmSetRoomAdmin}
+              onNo={() => { setShowSetAdminModal(false); }} />
+          }
+
           <Typography sx={{ fontSize: '1em', textAlign: 'center', marginTop: '1em' }}
             color="text.secondary"
             gutterBottom
@@ -280,6 +296,7 @@ const RoomComponent = function () {
               <ParticipantListComponent
                 users={users}
                 isCurrentUserAdmin={isCurrentUserAdmin}
+                roomHasAdmin={rommHasAdmin}
                 onSetRoomAdmin={onSetRoomAdmin} />
             </Box>
           }

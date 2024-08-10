@@ -8,6 +8,7 @@ type ParticipantProps = {
     participant: ParticipantDTO
     onSetRoomAdmin: Function
     isCurrentUserAdmin: boolean
+    roomHasAdmin: boolean
 }
 
 const cardContentStyle = (vote: boolean): any => {
@@ -24,7 +25,7 @@ const cardContentStyle = (vote: boolean): any => {
     }
 };
 
-const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, onSetRoomAdmin, isCurrentUserAdmin }) => {
+const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, isCurrentUserAdmin, onSetRoomAdmin, roomHasAdmin }) => {
     const initialsCard = { 'text': getShortName(sanitizeText(participant.userName), 2), 'value': '' };
     const hiddenCard = { 'text': '*', 'value': '*' };
 
@@ -51,7 +52,7 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
 
     // ----------
     let onParticipantClick = () => { };
-    if ((!isCurrentUserAdmin && !participant.isAdmin) || (isCurrentUserAdmin && !participant.isAdmin)) {
+    if ((roomHasAdmin === false && isCurrentUserAdmin === false && participant.isAdmin === false) || (isCurrentUserAdmin && participant.isAdmin === false)) {
         onParticipantClick = () => { onSetRoomAdmin(participant.userName) };
     }
 
