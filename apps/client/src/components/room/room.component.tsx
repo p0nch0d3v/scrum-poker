@@ -163,10 +163,12 @@ const RoomComponent = function () {
     }
   }
 
-  const onVoteClick = function (value: CardDTO | null) {
-    console.log(`[${Messages.TO_SERVER.vote}]`, value);
-    wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: value });
-    setUserVote(value);
+  const onVoteClick = function (card: CardDTO | null) {
+    if (userVote?.value !== card.value) {
+      console.log(`[${Messages.TO_SERVER.vote}]`, card);
+      wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: card });
+      setUserVote(card);
+    }
   };
 
   const onClearAllClick = function () {
@@ -270,7 +272,7 @@ const RoomComponent = function () {
                   <CardComponent card={card}
                     disabled={roomHide === false}
                     selected={userVote?.value === card.value}
-                    onClick={() => { userVote?.value === card.value ? onVoteClick(null) : onVoteClick(card); }} />
+                    onClick={() => { onVoteClick(card); }} />
                 )}
               </Box>
 
