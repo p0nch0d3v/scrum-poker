@@ -164,7 +164,7 @@ const RoomComponent = function () {
   }
 
   const onVoteClick = function (card: CardDTO | null) {
-    if (userVote?.value !== card.value) {
+    if (userVote?.value !== card?.value) {
       console.log(`[${Messages.TO_SERVER.vote}]`, card);
       wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: card });
       setUserVote(card);
