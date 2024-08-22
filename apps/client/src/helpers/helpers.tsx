@@ -46,6 +46,24 @@ function reverseString(input: string): string {
     return input.split("").reverse().join("");
 }
 
+const getShortName = (input: string, count: number): string => {
+    if (isUndefinedNullOrEmpty(input)) {
+        return "";
+    }
+    const subItems = input.split(" ");
+    if (subItems.length > 1) {
+        let returnValue: string = ""
+        for (let i = 0; i < Math.min(count, subItems.length); i++) {
+            returnValue += subItems[i].substring(0, 1);
+        }
+        return returnValue;
+    }
+    else if (subItems[0].length > 1) {
+        return subItems[0].substring(0, Math.min(count, subItems[0].length));
+    }
+    return subItems[0];
+}
+
 if (Config.IS_PRODUCTION) {
     window.console.log = () => { };
     window.console.debug = () => { };
@@ -58,5 +76,6 @@ export {
     isUndefinedNullOrEmpty,
     shuffleArray,
     sanitizeText,
-    reverseString
+    reverseString,
+    getShortName
 };

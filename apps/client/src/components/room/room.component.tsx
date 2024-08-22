@@ -3,15 +3,17 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Socket, io } from 'socket.io-client';
 
-import { CardDTO, ErrorDTO, NofityCardsDTO, NotifyPeopleDTO, ParticipantDTO, RoomDTO } from "models";
+import { CardDTO, ErrorDTO, NofityCardsDTO, NotifyPeopleDTO, ParticipantDTO, RoomDTO, SetAdminDTO } from "models";
 import Config from "../../config/config";
 import { isUndefinedNullOrEmpty, isUndefinedOrNull, sanitizeText, shuffleArray, validateUUID } from "../../helpers/helpers";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { getRoom, setRoomAdmin } from '../../services/api.service';
 import CardComponent from "../card/card.component";
 import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
-import ParticipantComponent from "../participant/participant.component";
 import UserNameModalComponent from "../userNameModal/userNameModal.component";
+import ParticipantListComponent from "../participantList/participantList.component";
+import VoteSummaryComponent from "../voteSummary/voteSummary.component";
+import ShowSetAdminModalComponent from "../setAdminModal/setAdminModal.component";
 
 const Messages = {
   FROM_SERVER: {
@@ -41,10 +43,12 @@ const RoomComponent = function () {
   const [room, setRoom] = useState<RoomDTO | null | undefined>();
   const [roomHide, setRoomHide] = useState<boolean | null | undefined>();
   const [rommHasAdmin, setRoomHasAdmin] = useState<boolean>(false);
-  const [isUserAdmin, setIsUserAdmin] = useState<boolean>(false);
+  const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
   const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
   const [cards, setCards] = useState<Array<CardDTO>>([]);
   const [userVote, setUserVote] = useState<CardDTO | null | undefined>(null);
+  const [showSetAdminModal, setShowSetAdminModal] = useState<boolean>(false);
+  const [newAdminName, setNewAdminName] = useState<string>("");
   const [connected, setConnected] = useState<boolean | undefined>();
   const [connectionId, setConnectionId] = useState<string | undefined>('');
   const [error, setError] = useState<ErrorDTO>({});
@@ -63,7 +67,7 @@ const RoomComponent = function () {
         setRoom(getRoomResult);
         setRoomHide(true);
         setRoomHasAdmin(!isUndefinedNullOrEmpty(getRoomResult.admin));
-        setIsUserAdmin(getRoomResult?.admin === userName);
+        setIsCurrentUserAdmin(getRoomResult?.admin === userName);
       }
       else {
         setValidRoom(isValidRoom);
@@ -159,10 +163,12 @@ const RoomComponent = function () {
     }
   }
 
-  const onVoteClick = function (value: CardDTO) {
-    console.log(`[${Messages.TO_SERVER.vote}]`, value);
-    wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: value });
-    setUserVote(value);
+  const onVoteClick = function (card: CardDTO | null) {
+    if (userVote?.value !== card?.value) {
+      console.log(`[${Messages.TO_SERVER.vote}]`, card);
+      wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: card });
+      setUserVote(card);
+    }
   };
 
   const onClearAllClick = function () {
@@ -173,14 +179,19 @@ const RoomComponent = function () {
     wsServer.emit(Messages.TO_SERVER.hide_unHide, { roomId: id });
   }
 
-  const onSetRoomAdmin = function (e: any) {
-    setRoomAdmin({ roomId: id, admin: e })
+  const onSetRoomAdmin = function (e: string) {
+    setShowSetAdminModal(true);
+    setNewAdminName(e);
+  }
+
+  const onConfirmSetRoomAdmin = function (e: string) {
+    setRoomAdmin({ roomId: id, admin: e } as SetAdminDTO)
       .then((r) => {
         if (r === true) {
           wsServer.emit(Messages.TO_SERVER.set_admin, { roomId: id });
         }
-      })
-  }
+      });
+  };
 
   /* ---------- */
 
@@ -204,22 +215,14 @@ const RoomComponent = function () {
     window.location.reload();
   };
 
-  const participantListWrapperStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
-    alignSelf: 'center',
-    marginTop: '1rem'
-  }
-
   return (
-    <Box width={'100vw'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
+    <Box width={'100vw'} height={'calc(100vh - 64px)'} sx={{ paddingLeft: 4, paddingRight: 4 }}>
 
       {Config.IS_PRODUCTION === false && debug === true &&
         <>
           <Typography>{validRoom ? 'valid' : 'invalid'}</Typography>
           <Typography>{roomHide ? 'hide' : 'no hide'}</Typography>
+          <Typography>{isCurrentUserAdmin === true ? 'isCurrentUserAdmin' : ''}</Typography>
           <Typography>
             {JSON.stringify(room)}
           </Typography>
@@ -241,6 +244,14 @@ const RoomComponent = function () {
 
       {validRoom === true && !isUndefinedNullOrEmpty(userName) && !error.message &&
         <>
+          {showSetAdminModal &&
+            <ShowSetAdminModalComponent
+              open={showSetAdminModal}
+              newAdminName={newAdminName}
+              onYes={onConfirmSetRoomAdmin}
+              onNo={() => { setShowSetAdminModal(false); }} />
+          }
+
           <Typography sx={{ fontSize: '1em', textAlign: 'center', marginTop: '1em' }}
             color="text.secondary"
             gutterBottom
@@ -258,42 +269,37 @@ const RoomComponent = function () {
             <Box display={'flex'} flexDirection={'column'}>
               <Box style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
                 {cards.map((card) =>
-                  <CardComponent card={card} 
+                  <CardComponent card={card}
                     disabled={roomHide === false}
                     selected={userVote?.value === card.value}
                     onClick={() => { onVoteClick(card); }} />
                 )}
               </Box>
 
-              {
-                rommHasAdmin === true && room?.admin === userName
-                && (
-                  <Box width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }}
-                    marginTop={2}
-                    display={'flex'}
-                    justifyContent={'space-between'}
-                    alignSelf={'center'}>
-                    <Button variant="contained"
-                      onClick={onClearAllClick}>Clear All</Button>
-                    <Button variant="contained"
-                      onClick={OnHideUnHideClick}>{roomHide === true ? 'Unhide' : 'Hide'}</Button>
-                  </Box>
-                )
-              }
-
-              <Box
-                sx={participantListWrapperStyle}
-                width={{ xs: '100%', s: '100%', md: '75%', l: '75%', xl: '75%' }}>
-                {[...new Set(users)].map((user) =>
-                  <ParticipantComponent
-                    participant={user}
-                    current={user.socketId === connectionId ? true : false}
-                    rommHasAdmin={rommHasAdmin}
-                    isUserAdmin={isUserAdmin}
-                    onSetRoomAdmin={onSetRoomAdmin}
-                  />
-                )}
+              <Box width={{ xs: '100%', s: '100%', md: '50%', l: '50%', xl: '50%' }}
+                marginTop={2}
+                display={'flex'}
+                justifyContent={'space-between'}
+                alignSelf={'center'}>
+                <Button variant="contained"
+                  onClick={onClearAllClick}
+                  disabled={rommHasAdmin !== true || room?.admin !== userName}>
+                  Clear All
+                </Button>
+                <Button variant="contained"
+                  onClick={OnHideUnHideClick}
+                  disabled={rommHasAdmin !== true || room?.admin !== userName}>
+                  {roomHide === true ? 'Unhide' : 'Hide'}
+                </Button>
               </Box>
+
+              {(!roomHide || isCurrentUserAdmin) && <VoteSummaryComponent users={users} />}
+
+              <ParticipantListComponent
+                users={users}
+                isCurrentUserAdmin={isCurrentUserAdmin}
+                roomHasAdmin={rommHasAdmin}
+                onSetRoomAdmin={onSetRoomAdmin} />
             </Box>
           }
         </>

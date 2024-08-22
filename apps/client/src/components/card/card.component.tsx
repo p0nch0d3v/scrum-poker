@@ -1,35 +1,46 @@
-import { Box, Button, Card, CardContent, Typography, useTheme } from "@mui/material";
+import { Card, CardContent, Tooltip, Typography, useTheme } from "@mui/material";
 import { FunctionComponent } from "react";
-
+import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
 
 type CardProps = {
     card: any,
     onClick?: any,
     disabled?: boolean,
-    selected?: boolean
+    selected?: boolean,
+    toolTipText?: string | undefined,
+    innerTextStyle?: any | undefined
 }
 
 const cardStyle = (disabled?: boolean, selected?: boolean) => {
     const themeOptions = useTheme();
     return {
-        margin: '1em',
-        width: '4em',
+        margin: '0.75em',
+        height: '5em',
+        width: '3.5em',
         cursor: disabled === true ? 'not-allowed' : 'pointer',
         opacity: disabled === true ? 0.5 : 1,
         border: `2px solid ${selected === true ? themeOptions.palette.primary.main : 'transparent'}`
     }
 }
 
-const CardComponent: FunctionComponent<CardProps> = ({ card, onClick, disabled, selected }) => {
-    return (
-        card.value !== null ? (<Card sx={cardStyle(disabled, selected)} onClick={disabled === true ? undefined : onClick}>
-            <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', alignContent: 'center' }}>
-                <Typography sx={{ fontSize: '2em' }}>
-                    {card.text && card.text.length > 0 ? card?.text : <>&nbsp;</>}
-                </Typography>
-            </CardContent>
-        </Card>) : <></>
+const CardComponent: FunctionComponent<CardProps> = ({ card, onClick, disabled, selected, toolTipText, innerTextStyle }) => {
+    const innerCardContent = <Typography sx={{ fontSize: '2em' }} style={innerTextStyle}>
+        {card.text && card.text.length > 0 ? card?.text : <>&nbsp;</>}
+    </Typography>;
 
+    return (
+        card.value !== null ? (
+            <Card sx={cardStyle(disabled, selected)} onClick={disabled === true ? undefined : onClick}>
+                <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', alignContent: 'center' }}>
+                    {!isUndefinedNullOrEmpty(toolTipText) && <Tooltip arrow
+                        placement="bottom"
+                        title={<Typography variant="h5">{toolTipText}</Typography>}>
+                        {innerCardContent}
+                    </Tooltip>}
+                    {isUndefinedNullOrEmpty(toolTipText) && innerCardContent}
+                </CardContent>
+            </Card>
+        ) : <></>
     );
 }
 

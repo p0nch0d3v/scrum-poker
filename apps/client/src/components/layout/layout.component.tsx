@@ -7,7 +7,7 @@ type LayoutProps = {
 }
 
 const layoutBoxStyle = {
-    height: '100vh',
+    height: 'calc(100vh - 64px)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between'
