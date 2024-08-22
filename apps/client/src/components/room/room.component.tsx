@@ -42,7 +42,7 @@ const RoomComponent = function () {
   const [validUserName, setValidUserName] = useState<boolean>()
   const [room, setRoom] = useState<RoomDTO | null | undefined>();
   const [roomHide, setRoomHide] = useState<boolean | null | undefined>();
-  const [rommHasAdmin, setRoomHasAdmin] = useState<boolean>(false);
+  const [roomHasAdmin, setRoomHasAdmin] = useState<boolean>(false);
   const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
   const [users, setUsers] = useState<Array<ParticipantDTO>>([]);
   const [cards, setCards] = useState<Array<CardDTO>>([]);
@@ -283,12 +283,13 @@ const RoomComponent = function () {
                 alignSelf={'center'}>
                 <Button variant="contained"
                   onClick={onClearAllClick}
-                  disabled={rommHasAdmin !== true || room?.admin !== userName}>
+                  disabled={roomHasAdmin !== true || room?.admin !== userName}>
                   Clear All
                 </Button>
+                { roomHasAdmin === false && <Typography variant="h5" component="h5" style={{ fontStyle: 'italic', fontWeight: 900 }}>No admin set, click on any user to set as Admin</Typography> }
                 <Button variant="contained"
                   onClick={OnHideUnHideClick}
-                  disabled={rommHasAdmin !== true || room?.admin !== userName}>
+                  disabled={roomHasAdmin !== true || room?.admin !== userName}>
                   {roomHide === true ? 'Unhide' : 'Hide'}
                 </Button>
               </Box>
@@ -298,7 +299,7 @@ const RoomComponent = function () {
               <ParticipantListComponent
                 users={users}
                 isCurrentUserAdmin={isCurrentUserAdmin}
-                roomHasAdmin={rommHasAdmin}
+                roomHasAdmin={roomHasAdmin}
                 onSetRoomAdmin={onSetRoomAdmin} />
             </Box>
           }
