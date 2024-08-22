@@ -286,7 +286,7 @@ const RoomComponent = function () {
                   disabled={roomHasAdmin !== true || room?.admin !== userName}>
                   Clear All
                 </Button>
-                { roomHasAdmin === false && <Typography variant="h5" component="h5" style={{ fontStyle: 'italic', fontWeight: 900 }}>No admin set, click on any user to set as Admin</Typography> }
+                { roomHasAdmin === false && <Typography variant="h6" component="h6" style={{ fontStyle: 'italic', fontWeight: 900 }}>No admin set, click on any user to set as Admin</Typography> }
                 <Button variant="contained"
                   onClick={OnHideUnHideClick}
                   disabled={roomHasAdmin !== true || room?.admin !== userName}>
