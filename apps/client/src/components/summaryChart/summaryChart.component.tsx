@@ -4,12 +4,13 @@ import { SummaryChartItemDTO } from "models";
 import { PieArcDatum } from 'd3';
 
 type SummaryChartProps = {
+  style: any,
   data: Array<SummaryChartItemDTO>,
   outerRadius: number,
   innerRadius: number
 }
 
-const SummaryChartComponent: FunctionComponent<SummaryChartProps> = ({ data, outerRadius, innerRadius }) => {
+const SummaryChartComponent: FunctionComponent<SummaryChartProps> = ({ style, data, outerRadius, innerRadius }) => {
   const margin = {
     top: 50, right: 50, bottom: 50, left: 50,
   };
@@ -78,7 +79,7 @@ const SummaryChartComponent: FunctionComponent<SummaryChartProps> = ({ data, out
       });
   }
 
-  return <div id="pie-container" />;
+  return <div style={style} id="pie-container" />;
 }
 
 export default SummaryChartComponent;

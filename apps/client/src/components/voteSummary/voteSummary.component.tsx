@@ -24,6 +24,14 @@ const mainStyle = () => {
     }
 };
 
+const summaryChartStyle = {
+    'width': '50vw'
+};
+
+const summaryTableStyle = {
+    'width': '50vw'
+};
+
 const summaryItemStyle = {
     'fontSize': '1.5em',
     'display': 'block'
@@ -65,8 +73,8 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
             console.log('voteValue', voteValue);
             if (voteValue !== -1) {
                 let findIndex = chartDataTemp.findIndex((i) => i.label === voteValue.toString())
-                if (findIndex > -1 ) {
-                    chartDataTemp[findIndex].value += 1; 
+                if (findIndex > -1) {
+                    chartDataTemp[findIndex].value += 1;
                 }
                 else {
                     chartDataTemp.push({ label: voteValue.toString(), value: 1 });
@@ -79,14 +87,15 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
 
     return (
         <Box sx={mainStyle}>
-          <SummaryChartComponent data={chartData} innerRadius={100 * 0.25} outerRadius={100} />
-            <Box>
-            {Object.keys(summary).reverse().map(function (key) {
-                return <Box sx={summaryItemStyle}>
-                    <span style={summaryItemKeyStyle}>{key}</span>
-                    <span style={summaryItemValueStyle}>{summary[key]}</span>
-                </Box>
-            })}</Box>
+            <SummaryChartComponent style={summaryChartStyle}
+                data={chartData} innerRadius={100 * 0.25} outerRadius={100} />
+            <Box sx={summaryTableStyle}>
+                {Object.keys(summary).reverse().map(function (key) {
+                    return <Box sx={summaryItemStyle}>
+                        <span style={summaryItemKeyStyle}>{key}</span>
+                        <span style={summaryItemValueStyle}>{summary[key]}</span>
+                    </Box>
+                })}</Box>
         </Box>
     )
 }
