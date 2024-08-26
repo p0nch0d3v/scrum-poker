@@ -70,7 +70,6 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
         let chartDataTemp: SummaryChartItemDTO[] = [];
         users.forEach(user => {
             let voteValue: Number = isNaN(Number(user.vote?.value)) ? -1 : Number(user.vote?.value);
-            console.log('voteValue', voteValue);
             if (voteValue !== -1) {
                 let findIndex = chartDataTemp.findIndex((i) => i.label === voteValue.toString())
                 if (findIndex > -1) {
@@ -81,7 +80,6 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
                 }
             }
         });
-        console.log('chartDataTemp', chartDataTemp)
         setChartData(chartDataTemp);
     }, [users])
 
