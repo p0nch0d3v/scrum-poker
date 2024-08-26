@@ -1,7 +1,8 @@
 import { Box, useTheme } from "@mui/material";
 import { CardDTO } from "models";
-import { ParticipantDTO } from "models";
+import { ParticipantDTO, SummaryChartItemDTO } from "models";
 import { FunctionComponent, useEffect, useState } from "react";
+import SummaryChartComponent from '../summaryChart/summaryChart.component';
 
 type VoteSummaryProps = {
     users: Array<ParticipantDTO>
@@ -17,15 +18,15 @@ const mainStyle = () => {
         'marginTop': '1em',
         'display': 'flex',
         'alignContent': 'center',
-        'alignItems': 'start',
-        'flexWrap': 'wrap',
-        'flexFlow': 'wrap'
+        'alignItems': 'center',
+        'flexWrap': 'no-wrap',
+        'flexDirection': 'row'
     }
 };
 
 const summaryItemStyle = {
     'fontSize': '1.5em',
-    'display': 'inline-block'
+    'display': 'block'
 };
 
 const summaryItemKeyStyle = {
@@ -41,6 +42,7 @@ const summaryItemValueStyle = {
 const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) => {
 
     const [summary, setSummary] = useState<any>([]);
+    const [chartData, setChartData] = useState<Array<SummaryChartItemDTO>>([]);
 
     useEffect(() => {
         let summaryTmp: any = {};
@@ -56,16 +58,35 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
             }
         });
         setSummary(summaryTmp);
+
+        let chartDataTemp: SummaryChartItemDTO[] = [];
+        users.forEach(user => {
+            let voteValue: Number = isNaN(Number(user.vote?.value)) ? -1 : Number(user.vote?.value);
+            console.log('voteValue', voteValue);
+            if (voteValue !== -1) {
+                let findIndex = chartDataTemp.findIndex((i) => i.label === voteValue.toString())
+                if (findIndex > -1 ) {
+                    chartDataTemp[findIndex].value += 1; 
+                }
+                else {
+                    chartDataTemp.push({ label: voteValue.toString(), value: 1 });
+                }
+            }
+        });
+        console.log('chartDataTemp', chartDataTemp)
+        setChartData(chartDataTemp);
     }, [users])
 
     return (
         <Box sx={mainStyle}>
+          <SummaryChartComponent data={chartData} innerRadius={100 * 0.25} outerRadius={100} />
+            <Box>
             {Object.keys(summary).reverse().map(function (key) {
                 return <Box sx={summaryItemStyle}>
                     <span style={summaryItemKeyStyle}>{key}</span>
                     <span style={summaryItemValueStyle}>{summary[key]}</span>
                 </Box>
-            })}
+            })}</Box>
         </Box>
     )
 }
