@@ -53,7 +53,6 @@ const summaryItemValueStyle = {
 const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) => {
     const [summary, setSummary] = useState<any>([]);
     const [chartData, setChartData] = useState<Array<SummaryChartItemDTO>>([]);
-
     const { width = 0, height = 0 } = useWindowSize();
 
     useEffect(() => {
