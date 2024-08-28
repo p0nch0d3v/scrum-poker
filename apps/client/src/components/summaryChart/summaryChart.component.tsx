@@ -7,13 +7,15 @@ type SummaryChartProps = {
   style: any,
   data: Array<SummaryChartItemDTO>,
   outerRadius: number,
-  innerRadius: number
+  innerRadius: number,
+  windowinnerWidth: number
 }
 
-const SummaryChartComponent: FunctionComponent<SummaryChartProps> = ({ style, data, outerRadius, innerRadius }) => {
+const SummaryChartComponent: FunctionComponent<SummaryChartProps> = ({ style, data, outerRadius, innerRadius, windowinnerWidth }) => {
   const margin = {
     top: 50, right: 50, bottom: 50, left: 50,
   };
+
 
   const width = 2 * outerRadius + margin.left + margin.right;
   const height = 2 * outerRadius + margin.top + margin.bottom;
@@ -25,7 +27,7 @@ const SummaryChartComponent: FunctionComponent<SummaryChartProps> = ({ style, da
 
   useEffect(() => {
     drawChart();
-  }, [data]);
+  }, [data, windowinnerWidth]);
 
   function drawChart() {
     // Remove the old svg

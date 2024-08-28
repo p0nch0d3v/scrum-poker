@@ -294,13 +294,13 @@ const RoomComponent = function () {
                 </Button>
               </Box>
 
-              {(!roomHide || isCurrentUserAdmin) && <VoteSummaryComponent users={users} />}
+              {(roomHide === false || isCurrentUserAdmin) && <VoteSummaryComponent users={users} />}
 
-              <ParticipantListComponent
+              {roomHide === true && <ParticipantListComponent
                 users={users}
                 isCurrentUserAdmin={isCurrentUserAdmin}
                 roomHasAdmin={roomHasAdmin}
-                onSetRoomAdmin={onSetRoomAdmin} />
+                onSetRoomAdmin={onSetRoomAdmin} /> }
             </Box>
           }
         </>
