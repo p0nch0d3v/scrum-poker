@@ -1,7 +1,9 @@
 import { Box, useTheme } from "@mui/material";
 import { CardDTO } from "models";
-import { ParticipantDTO } from "models";
+import { ParticipantDTO, SummaryChartItemDTO } from "models";
 import { FunctionComponent, useEffect, useState } from "react";
+import { useWindowSize, useScreen } from 'usehooks-ts';
+import SummaryChartComponent from '../summaryChart/summaryChart.component';
 
 type VoteSummaryProps = {
     users: Array<ParticipantDTO>
@@ -17,15 +19,25 @@ const mainStyle = () => {
         'marginTop': '1em',
         'display': 'flex',
         'alignContent': 'center',
-        'alignItems': 'start',
+        'alignItems': 'center',
+        'justifyContent': 'center',
         'flexWrap': 'wrap',
-        'flexFlow': 'wrap'
+        'flexDirection': 'row'
     }
+};
+
+const summaryChartStyle = {
+    'border': '1px solid transparent'
+};
+
+const summaryTableStyle = {
+    'border': '1px solid transparent',
+    'width': '50%'
 };
 
 const summaryItemStyle = {
     'fontSize': '1.5em',
-    'display': 'inline-block'
+    'display': 'block'
 };
 
 const summaryItemKeyStyle = {
@@ -39,8 +51,9 @@ const summaryItemValueStyle = {
 };
 
 const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) => {
-
     const [summary, setSummary] = useState<any>([]);
+    const [chartData, setChartData] = useState<Array<SummaryChartItemDTO>>([]);
+    const { width = 0, height = 0 } = useWindowSize();
 
     useEffect(() => {
         let summaryTmp: any = {};
@@ -56,18 +69,44 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
             }
         });
         setSummary(summaryTmp);
-    }, [users])
 
-    return (
-        <Box sx={mainStyle}>
-            {Object.keys(summary).reverse().map(function (key) {
-                return <Box sx={summaryItemStyle}>
-                    <span style={summaryItemKeyStyle}>{key}</span>
-                    <span style={summaryItemValueStyle}>{summary[key]}</span>
-                </Box>
-            })}
-        </Box>
-    )
+        let chartDataTemp: SummaryChartItemDTO[] = [];
+        users.forEach(user => {
+            let voteValue: Number = isNaN(Number(user.vote?.value)) ? -1 : Number(user.vote?.value);
+            if (voteValue !== -1) {
+                let findIndex = chartDataTemp.findIndex((i) => i.label === voteValue.toString())
+                if (findIndex > -1) {
+                    chartDataTemp[findIndex].value += 1;
+                }
+                else {
+                    chartDataTemp.push({ label: voteValue.toString(), value: 1 });
+                }
+            }
+        });
+        setChartData(chartDataTemp);
+    }, [users, width, height])
+
+    const resizeFactor = width > height ? 0.15 : 0.25;
+
+    if (chartData.length > 0 || summary.length > 0) {
+        return (
+            <Box sx={mainStyle}>
+                <SummaryChartComponent style={summaryChartStyle}
+                    data={chartData}
+                    innerRadius={width * resizeFactor * 0.25}
+                    outerRadius={width * resizeFactor}
+                    windowinnerWidth={width} />
+                <Box sx={summaryTableStyle}>
+                    {Object.keys(summary).reverse().map(function (key) {
+                        return <Box sx={summaryItemStyle}>
+                            <span style={summaryItemKeyStyle}>{key}</span>
+                            <span style={summaryItemValueStyle}>{summary[key]}</span>
+                        </Box>
+                    })}</Box>
+            </Box>
+        );
+    }
+    return <></>;
 }
 
 export default VoteSummaryComponent;
