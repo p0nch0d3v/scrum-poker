@@ -73,7 +73,7 @@ const SummaryChartComponent: FunctionComponent<SummaryChartProps> = ({ style, da
       .attr('alignment-baseline', 'middle')
       .text((d) => d.data.label)
       .style('fill', (_, i) => colorScale((data.length - i) * -1))
-      .style('font-size', '2rem')
+      .style('font-size', '1.75rem')
       .attr('transform', (d) => {
         const [x, y] = arcGenerator.centroid(d);
         return `translate(${x}, ${y})`;
