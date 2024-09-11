@@ -58,7 +58,7 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
     useEffect(() => {
         let summaryTmp: any = {};
         users.forEach(user => {
-            let index: Number = isNaN(Number(user.vote?.value)) ? -1 : Number(user.vote?.value);
+            let index: number = isNaN(Number(user.vote?.value)) ? -1 : Number(user.vote?.value);
             if (index !== -1) {
                 if (summaryTmp[index.toString()]) {
                     summaryTmp[index.toString()] += (", " + user.userName);
@@ -71,8 +71,9 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
         setSummary(summaryTmp);
 
         let chartDataTemp: SummaryChartItemDTO[] = [];
+        let total: number = 0;
         users.forEach(user => {
-            let voteValue: Number = isNaN(Number(user.vote?.value)) ? -1 : Number(user.vote?.value);
+            let voteValue: number = isNaN(Number(user.vote?.value)) ? -1 : Number(user.vote?.value);
             if (voteValue !== -1) {
                 let findIndex = chartDataTemp.findIndex((i) => i.label === voteValue.toString())
                 if (findIndex > -1) {
@@ -81,7 +82,13 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
                 else {
                     chartDataTemp.push({ label: voteValue.toString(), value: 1 });
                 }
+                total ++;
             }
+        });
+        chartDataTemp.forEach((item) => {
+            let pct: number = (item.value * 100) / total;
+            let pctStr: string = (Math.round(pct * 100) / 100).toFixed(1);
+            item.label = `${item.label} [${pctStr}%]`;
         });
         setChartData(chartDataTemp);
     }, [users, width, height])
