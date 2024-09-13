@@ -22,7 +22,6 @@ export function ThemeContextProvider({ children }: ThemeProviderProps) {
 
   const switchColorMode = () => {
     setMode(mode === 'light' ? 'dark' : 'light');
-    console.log('switchColorMode', mode)
   }
 
   const contextTheme = React.useMemo(

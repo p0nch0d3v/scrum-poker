@@ -11,6 +11,7 @@ import { ParticipantDTO } from './DTO/participant.dto';
 import { ErrorDTO } from './DTO/error.dto';
 import { SetAdminDTO } from './DTO/setAdmin.dto';
 import { ServerConfigDTO } from './DTO/serverConfig.dto';
+import { SummaryChartItemDTO } from './DTO/summaryChartItem.dto';
 import { AppConstants, Environments } from './app.constants';
 
 export {
@@ -27,6 +28,7 @@ export {
     type ErrorDTO,
     type SetAdminDTO,
     type ServerConfigDTO,
+    type SummaryChartItemDTO,
     AppConstants,
     Environments
 };
