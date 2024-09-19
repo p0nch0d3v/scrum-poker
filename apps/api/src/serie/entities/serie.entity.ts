@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn} from "typeorm"
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity()
 export class Serie {
@@ -11,4 +11,13 @@ export class Serie {
 
     @Column()
     serie: string
+
+    @Column()
+    values: string
+
+    @Column({ default: true })
+    isFull: boolean
+
+    @Column({ default: false })
+    isWildcard: boolean
 }
