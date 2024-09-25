@@ -1,12 +1,13 @@
 import { Serie } from './entities/serie.entity'
 import { Module } from '@nestjs/common';
-import { SeriesService } from './series.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SerieController } from './serie.controller';
+import { SerieService } from './seire.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Serie])],
   exports: [TypeOrmModule],
-  controllers: [],
-  providers: [SeriesService],
+  controllers: [SerieController],
+  providers: [SerieService],
 })
 export class SeriesModule {}

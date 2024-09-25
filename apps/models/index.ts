@@ -12,6 +12,7 @@ import { ErrorDTO } from './DTO/error.dto';
 import { SetAdminDTO } from './DTO/setAdmin.dto';
 import { ServerConfigDTO } from './DTO/serverConfig.dto';
 import { SummaryChartItemDTO } from './DTO/summaryChartItem.dto';
+import { SerieDTO } from './DTO/serie.dto';
 import { AppConstants, Environments } from './app.constants';
 
 export {
@@ -29,6 +30,7 @@ export {
     type SetAdminDTO,
     type ServerConfigDTO,
     type SummaryChartItemDTO,
+    SerieDTO,
     AppConstants,
     Environments
 };
