@@ -9,14 +9,23 @@ export class Room {
     @Column()
     name: string;
 
-    @Column({ nullable: true }) 
+    @Column({ nullable: true })
     admin: string;
 
     @Column({ nullable: true })
     password: string;
 
-    @Column()
+    /**
+    * @deprecated This would be replaced by "serie" and "values"
+    */
+    @Column({ nullable: true })
     cards: string;
+
+    @Column({ nullable: true })
+    serie: string;
+
+    @Column({ nullable: true })
+    values: string;
 
     @CreateDateColumn()
     created_at: Date;

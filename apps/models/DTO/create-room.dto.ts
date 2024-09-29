@@ -1,7 +1,8 @@
 
 export type CreateRoomDTO = {
-    name: string,
-    admin: string,
-    password: string,
-    cards: string
+    name: string | undefined;
+    admin: string | undefined;
+    password: string | undefined;
+    serie: string | undefined;
+    values: string | undefined;
 }
