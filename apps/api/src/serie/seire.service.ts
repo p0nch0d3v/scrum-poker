@@ -12,7 +12,7 @@ export class SerieService {
     ) { }
 
     async getAll(): Promise<Array<SerieDTO>> {
-        const series = await (await this.query()).getRawMany();
+        const series = await (await this.query(true, true)).getRawMany();
         const allSeries = [];
         series.forEach(serie => {
             allSeries.push(new SerieDTO(serie.serie_name, serie.serie_serie, serie.serie_values, serie.serie_isFull, serie.serie_isWildcard));
@@ -21,10 +21,39 @@ export class SerieService {
         return allSeries;
     }
 
-    private async query(): Promise<SelectQueryBuilder<Serie>> {
-        return await this.serieRepository
-            .createQueryBuilder('serie')
-            .select(['serie.name', 'serie.serie', 'serie.values', 'serie.isFull', 'serie.isWildcard'])
-            .orderBy("id", "ASC");
+    async getFull(): Promise<Array<SerieDTO>> {
+        const series = await (await this.query(true, false)).getRawMany();
+        const allSeries = [];
+        series.forEach(serie => {
+            allSeries.push(new SerieDTO(serie.serie_name, serie.serie_serie, serie.serie_values, serie.serie_isFull, serie.serie_isWildcard));
+        });
+
+        return allSeries;
+    }
+
+    async getWildcard(): Promise<Array<SerieDTO>> {
+        const series = await (await this.query(false, true)).getRawMany();
+        const allSeries = [];
+        series.forEach(serie => {
+            allSeries.push(new SerieDTO(serie.serie_name, serie.serie_serie, serie.serie_values, serie.serie_isFull, serie.serie_isWildcard));
+        });
+
+        return allSeries;
+    }
+
+    private async query(full: boolean = false, wildcard: boolean = false): Promise<SelectQueryBuilder<Serie>> {
+        const tmpQuery = this.serieRepository
+        .createQueryBuilder('serie')
+        .select(['serie.name', 'serie.serie', 'serie.values', 'serie.isFull', 'serie.isWildcard'])
+        .orderBy("id", "ASC");
+
+        if (full === true) {
+            tmpQuery.where('serie.isFull = :full', {full: full});
+        }
+        else if (wildcard === true) {
+            tmpQuery.where('serie.isWildcard = :wildcard', {wildcard: wildcard});
+        }
+
+        return await tmpQuery;
     }
 }

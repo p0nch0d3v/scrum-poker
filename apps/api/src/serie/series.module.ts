@@ -6,7 +6,7 @@ import { SerieService } from './seire.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Serie])],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, SerieService],
   controllers: [SerieController],
   providers: [SerieService],
 })

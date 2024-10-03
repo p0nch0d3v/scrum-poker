@@ -21,7 +21,7 @@ export class SeedSerie1726715024873 implements MigrationInterface {
 
         name = 'Wildcard';
         serie = '☕️,?,♾️,-';
-        values = '-1,-1,-1,-1';
+        values = '☕️,?,♾️,null';
         query = `INSERT INTO serie (name, serie, "values", "isFull", "isWildcard")
                 SELECT '${name}', '${serie}', '${values}', false, true
                 WHERE NOT EXISTS (SELECT * FROM serie WHERE name = '${name}');`;
