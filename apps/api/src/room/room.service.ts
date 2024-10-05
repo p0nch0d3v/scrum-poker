@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { JoinRoomDTO, RoomDTO, CreateRoomDTO, SetAdminDTO } from 'models';
+import { JoinRoomDTO, RoomDTO, CreateRoomDTO, SetAdminDTO, CreateRoomResultDTO } from 'models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
 import { Repository, IsNull, Not, SelectQueryBuilder } from 'typeorm';
@@ -12,7 +12,7 @@ export class RoomService {
     private roomsRepository: Repository<Room>,
   ) { }
 
-  async create(createRoomDto: CreateRoomDTO): Promise<string> {
+  async create(createRoomDto: CreateRoomDTO): Promise<CreateRoomResultDTO> {
     if (createRoomDto.password !== undefined
       && createRoomDto.password !== null
       && createRoomDto.password.trim().length > 0) {
@@ -22,21 +22,39 @@ export class RoomService {
       createRoomDto.password = null;
     }
 
-    const room = await this.roomsRepository.create(createRoomDto);
-    await this.roomsRepository.save(room);
-    return room.id;
+    const roomExists = await this.exists({ id: createRoomDto.name, password: null });
+    if (roomExists === false) {
+      const room = await this.roomsRepository.create(createRoomDto);
+      await this.roomsRepository.save(room);
+      return { success: true, id: room.id, error: null };
+    }
+    else {
+      return { success: false, id: null, error: 'Room already created' };;
+    }
+    
   }
 
   async exists(roomDto: JoinRoomDTO): Promise<boolean> {
-    if (!this.validateUUID(roomDto.id)) {
-      return false;
+    let lookupById = false;
+    if (this.validateUUID(roomDto.id)) {
+      lookupById = true;
     }
 
-    const savedRoom = await this.roomsRepository.findOne({
-      where: {
-        id: roomDto.id
-      }
-    });
+    let savedRoom = null;
+    if (lookupById === true) {
+      savedRoom = await this.roomsRepository.findOne({
+          where: [
+            { id: roomDto.id }
+          ]
+        });
+    }
+    else {
+      savedRoom = await this.roomsRepository.findOne({
+        where: [
+          { name: roomDto.id }
+        ]
+      });
+    }
 
     if (savedRoom !== undefined && savedRoom !== null) {
       if (savedRoom.password !== undefined && savedRoom.password !== null && roomDto.password !== undefined && roomDto.password !== null) {

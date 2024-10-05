@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { CreateRoomDTO, JoinRoomDTO, RoomDTO, SetAdminDTO, ServerConfigDTO, SerieDTO } from 'models';
+import { CreateRoomDTO, JoinRoomDTO, RoomDTO, SetAdminDTO, ServerConfigDTO, SerieDTO, CreateRoomResultDTO } from 'models';
 
-const createRoom = async function (newRoom: CreateRoomDTO): Promise<string> {
+const createRoom = async function (newRoom: CreateRoomDTO): Promise<CreateRoomResultDTO> {
     return await axios.post('/api/room/create', newRoom).then((r) => r.data);
 };
 

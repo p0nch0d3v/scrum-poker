@@ -1,13 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query, Put } from '@nestjs/common';
 import { RoomService } from './room.service';
-import { CreateRoomDTO, JoinRoomDTO, RoomDTO, SetAdminDTO } from 'models';
+import { CreateRoomDTO, CreateRoomResultDTO, JoinRoomDTO, RoomDTO, SetAdminDTO } from 'models';
 
 @Controller('room')
 export class RoomController {
   constructor(private readonly roomService: RoomService) { }
 
   @Post('create')
-  async create(@Body() createRoomDto: CreateRoomDTO): Promise<string> {
+  async create(@Body() createRoomDto: CreateRoomDTO): Promise<CreateRoomResultDTO> {
     return await this.roomService.create(createRoomDto);
   }
 
