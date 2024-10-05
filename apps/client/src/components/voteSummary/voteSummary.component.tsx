@@ -75,12 +75,13 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
         users.forEach(user => {
             let voteValue: number = isNaN(Number(user.vote?.value)) ? -1 : Number(user.vote?.value);
             if (voteValue !== -1) {
-                let findIndex = chartDataTemp.findIndex((i) => i.label === voteValue.toString())
+                const voteLabel = user.vote?.text || voteValue.toString() || '';
+                let findIndex = chartDataTemp.findIndex((i) => i.label === voteLabel)
                 if (findIndex > -1) {
                     chartDataTemp[findIndex].value += 1;
                 }
                 else {
-                    chartDataTemp.push({ label: voteValue.toString(), value: 1 });
+                    chartDataTemp.push({ label: voteLabel, value: 1 });
                 }
                 total ++;
             }
