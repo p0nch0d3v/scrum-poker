@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { RoomService } from './room.service';
-import { CardDTO, NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO, ErrorDTO } from 'models'
-import { ParticipantDTO } from 'models';
+import { NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO, ErrorDTO, ParticipantDTO, SerieDTO } from 'models'
+import { SerieService } from '../serie/seire.service';
 
 const Messages = {
   TO_CLIENT: {
@@ -24,7 +24,10 @@ const Messages = {
 @Injectable()
 export class SocketService {
 
-  constructor(private readonly roomService: RoomService) { }
+  constructor(
+    private readonly roomService: RoomService,
+    private readonly serieService: SerieService
+  ) { }
 
   private readonly allRooms: Map<String, Array<ParticipantDTO>> = new Map();
   private readonly allRoomsInfo: Map<String, RoomInfoDTO> = new Map();
@@ -145,22 +148,29 @@ export class SocketService {
   }
 
   emitCards = async function (socket: Socket, roomId: string) {
-    const savedCards = await this.roomService.getCards(roomId);
-    let cards = savedCards.split(',');
+    const [savedSerie, savedValues] = await this.roomService.getCards(roomId);
+    const serie = savedSerie.split(',');
+    const values = savedValues.split(',');
+
+    const wildcards = await this.serieService.getWildcard();
 
     let nofityCards: NofityCardsDTO = {
       'roomId': roomId,
       'cards': [
-        { text: '☕️', value: '☕️' },
-        { text: '?', value: '?' },
-        { text: '♾️', value: '♾️' },
-        { text: '-', value: null }
       ]
     };
 
-    for (let i = 0; i < cards.length; i++) {
-      const card = cards[i];
-      nofityCards.cards.push({ text: card, value: card });
+    for (let i = 0; i < wildcards.length; i++) {
+      const wildcard: SerieDTO = wildcards[i];
+      const wildcardSerie = wildcard.serie.split(',');
+      const wildcardValues = wildcard.values.split(',');
+      for (let j = 0; j < wildcardSerie.length; j++) {
+        nofityCards.cards.push({ text: wildcardSerie[j], value: this.parseValue(wildcardValues[j]) });
+      }
+    }
+
+    for (let i = 0; i < serie.length; i++) {
+      nofityCards.cards.push({ text: serie[i], value: this.parseValue(values[i]) });
     }
 
     socket.emit(Messages.TO_CLIENT.cards, nofityCards);
@@ -200,6 +210,20 @@ export class SocketService {
       this.allRoomsInfo.set(roomId, new RoomInfoDTO(roomId, newValue, roomAdmin));
     }
     this.allRoomsInfo.get(roomId).hide = newValue;
+  }
+
+   parseValue = function(input: string): string | null | undefined {
+    let value = undefined;
+    if (input == 'undefined') {
+      value = undefined;
+    }
+    else if (input == 'null') {
+      value = null;
+    }
+    else {
+      value = input;
+    }
+    return value;
   }
 
   // Add more methods for handling events, messages, etc.

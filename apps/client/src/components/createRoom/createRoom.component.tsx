@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { CreateRoomDTO } from 'models';
 import { isUndefinedNullOrEmpty, sanitizeText } from "../../helpers/helpers";
 import useLocalStorage from '../../hooks/useLocalStorage';
-import { createRoom } from '../../services/api.service';
+import { createRoom, getAllSeries } from '../../services/api.service';
+import { SerieDTO } from "models";
 
 export default function CreateRoomComponent() {
     const navigate = useNavigate();
@@ -15,9 +16,7 @@ export default function CreateRoomComponent() {
     const [roomId, setRoomId] = useState<string>('');
     const [admin, setAdmin] = useState<string>('');
     const [userName, setUserName] = useLocalStorage('userName', '');
-
-    const fibonacciSerie = "1,2,3,5,8,13,21";
-    const tShirtSerie = "XS,S,M,L,XL";
+    const [series, setSeries] = useState<Array<SerieDTO>>([])
 
     const onRoomNameChange = function (event: any) {
         setRoomName(event.target.value)
@@ -30,7 +29,11 @@ export default function CreateRoomComponent() {
 
     const onCreateClick = async function () {
         const newRoom: CreateRoomDTO = {
-            name: roomName, admin: admin, password: password, cards: cardsValues
+            name: roomName, 
+            admin: admin, 
+            password: password, 
+            serie: cardsValues,
+            values: series.find((s) => s.serie === cardsValues)?.values
         };
         const createResult = await createRoom(newRoom);
 
@@ -61,8 +64,20 @@ export default function CreateRoomComponent() {
         return isUndefinedNullOrEmpty(roomName) || isUndefinedNullOrEmpty(cardsValues);
     };
 
+    const getSeries = async () => {
+        const allSeries = await getAllSeries();
+        setSeries(allSeries);
+        console.log(allSeries);
+    };
+
     useEffect(() => {
+        const useEffectAsync = async () => {
+            await getSeries();
+        };
+
+        useEffectAsync();
         setUserName(sanitizeText(userName));
+
     }, [])
 
     useEffect(() => {
@@ -92,13 +107,14 @@ export default function CreateRoomComponent() {
                         labelId="card-serie-label"
                         onChange={onSeriesChange}>
                         <MenuItem value={''} selected={true}>NONE</MenuItem >
-                        <MenuItem value={fibonacciSerie}>Fibonacci</MenuItem>
-                        <MenuItem value={tShirtSerie}>T-Shirt</MenuItem>
+                        {series.filter((s) => s.isFull === true).map((s) => {
+                            return <MenuItem value={s.serie}>{s.name}</MenuItem>;
+                        })}
                     </Select>
                     <TextField
                         fullWidth={true}
                         value={cardsValues}
-                        onChange={onCardsValuesChange} />
+                        disabled={true} />
 
                     <InputLabel id="card-admin-label">Admin</InputLabel>
                     <TextField

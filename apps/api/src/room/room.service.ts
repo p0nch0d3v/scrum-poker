@@ -74,7 +74,8 @@ export class RoomService {
     return (savedRoom !== undefined && savedRoom !== null) ? new RoomDTO(savedRoom.id,
       savedRoom.name,
       savedRoom.admin,
-      savedRoom.cards,
+      savedRoom.serie,
+      savedRoom.values,
       savedRoom.created_at,
       savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0)
       : null;
@@ -90,12 +91,12 @@ export class RoomService {
     return allRooms;
   }
 
-  async getCards(id: string): Promise<string> {
+  async getCards(id: string): Promise<[string, string]> {
     const savedRoom = await this.getByUniqueId(id);
     if (savedRoom !== undefined && savedRoom !== null) {
-      return savedRoom.cards;
+      return [savedRoom.serie, savedRoom.values];
     }
-    return "";
+    return ['', ''];
   }
 
   async latest(): Promise<Array<RoomDTO>> {
