@@ -99,20 +99,20 @@ const RoomComponent = function () {
   }, []);
 
   useEffect(() => {
-    if (validRoom 
-          && !isUndefinedNullOrEmpty(userName) 
-          && !isUndefinedNullOrEmpty(roomId)
-          && !isUndefinedNullOrEmpty(roomName)
-        ) {
-        setConnected(wsServer.connected);
-        setConnectionId(wsServer.id)
+    if (validRoom
+      && !isUndefinedNullOrEmpty(userName)
+      && !isUndefinedNullOrEmpty(roomId)
+      && !isUndefinedNullOrEmpty(roomName)
+    ) {
+      setConnected(wsServer.connected);
+      setConnectionId(wsServer.id)
 
-        if (!connected) {
-          const _interval_id = setInterval(conntectWS, 500);
-          setIntervalId(_interval_id);
-        }
-        setWsServer(setWsEvents(wsServer));
+      if (!connected) {
+        const _interval_id = setInterval(conntectWS, 500);
+        setIntervalId(_interval_id);
       }
+      setWsServer(setWsEvents(wsServer));
+    }
   }, [roomId, roomName, validRoom]);
 
   useEffect(() => {
@@ -282,7 +282,7 @@ const RoomComponent = function () {
               <Box style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
                 {cards.map((card) =>
                   <CardComponent card={card}
-                    disabled={roomHide === false}
+                    disabled={roomHide === false || roomHasAdmin == false}
                     selected={userVote?.value === card.value}
                     onClick={() => { onVoteClick(card); }} />
                 )}
@@ -298,7 +298,11 @@ const RoomComponent = function () {
                   disabled={roomHasAdmin !== true || room?.admin !== userName}>
                   Clear All
                 </Button>
-                {roomHasAdmin === false && <Typography variant="h6" component="h6" style={{ fontStyle: 'italic', fontWeight: 900 }}>No admin set, click on any user to set as Admin</Typography>}
+                {roomHasAdmin === false &&
+                  <Typography variant="h6" component="h6" color="warning"
+                    style={{ fontStyle: 'italic', fontWeight: 900, color:'#ba8e23' }}>
+                    No admin set, click on any user to set as Admin
+                  </Typography>}
                 <Button variant="contained"
                   onClick={OnHideUnHideClick}
                   disabled={roomHasAdmin !== true || room?.admin !== userName}>
