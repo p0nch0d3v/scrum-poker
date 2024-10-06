@@ -34,13 +34,15 @@ const Messages = {
 }
 
 const RoomComponent = function () {
-  let { id } = useParams();
-  id = isUndefinedOrNull(id) ? '' : id;
+  let { paramId } = useParams();
+  paramId = isUndefinedOrNull(paramId) ? '' : paramId;
 
   const [userName, setUserName] = useLocalStorage('userName', '');
   const [validRoom, setValidRoom] = useState<boolean>()
   const [validUserName, setValidUserName] = useState<boolean>()
   const [room, setRoom] = useState<RoomDTO | null | undefined>();
+  const [roomId, setRoomId] = useState<string | null | undefined>('');
+  const [roomName, setRoomName] = useState<string | null | undefined>('');
   const [roomHide, setRoomHide] = useState<boolean | null | undefined>();
   const [roomHasAdmin, setRoomHasAdmin] = useState<boolean>(false);
   const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
@@ -60,28 +62,21 @@ const RoomComponent = function () {
   useEffect(() => {
     async function useEffectAsync() {
       let isValidRoom = false;
-      if (validateUUID(id)) {
-        const getRoomResult = await getRoom(id);
-        isValidRoom = !isUndefinedOrNull(getRoomResult);
+      // if (validateUUID(id)) {
+      const getRoomResult = await getRoom(paramId);
+      isValidRoom = !isUndefinedOrNull(getRoomResult);
+      console.log('isValidRoom', isValidRoom, getRoomResult);
+      if (isValidRoom === true) {
         setValidRoom(isValidRoom);
         setRoom(getRoomResult);
+        setRoomId(getRoomResult?.id);
+        setRoomName(getRoomResult.name || '');
         setRoomHide(true);
         setRoomHasAdmin(!isUndefinedNullOrEmpty(getRoomResult.admin));
         setIsCurrentUserAdmin(getRoomResult?.admin === userName);
       }
       else {
         setValidRoom(isValidRoom);
-      }
-
-      if (isValidRoom && !isUndefinedNullOrEmpty(userName)) {
-        setConnected(wsServer.connected);
-        setConnectionId(wsServer.id)
-
-        if (!connected) {
-          const _interval_id = setInterval(conntectWS, 500);
-          setIntervalId(_interval_id);
-        }
-        setWsServer(setWsEvents(wsServer));
       }
     }
     useEffectAsync();
@@ -104,13 +99,30 @@ const RoomComponent = function () {
   }, []);
 
   useEffect(() => {
+    if (validRoom 
+          && !isUndefinedNullOrEmpty(userName) 
+          && !isUndefinedNullOrEmpty(roomId)
+          && !isUndefinedNullOrEmpty(roomName)
+        ) {
+        setConnected(wsServer.connected);
+        setConnectionId(wsServer.id)
+
+        if (!connected) {
+          const _interval_id = setInterval(conntectWS, 500);
+          setIntervalId(_interval_id);
+        }
+        setWsServer(setWsEvents(wsServer));
+      }
+  }, [roomId, roomName, validRoom]);
+
+  useEffect(() => {
     if (wsServer.connected === true || !isUndefinedNullOrEmpty(connectionId)) {
       clearInterval(intervalId);
     };
   }, [connected, connectionId])
 
   useEffect(() => {
-    if (error?.message && (error.roomId !== id || (connectionId && error.socketId !== connectionId))) {
+    if (error?.message && (error.roomId !== roomId || (connectionId && error.socketId !== connectionId))) {
       setError({})
     }
   }, [error, connectionId])
@@ -119,7 +131,7 @@ const RoomComponent = function () {
 
   const onConnectHandler = function (data: any) {
     console.log(`[${Messages.FROM_SERVER.connect}]`, data);
-    wsServer.emit(Messages.TO_SERVER.join_me, { roomId: id, userName: userName });
+    wsServer.emit(Messages.TO_SERVER.join_me, { roomId: roomId, userName: userName });
     // let usersTmp = Array<ParticipantDTO>();
     // usersTmp.push({ socketId: connectionId, userName: userName, vote: undefined, hide: users[0].hide });
     // setUsers(usersTmp);
@@ -128,7 +140,7 @@ const RoomComponent = function () {
   const onPeopleHandler = function (data: NotifyPeopleDTO) {
     console.log(`[${Messages.FROM_SERVER.people}]`, data, room);
 
-    if (data.roomId === id) {
+    if (data.roomId === roomId) {
       setRoomHide(data.hide === true ? true : false);
 
       if (data.hide === false) {
@@ -147,7 +159,7 @@ const RoomComponent = function () {
 
   const onCardsHandler = function (data: NofityCardsDTO) {
     console.log(`[${Messages.FROM_SERVER.cards}]`, data);
-    if (data.roomId === id) {
+    if (data.roomId === roomId) {
       setCards(shuffleArray(data.cards));
     }
   }
@@ -158,7 +170,7 @@ const RoomComponent = function () {
 
   const onRefreshHandler = function (data: any) {
     console.log(`[${Messages.FROM_SERVER.refresh}]`, data);
-    if (data.roomId === id) {
+    if (data.roomId === roomId) {
       window.location.reload();
     }
   }
@@ -166,17 +178,17 @@ const RoomComponent = function () {
   const onVoteClick = function (card: CardDTO | null) {
     if (userVote?.value !== card?.value) {
       console.log(`[${Messages.TO_SERVER.vote}]`, card);
-      wsServer.emit(Messages.TO_SERVER.vote, { roomId: id, userId: connectionId, vote: card });
+      wsServer.emit(Messages.TO_SERVER.vote, { roomId: roomId, userId: connectionId, vote: card });
       setUserVote(card);
     }
   };
 
   const onClearAllClick = function () {
-    wsServer.emit(Messages.TO_SERVER.clear_votes, { roomId: id });
+    wsServer.emit(Messages.TO_SERVER.clear_votes, { roomId: roomId });
   }
 
   const OnHideUnHideClick = function () {
-    wsServer.emit(Messages.TO_SERVER.hide_unHide, { roomId: id });
+    wsServer.emit(Messages.TO_SERVER.hide_unHide, { roomId: roomId });
   }
 
   const onSetRoomAdmin = function (e: string) {
@@ -185,10 +197,10 @@ const RoomComponent = function () {
   }
 
   const onConfirmSetRoomAdmin = function (e: string) {
-    setRoomAdmin({ roomId: id, admin: e } as SetAdminDTO)
+    setRoomAdmin({ roomId: roomId, admin: e } as SetAdminDTO)
       .then((r) => {
         if (r === true) {
-          wsServer.emit(Messages.TO_SERVER.set_admin, { roomId: id });
+          wsServer.emit(Messages.TO_SERVER.set_admin, { roomId: roomId });
         }
       });
   };
@@ -256,7 +268,7 @@ const RoomComponent = function () {
             color="text.secondary"
             gutterBottom
             onClick={() => { setDebug(!debug) }}>
-            ROOM: {room?.name}
+            ROOM: {roomName}
             {!isUndefinedNullOrEmpty(room?.admin) ? <> | Admin: {room?.admin}</> : <></>}
           </Typography>
 
@@ -286,7 +298,7 @@ const RoomComponent = function () {
                   disabled={roomHasAdmin !== true || room?.admin !== userName}>
                   Clear All
                 </Button>
-                { roomHasAdmin === false && <Typography variant="h6" component="h6" style={{ fontStyle: 'italic', fontWeight: 900 }}>No admin set, click on any user to set as Admin</Typography> }
+                {roomHasAdmin === false && <Typography variant="h6" component="h6" style={{ fontStyle: 'italic', fontWeight: 900 }}>No admin set, click on any user to set as Admin</Typography>}
                 <Button variant="contained"
                   onClick={OnHideUnHideClick}
                   disabled={roomHasAdmin !== true || room?.admin !== userName}>
@@ -300,7 +312,7 @@ const RoomComponent = function () {
                 users={users}
                 isCurrentUserAdmin={isCurrentUserAdmin}
                 roomHasAdmin={roomHasAdmin}
-                onSetRoomAdmin={onSetRoomAdmin} /> }
+                onSetRoomAdmin={onSetRoomAdmin} />}
             </Box>
           }
         </>

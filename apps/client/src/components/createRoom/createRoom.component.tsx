@@ -48,7 +48,7 @@ export default function CreateRoomComponent() {
                 setPassword('');
                 setRoomName('');
                 setCardsValues('');
-                navigate(`/room/${createResult}`);
+                navigate(`/room/${createResult.id}`);
             }
             else {
                 alert(createResult.error);
@@ -77,7 +77,6 @@ export default function CreateRoomComponent() {
     const getSeries = async () => {
         const allSeries = await getAllSeries();
         setSeries(allSeries);
-        console.log(allSeries);
     };
 
     useEffect(() => {
