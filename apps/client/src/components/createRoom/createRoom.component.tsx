@@ -1,9 +1,9 @@
 import { Box, Button, Card, CardActions, CardContent, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import { CreateRoomDTO } from 'models';
-import { isUndefinedNullOrEmpty, sanitizeText } from "../../helpers/helpers";
+import { isUndefinedNullOrEmpty, isUndefinedOrNull, sanitizeText } from "../../helpers/helpers";
 import useLocalStorage from '../../hooks/useLocalStorage';
 import { createRoom, getAllSeries } from '../../services/api.service';
 import { SerieDTO } from "models";
@@ -17,9 +17,15 @@ export default function CreateRoomComponent() {
     const [admin, setAdmin] = useState<string>('');
     const [userName, setUserName] = useLocalStorage('userName', '');
     const [series, setSeries] = useState<Array<SerieDTO>>([])
+    const [errorText, setErrorText] = useState('');
 
     const onRoomNameChange = function (event: any) {
-        setRoomName(event.target.value)
+        const inputValue = event.target.value;
+        const regex = /[^a-zA-Z0-9]+/gmi;
+        const replaceResult = inputValue.replace(regex, '');
+
+        event.target.value = replaceResult;
+        setRoomName(replaceResult);
     }
 
     // TEMPORARY DISABLED
@@ -28,21 +34,27 @@ export default function CreateRoomComponent() {
     // }
 
     const onCreateClick = async function () {
+        setErrorText('');
         const newRoom: CreateRoomDTO = {
-            name: roomName, 
-            admin: admin, 
-            password: password, 
+            name: roomName,
+            admin: admin,
+            password: password,
             serie: cardsValues,
             values: series.find((s) => s.serie === cardsValues)?.values
         };
         const createResult = await createRoom(newRoom);
 
-        if (!isUndefinedNullOrEmpty(createResult)) {
-            setRoomId(createResult);
-            setPassword('');
-            setRoomName('');
-            setCardsValues('');
-            navigate(`/room/${createResult}`);
+        if (!isUndefinedOrNull(createResult)) {
+            if (createResult.success === true) {
+                setRoomId(createResult.id || '');
+                setPassword('');
+                setRoomName('');
+                setCardsValues('');
+                navigate(`/room/${createResult.id}`);
+            }
+            else {
+                setErrorText(createResult.error || '');
+            }
         }
     }
 
@@ -67,7 +79,6 @@ export default function CreateRoomComponent() {
     const getSeries = async () => {
         const allSeries = await getAllSeries();
         setSeries(allSeries);
-        console.log(allSeries);
     };
 
     useEffect(() => {
@@ -124,6 +135,12 @@ export default function CreateRoomComponent() {
                         disabled
                         value={userName}
                         onChange={onAdminNameChange} />
+
+                    {!isUndefinedNullOrEmpty(errorText) &&
+                        <Typography sx={{ fontSize: 14, textAlign: 'left' }} color="error">
+                            {errorText}
+                        </Typography>
+                    }
                 </CardContent>
                 <CardActions>
                     <Button

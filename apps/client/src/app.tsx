@@ -27,7 +27,7 @@ export function App() {
     <LayoutComponent>
       <Routes>
         <Route path="/" element={<HomeComponent />} />
-        <Route path="/room/:id" element={<RoomComponent />} />
+        <Route path="/room/:paramId" element={<RoomComponent />} />
 
         <Route path="/join" element={<JoinRoomComponent />} />
         <Route path="/room/join" element={<JoinRoomComponent />} />

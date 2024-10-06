@@ -12,13 +12,13 @@ const validateUUID = function (uuid: string | undefined): boolean {
     return regexV1.test(uuid) || regexV2.test(uuid) || regexV3.test(uuid) || regexV4.test(uuid) || regexV5.test(uuid)
 };
 
-const isUndefinedOrNull = function (value: any | undefined): boolean {
+const isUndefinedOrNull = function (value: any | null | undefined): boolean {
     return typeof value === 'undefined'
         || value === undefined
         || value === null;
 }
 
-const isUndefinedNullOrEmpty = function (value: string | undefined): boolean {
+const isUndefinedNullOrEmpty = function (value: string | null | undefined): boolean {
     return typeof value === 'undefined'
         || value === undefined
         || value === null

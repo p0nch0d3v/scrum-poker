@@ -5,6 +5,7 @@ import { VoteDTO } from './DTO/vote.dto';
 import { RoomInfoDTO } from './DTO/roomInfo.dto';
 import { NotifyPeopleDTO } from './DTO/notifyPeople.dto';
 import { CreateRoomDTO } from './DTO/create-room.dto';
+import { CreateRoomResultDTO } from './DTO/createRoomResulkt.dto';
 import { JoinRoomDTO } from './DTO/joinRoom.dto';
 import { RoomDTO } from './DTO/room.dto';
 import { ParticipantDTO } from './DTO/participant.dto';
@@ -23,6 +24,7 @@ export {
     RoomInfoDTO,
     type NotifyPeopleDTO,
     type CreateRoomDTO,
+    type CreateRoomResultDTO,
     type JoinRoomDTO,
     RoomDTO,
     type ParticipantDTO,
