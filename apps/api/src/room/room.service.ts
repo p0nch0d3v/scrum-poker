@@ -29,7 +29,7 @@ export class RoomService {
       return { success: true, id: room.id, error: null };
     }
     else {
-      return { success: false, id: null, error: 'Room already created' };;
+      return { success: false, id: null, error: 'There is already a room with the same name' };;
     }
 
   }

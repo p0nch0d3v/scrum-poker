@@ -17,6 +17,7 @@ export default function CreateRoomComponent() {
     const [admin, setAdmin] = useState<string>('');
     const [userName, setUserName] = useLocalStorage('userName', '');
     const [series, setSeries] = useState<Array<SerieDTO>>([])
+    const [errorText, setErrorText] = useState('');
 
     const onRoomNameChange = function (event: any) {
         const inputValue = event.target.value;
@@ -33,6 +34,7 @@ export default function CreateRoomComponent() {
     // }
 
     const onCreateClick = async function () {
+        setErrorText('');
         const newRoom: CreateRoomDTO = {
             name: roomName,
             admin: admin,
@@ -51,7 +53,7 @@ export default function CreateRoomComponent() {
                 navigate(`/room/${createResult.id}`);
             }
             else {
-                alert(createResult.error);
+                setErrorText(createResult.error || '');
             }
         }
     }
@@ -133,6 +135,12 @@ export default function CreateRoomComponent() {
                         disabled
                         value={userName}
                         onChange={onAdminNameChange} />
+
+                    {!isUndefinedNullOrEmpty(errorText) &&
+                        <Typography sx={{ fontSize: 14, textAlign: 'left' }} color="error">
+                            {errorText}
+                        </Typography>
+                    }
                 </CardContent>
                 <CardActions>
                     <Button
