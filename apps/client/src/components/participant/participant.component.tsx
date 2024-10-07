@@ -42,12 +42,12 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
     }
 
     // ----------
-    let innerTextStyle: any = { 'fontSize': '1.8em', 'text-align': 'center' };
+    let innerTextStyle: any = { 'fontSize': '1.8em', 'textAlign': 'center' };
     if (participant.isAdmin) {
         innerTextStyle = { ...innerTextStyle, 'font-weight': '900' };
     }
     else {
-        innerTextStyle = { ...innerTextStyle, 'font-style': 'italic' };
+        innerTextStyle = { ...innerTextStyle, 'fontStyle': 'italic' };
     }
 
     // ----------

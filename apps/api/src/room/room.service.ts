@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { JoinRoomDTO, RoomDTO, CreateRoomDTO, SetAdminDTO } from 'models';
+import { JoinRoomDTO, RoomDTO, CreateRoomDTO, SetAdminDTO, CreateRoomResultDTO } from 'models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
 import { Repository, IsNull, Not, SelectQueryBuilder } from 'typeorm';
@@ -12,7 +12,7 @@ export class RoomService {
     private roomsRepository: Repository<Room>,
   ) { }
 
-  async create(createRoomDto: CreateRoomDTO): Promise<string> {
+  async create(createRoomDto: CreateRoomDTO): Promise<CreateRoomResultDTO> {
     if (createRoomDto.password !== undefined
       && createRoomDto.password !== null
       && createRoomDto.password.trim().length > 0) {
@@ -22,21 +22,19 @@ export class RoomService {
       createRoomDto.password = null;
     }
 
-    const room = await this.roomsRepository.create(createRoomDto);
-    await this.roomsRepository.save(room);
-    return room.id;
+    const roomExists = await this.exists({ id: createRoomDto.name, password: null });
+    if (roomExists === false) {
+      const room = await this.roomsRepository.create(createRoomDto);
+      await this.roomsRepository.save(room);
+      return { success: true, id: room.id, error: null };
+    }
+    else {
+      return { success: false, id: null, error: 'There is already a room with the same name' };;
+    }
   }
 
   async exists(roomDto: JoinRoomDTO): Promise<boolean> {
-    if (!this.validateUUID(roomDto.id)) {
-      return false;
-    }
-
-    const savedRoom = await this.roomsRepository.findOne({
-      where: {
-        id: roomDto.id
-      }
-    });
+    const savedRoom = await this.get(roomDto.id);
 
     if (savedRoom !== undefined && savedRoom !== null) {
       if (savedRoom.password !== undefined && savedRoom.password !== null && roomDto.password !== undefined && roomDto.password !== null) {
@@ -52,12 +50,7 @@ export class RoomService {
       return false;
     }
 
-    return await this.roomsRepository.exists({
-      where: {
-        id: id,
-        password: Not(IsNull())
-      }
-    });
+    return (await this.get(id)).hasPassword
   }
 
   async getByUniqueId(id: string): Promise<RoomDTO> {
@@ -74,42 +67,67 @@ export class RoomService {
     return (savedRoom !== undefined && savedRoom !== null) ? new RoomDTO(savedRoom.id,
       savedRoom.name,
       savedRoom.admin,
-      savedRoom.cards,
+      savedRoom.serie,
+      savedRoom.values,
       savedRoom.created_at,
+      savedRoom.password,
       savedRoom.password !== undefined && savedRoom.password !== null && savedRoom.password.length > 0)
       : null;
+  }
+
+  async getByName(name: string): Promise<RoomDTO> {
+    const queryResult = await (await this.query()).where('LOWER(name) = LOWER(:name)', { name: name }).getRawOne();
+    if (queryResult !== undefined && queryResult !== null) {
+      return new RoomDTO(queryResult.room_id, queryResult.room_name, queryResult.room_admin, queryResult.room_serie, queryResult.room_values, queryResult.room_created_at, queryResult.room_hasPassword);
+    }
+    return null;
+  }
+
+  async get(id: string): Promise<RoomDTO> {
+    let lookupById = false;
+    if (this.validateUUID(id)) {
+      lookupById = true;
+    }
+    let savedRoom = null;
+    if (lookupById === true) {
+      savedRoom = await this.getByUniqueId(id);
+    }
+    else {
+      savedRoom = await this.getByName(id);
+    }
+    return savedRoom;
   }
 
   async getAll(): Promise<Array<RoomDTO>> {
     const rooms = await (await this.query()).getRawMany();
     const allRooms = [];
     rooms.forEach(room => {
-      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_admin, room.room_cards, room.room_created_at, room.room_hasPassword));
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_admin, room.room_serie, room.room_values, room.room_created_at, room.room_password, room.room_hasPassword));
     });
 
     return allRooms;
   }
 
-  async getCards(id: string): Promise<string> {
+  async getCards(id: string): Promise<[string, string]> {
     const savedRoom = await this.getByUniqueId(id);
     if (savedRoom !== undefined && savedRoom !== null) {
-      return savedRoom.cards;
+      return [savedRoom.serie, savedRoom.values];
     }
-    return "";
+    return ['', ''];
   }
 
   async latest(): Promise<Array<RoomDTO>> {
     const rooms = await (await this.query()).take(10).getRawMany();
     const allRooms = [];
     rooms.forEach(room => {
-      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_admin, room.room_cards, room.room_created_at, room.room_hasPassword));
+      allRooms.push(new RoomDTO(room.room_id, room.room_name, room.room_admin, room.room_cards, room.room_created_at, room.room_password, room.room_hasPassword));
     });
     return allRooms;
   }
 
   async setAdmin(roomInfo: SetAdminDTO): Promise<boolean> {
     const room = await this.getByUniqueId(roomInfo.roomId);
-    const updateResult = await this.roomsRepository.update(room.id, {admin: roomInfo.admin});
+    const updateResult = await this.roomsRepository.update(room.id, { admin: roomInfo.admin });
     return updateResult.affected === 1;
   }
 
@@ -121,7 +139,7 @@ export class RoomService {
   private async query(): Promise<SelectQueryBuilder<Room>> {
     return await this.roomsRepository
       .createQueryBuilder('room')
-      .select(['room.id', 'room.name', 'room.admin', 'room.cards', 'room.created_at'])
+      .select(['room.id', 'room.name', 'room.admin', 'room.serie', 'room.values', 'room.cards', 'room.created_at', 'room.password'])
       .addSelect("password is not NULL", "room_hasPassword")
       .orderBy("created_at", "DESC");
   }

@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { CreateRoomDTO, JoinRoomDTO, RoomDTO, SetAdminDTO, ServerConfigDTO } from 'models';
+import { CreateRoomDTO, JoinRoomDTO, RoomDTO, SetAdminDTO, ServerConfigDTO, SerieDTO, CreateRoomResultDTO } from 'models';
 
-const createRoom = async function (newRoom: CreateRoomDTO): Promise<string> {
+const createRoom = async function (newRoom: CreateRoomDTO): Promise<CreateRoomResultDTO> {
     return await axios.post('/api/room/create', newRoom).then((r) => r.data);
 };
 
@@ -33,6 +33,10 @@ const getServerConfig = async function(): Promise<ServerConfigDTO> {
     return await axios.get('/api/config/all').then((r) => r.data);
 }
 
+const getAllSeries = async function(): Promise<Array<SerieDTO>> {
+    return await axios.get('/api/serie/all').then((r) => r.data);
+}
+
 export {
     createRoom,
     roomHasPassword,
@@ -40,5 +44,6 @@ export {
     getRoom,
     getLatest,
     setRoomAdmin,
-    getServerConfig
+    getServerConfig,
+    getAllSeries
 }

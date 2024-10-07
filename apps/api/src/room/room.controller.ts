@@ -1,13 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query, Put, NotFoundException } from '@nestjs/common';
 import { RoomService } from './room.service';
-import { CreateRoomDTO, JoinRoomDTO, RoomDTO, SetAdminDTO } from 'models';
+import { CreateRoomDTO, CreateRoomResultDTO, JoinRoomDTO, RoomDTO, SetAdminDTO } from 'models';
 
 @Controller('room')
 export class RoomController {
   constructor(private readonly roomService: RoomService) { }
 
   @Post('create')
-  async create(@Body() createRoomDto: CreateRoomDTO): Promise<string> {
+  async create(@Body() createRoomDto: CreateRoomDTO): Promise<CreateRoomResultDTO> {
     return await this.roomService.create(createRoomDto);
   }
 
@@ -27,8 +27,12 @@ export class RoomController {
   }
 
   @Get('get')
-  async get(@Query('id') id: string): Promise<RoomDTO> {
-    return await this.roomService.getByUniqueId(id);
+  async get(@Query('id') id: string): Promise<RoomDTO | HttpException> {
+    const result = await this.roomService.get(id);
+    if (result === null) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
+    }
+    return result;
   }
 
   @Get('all')

@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { Room } from "../room/entities/room.entity";
+import { Serie } from "../serie/entities/serie.entity";
 import { DataSourceOptions } from "typeorm";
 
 require('dotenv').config();
@@ -14,7 +15,7 @@ export function typeOrmModuleOptions(isProduction: boolean): TypeOrmModuleOption
         password: process.env.POSTGRES_PASSWORD ? process.env.POSTGRES_PASSWORD : undefined,
         database: process.env.POSTGRES_DATABASE ? process.env.POSTGRES_DATABASE : undefined,
 
-        entities: [Room]
+        entities: [Room, Serie]
     }
     if (process.env.POSTGRES_URI !== undefined && process.env.POSTGRES_URI !== null) {
         options = { ...options, 'url': process.env.POSTGRES_URI };
