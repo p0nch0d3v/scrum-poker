@@ -26,25 +26,31 @@ export function App() {
     useEffectAsync();
   }, []);
 
-  if (user === null || user === undefined) {
-    return <LoginComponent afterLogin={(user: UserDTO) => { setUser(user) }} />
+  if (configIsInitialized === true) {
+    if (user === null || user === undefined) {
+      return (
+        <LoginComponent clientId={Config.GOOGLE_AUTH_CLIENT_ID} 
+          afterLogin={(user: UserDTO) => { setUser(user) }} />
+      );
+    }
+
+    return (
+      <LayoutComponent>
+        <Routes>
+          <Route path="/" element={<HomeComponent />} />
+          <Route path="/room/:paramId" element={<RoomComponent />} />
+
+          <Route path="/join" element={<JoinRoomComponent />} />
+          <Route path="/room/join" element={<JoinRoomComponent />} />
+
+          <Route path="/create" element={<CreateRoomComponent />} />
+          <Route path="/room/create" element={<CreateRoomComponent />} />
+
+          <Route path="/list" element={<RoomListComponent />} />
+          <Route path="/room/list" element={<RoomListComponent />} />
+        </Routes>
+      </LayoutComponent>
+    );
   }
-
-  return configIsInitialized === true && (
-    <LayoutComponent>
-      <Routes>
-        <Route path="/" element={<HomeComponent />} />
-        <Route path="/room/:paramId" element={<RoomComponent />} />
-
-        <Route path="/join" element={<JoinRoomComponent />} />
-        <Route path="/room/join" element={<JoinRoomComponent />} />
-
-        <Route path="/create" element={<CreateRoomComponent />} />
-        <Route path="/room/create" element={<CreateRoomComponent />} />
-
-        <Route path="/list" element={<RoomListComponent />} />
-        <Route path="/room/list" element={<RoomListComponent />} />
-      </Routes>
-    </LayoutComponent>
-  )
+  return <></>;
 }

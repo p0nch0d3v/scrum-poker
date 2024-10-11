@@ -13,8 +13,6 @@ import { ThemeContext } from '../../contexts/themeContext';
 
 export default function HeaderComponent() {
     const [userName, setUserName] = useLocalStorage('userName', '');
-    const [applicationTitle, setApplicationTitle] = useState<string>('');
-
     const { switchColorMode, mode } = useContext(ThemeContext)
     const userNameRef = useRef(userName);
     const navigate = useNavigate();
@@ -41,8 +39,7 @@ export default function HeaderComponent() {
 
     useEffect(() => {
         userNameRef.current.firstChild.value = userName;
-        setApplicationTitle(Config.IS_PRODUCTION === false ? reverseString(AppConstants.APP_TITLE) : AppConstants.APP_TITLE);
-        window.document.title = applicationTitle;
+        window.document.title = Config.ApplicationTitle;
     }, [])
 
     return (
@@ -51,7 +48,7 @@ export default function HeaderComponent() {
                 <MenuIcon />
                 <Typography variant="h6" component="div" marginLeft={1} width={'100%'} align='left'
                     onClick={backToHome} >
-                    {applicationTitle}
+                    {Config.ApplicationTitle}
                 </Typography>
                 <Box alignItems={'right'} alignContent={'right'} className='participant-name' display={'flex'}>
                     <Tooltip disableFocusListener arrow

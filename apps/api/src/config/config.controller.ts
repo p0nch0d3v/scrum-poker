@@ -10,7 +10,8 @@ export class ConfigController {
         return {
             environment: configService.getEnvironment(),
             isProduction: configService.isProduction(),
-            socketServer: configService.getSocketServer()
+            socketServer: configService.getSocketServer(),
+            googleAuthClientId: configService.getGoogleAuthClientId()
         }
     }
 }
