@@ -2,7 +2,6 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { FunctionComponent } from "react";
 import { loginUser } from "../../services/api.service";
 
-import './login.component.css';
 import { Box, Button, Typography } from "@mui/material";
 import Config from "../../config/config";
 
