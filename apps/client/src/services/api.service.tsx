@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CreateRoomDTO, JoinRoomDTO, RoomDTO, SetAdminDTO, ServerConfigDTO, SerieDTO, CreateRoomResultDTO } from 'models';
+import { CreateRoomDTO, JoinRoomDTO, RoomDTO, SetAdminDTO, ServerConfigDTO, SerieDTO, CreateRoomResultDTO, UserDTO } from 'models';
 
 const createRoom = async function (newRoom: CreateRoomDTO): Promise<CreateRoomResultDTO> {
     return await axios.post('/api/room/create', newRoom).then((r) => r.data);
@@ -37,6 +37,10 @@ const getAllSeries = async function(): Promise<Array<SerieDTO>> {
     return await axios.get('/api/serie/all').then((r) => r.data);
 }
 
+const loginUser = async function(token: string): Promise<UserDTO> {
+    return await axios.post("/api/auth/login", { token: token }).then((r) => r.data);
+}
+
 export {
     createRoom,
     roomHasPassword,
@@ -45,5 +49,6 @@ export {
     getLatest,
     setRoomAdmin,
     getServerConfig,
-    getAllSeries
+    getAllSeries,
+    loginUser
 }

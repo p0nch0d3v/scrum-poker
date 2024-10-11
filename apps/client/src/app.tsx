@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomeComponent from './components/home/home.component';
 import RoomComponent from './components/room/room.component';
@@ -6,12 +7,14 @@ import JoinRoomComponent from './components/JoinRoom/joinRoom.component';
 import CreateRoomComponent from './components/createRoom/createRoom.component';
 import RoomListComponent from './components/roomList/roomList.component';
 import Config from './config/config.tsx';
-
 import './app.css'
-import { useEffect, useState } from 'react';
+import useSessionStorage from './hooks/useSessionStorage.tsx';
+import LoginComponent from './components/login/login.component.tsx';
+import { UserDTO } from 'models';
 
 export function App() {
   const [configIsInitialized, setConfigIsInitialized] = useState<boolean>(false);
+  const [user, setUser] = useSessionStorage("user", null);
 
   useEffect(() => {
     async function useEffectAsync() {
@@ -22,6 +25,10 @@ export function App() {
     }
     useEffectAsync();
   }, []);
+
+  if (user === null || user === undefined) {
+    return <LoginComponent afterLogin={(user: UserDTO) => { setUser(user) }} />
+  }
 
   return configIsInitialized === true && (
     <LayoutComponent>

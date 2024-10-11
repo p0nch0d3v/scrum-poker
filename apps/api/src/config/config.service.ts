@@ -58,6 +58,14 @@ class ConfigService {
         const cors_origin = this.getValue("CORS_ORIGIN");
         return cors_origin !== undefined && cors_origin !== null ? cors_origin : "*"; 
     }
+
+    public getGoogleAuthClientId(): string {
+        return "";
+    } 
+
+    public getGooleAuthClientSecret(): string {
+        return "";
+    }
 }
 
 const configService = new ConfigService(process.env)

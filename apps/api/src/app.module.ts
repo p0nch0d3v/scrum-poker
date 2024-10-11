@@ -7,6 +7,8 @@ import { RoomModule } from './room/room.module';
 import { configService } from './config/config.service';
 import { ConfigModule } from './config/config.module';
 import { SeriesModule } from './serie/series.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './user/users.module';
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { SeriesModule } from './serie/series.module';
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     RoomModule,
     ConfigModule,
-    SeriesModule
+    SeriesModule,
+    AuthModule,
+    UsersModule
   ],
   controllers: [],
   providers: [],
