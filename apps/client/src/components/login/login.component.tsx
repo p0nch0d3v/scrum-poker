@@ -1,8 +1,9 @@
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { FunctionComponent } from "react";
-import { loginUser } from "../../services/api.service";
-
 import { Box, Button, Typography } from "@mui/material";
+import useSessionStorage from '../../hooks/useSessionStorage';
+
+import { loginUser } from "../../services/api.service";
 import Config from "../../config/config";
 
 type LoginProps = {
@@ -24,10 +25,14 @@ const LoginComponent: FunctionComponent<LoginProps> = ({ clientId, afterLogin })
             <Box maxWidth={'33vw'}>
                 <GoogleOAuthProvider clientId={clientId}>
                     <GoogleLogin
-                        useOneTap={true}
+                        useOneTap={false}
+                        type="standard"
+                        ux_mode="popup"
                         onSuccess={async (credentialResponse) => {
-                            const userData = await loginUser(credentialResponse?.credential || '');
-                            afterLogin(userData);
+                            const isUserCreated = await loginUser(credentialResponse?.credential || '');
+                            if (isUserCreated === true) {
+                                afterLogin(credentialResponse?.credential);
+                            }
                         }}
                         onError={() => {
                             console.log("Login Failed");

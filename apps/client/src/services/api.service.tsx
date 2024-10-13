@@ -37,7 +37,7 @@ const getAllSeries = async function(): Promise<Array<SerieDTO>> {
     return await axios.get('/api/serie/all').then((r) => r.data);
 }
 
-const loginUser = async function(token: string): Promise<UserDTO> {
+const loginUser = async function(token: string): Promise<boolean> {
     return await axios.post("/api/auth/login", { token: token }).then((r) => r.data);
 }
 

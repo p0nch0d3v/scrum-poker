@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
+
 import HomeComponent from './components/home/home.component';
 import RoomComponent from './components/room/room.component';
 import LayoutComponent from './components/layout/layout.component';
@@ -8,12 +9,14 @@ import CreateRoomComponent from './components/createRoom/createRoom.component';
 import RoomListComponent from './components/roomList/roomList.component';
 import Config from './config/config.tsx';
 import './app.css'
-import useSessionStorage from './hooks/useSessionStorage.tsx';
-import LoginComponent from './components/login/login.component.tsx';
+import useSessionStorage from './hooks/useSessionStorage';
+import LoginComponent from './components/login/login.component';
 import { UserDTO } from 'models';
+import { getUser, isTokenValid } from './services/auth.services.ts';
 
 export function App() {
   const [configIsInitialized, setConfigIsInitialized] = useState<boolean>(false);
+  const [token, setToken] = useSessionStorage("token", null);
   const [user, setUser] = useSessionStorage("user", null);
 
   useEffect(() => {
@@ -26,11 +29,24 @@ export function App() {
     useEffectAsync();
   }, []);
 
+  useEffect(() => {
+    if (token) {
+      const user = getUser(token);
+      if (user) {
+        setUser(user);
+      }
+    }
+  }, [token]);
+
+  const afterLogin = function (token: string) {
+    setToken(token);
+  };
+
   if (configIsInitialized === true) {
-    if (user === null || user === undefined) {
+    if (token === null || token === undefined || isTokenValid(token) === false) {
       return (
-        <LoginComponent clientId={Config.GOOGLE_AUTH_CLIENT_ID} 
-          afterLogin={(user: UserDTO) => { setUser(user) }} />
+        <LoginComponent clientId={Config.GOOGLE_AUTH_CLIENT_ID}
+          afterLogin={afterLogin} />
       );
     }
 

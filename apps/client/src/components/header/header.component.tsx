@@ -1,25 +1,29 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Box, IconButton, Input, Toolbar, Tooltip, Typography } from '@mui/material';
-
 import { Brightness4, Brightness7 } from '@mui/icons-material';
-import { AppConstants } from 'models/index';
+
 import Config from '../../config/config';
-import { reverseString, sanitizeText } from '../../helpers/helpers';
-import useLocalStorage from '../../hooks/useLocalStorage';
 import { ThemeContext } from '../../contexts/themeContext';
+import useSessionStorage from '../../hooks/useSessionStorage';
 
 export default function HeaderComponent() {
-    const [userName, setUserName] = useLocalStorage('userName', '');
+    // const [userName, setUserName] = useLocalStorage('userName', '');
+    const [user] = useSessionStorage("user", null);
     const { switchColorMode, mode } = useContext(ThemeContext)
-    const userNameRef = useRef(userName);
+    // const userNameRef = useRef(userName);
     const navigate = useNavigate();
 
     useEffect(() => {
-        setUserName(sanitizeText(userName));
+        // setUserName(sanitizeText(userName));
     }, []);
+
+    useEffect(() => {
+        if (user) {
+            const { name, email, picture } = user;
+        }
+    }, [user]);
 
     const backToHome = () => {
         setTimeout(() => {
@@ -31,39 +35,39 @@ export default function HeaderComponent() {
     const onUserNameKeyUp = (e: any) => {
         if (e.keyCode === 13) {
             setTimeout(() => {
-                setUserName(sanitizeText(userNameRef.current.firstChild.value));
+                // setUserName(sanitizeText(userNameRef.current.firstChild.value));
                 backToHome();
             }, 250);
         }
     }
 
     useEffect(() => {
-        userNameRef.current.firstChild.value = userName;
+        // userNameRef.current.firstChild.value = userName;
         window.document.title = Config.ApplicationTitle;
     }, [])
 
     return (
         <AppBar position="relative">
-            <Toolbar>
+            <Toolbar sx={{ display: 'flex' }}>
                 <MenuIcon />
                 <Typography variant="h6" component="div" marginLeft={1} width={'100%'} align='left'
                     onClick={backToHome} >
                     {Config.ApplicationTitle}
                 </Typography>
-                <Box alignItems={'right'} alignContent={'right'} className='participant-name' display={'flex'}>
+                <Box alignItems={'right'} alignContent={'right'} className='participant-name' display={'flex'} flexGrow={2}>
                     <Tooltip disableFocusListener arrow
-                        placement="left"
-                        title="Press [ENTER] to update the Participant name" >
-                        <Input placeholder='Participant name'
-                            sx={{ color: 'unset' }}
-                            inputProps={{ maxLength: 15 }}
-                            ref={userNameRef}
-                            onKeyUp={onUserNameKeyUp} />
+                        placement="bottom" title={user?.email}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography sx={{ minWidth: '9em', textWrap: 'pretty', textAlign: 'right', marginRight:'0.5em' }}>
+                                {user?.name}
+                            </Typography>
+                            <img src={user?.picture} style={{ height: '3em', width: '3em' }} />
+                            </Box>
                     </Tooltip>
                 </Box>
-                    <IconButton sx={{ ml: 1 }} onClick={switchColorMode} color="inherit">
-                        {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
-                    </IconButton>
+                <IconButton sx={{ ml: 1 }} onClick={switchColorMode} color="inherit">
+                    {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+                </IconButton>
             </Toolbar>
         </AppBar>
     );

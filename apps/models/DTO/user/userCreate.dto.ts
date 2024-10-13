@@ -1,6 +1,6 @@
 export type UserCreateDTO = {
     name: string,
     email: string,
-    image: string,
+    picture: string,
     rawData: string
 };
