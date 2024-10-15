@@ -23,7 +23,12 @@ const getUser = function (token: string): UserDTO | null | undefined {
     return null;
 }
 
+const logout = () => {
+    sessionStorage.removeItem("token");
+}
+
 export {
     isTokenValid,
-    getUser
+    getUser, 
+    logout
 }
