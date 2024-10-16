@@ -61,10 +61,10 @@ const VoteSummaryComponent: FunctionComponent<VoteSummaryProps> = ({ users }) =>
             let index: number = isNaN(Number(user.vote?.value)) ? -1 : Number(user.vote?.value);
             if (index !== -1) {
                 if (summaryTmp[index.toString()]) {
-                    summaryTmp[index.toString()] += (", " + user.userName);
+                    summaryTmp[index.toString()] += (", " + user.user.name);
                 }
                 else {
-                    summaryTmp[index.toString()] = user.userName;
+                    summaryTmp[index.toString()] = user.user.name;
                 }
             }
         });

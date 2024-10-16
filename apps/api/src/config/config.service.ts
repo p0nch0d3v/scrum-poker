@@ -58,6 +58,16 @@ class ConfigService {
         const cors_origin = this.getValue("CORS_ORIGIN");
         return cors_origin !== undefined && cors_origin !== null ? cors_origin : "*"; 
     }
+
+    public getGoogleAuthClientId(): string {
+        const value = this.getValue("GOOGLE_AUTH_CLIENT_ID");
+        return value !== undefined && value !== null ? value : '';
+    } 
+
+    public getGooleAuthClientSecret(): string {
+        const value = this.getValue("GOOGLE_AUTH_CLIENT_SECRET");
+        return value !== undefined && value !== null ? value : '';
+    }
 }
 
 const configService = new ConfigService(process.env)
@@ -72,7 +82,9 @@ const configService = new ConfigService(process.env)
         'POSTGRES_USER',
         'POSTGRES_PASSWORD',
         'POSTGRES_DATABASE',
-        'POSTGRES_URI'
+        'POSTGRES_URI',
+        'GOOGLE_AUTH_CLIENT_ID',
+        'GOOGLE_AUTH_CLIENT_SECRET'
     ]);
 
 export { configService };

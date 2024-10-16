@@ -1,6 +1,6 @@
 import { Card, CardContent, Tooltip, Typography, useTheme } from "@mui/material";
 import { FunctionComponent } from "react";
-import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
+import { isUndefinedNullOrEmpty, isUndefinedOrNull } from "../../helpers/helpers";
 
 type CardProps = {
     card: any,
@@ -24,9 +24,23 @@ const cardStyle = (disabled?: boolean, selected?: boolean) => {
 }
 
 const CardComponent: FunctionComponent<CardProps> = ({ card, onClick, disabled, selected, toolTipText, innerTextStyle }) => {
-    const innerCardContent = <Typography sx={{ fontSize: '2em' }} style={innerTextStyle}>
-        {card.text && card.text.length > 0 ? card?.text : <>&nbsp;</>}
-    </Typography>;
+    
+    let innerCardContent = (
+        <></>
+    )
+
+    if (!isUndefinedOrNull(card.user)) {
+        innerCardContent = (
+            <img src={card.user.user.picture} />
+        );
+    }
+    else if (!isUndefinedOrNull(card.text)) {
+        innerCardContent = (
+            <Typography sx={{ fontSize: '2em' }} style={innerTextStyle}>
+                {card.text && card.text.length > 0 ? card?.text : <>&nbsp;</>}
+            </Typography>
+        );
+    }
 
     return (
         card.value !== null ? (

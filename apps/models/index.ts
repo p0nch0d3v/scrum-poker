@@ -15,6 +15,8 @@ import { ServerConfigDTO } from './DTO/serverConfig.dto';
 import { SummaryChartItemDTO } from './DTO/summaryChartItem.dto';
 import { SerieDTO } from './DTO/serie.dto';
 import { AppConstants, Environments } from './app.constants';
+import { UserDTO } from './DTO/user/user.dto';
+import { UserCreateDTO } from './DTO/user/userCreate.dto';
 
 export {
     type CardDTO,
@@ -33,6 +35,8 @@ export {
     type ServerConfigDTO,
     type SummaryChartItemDTO,
     SerieDTO,
+    type UserDTO,
+    type UserCreateDTO,
     AppConstants,
     Environments
 };
