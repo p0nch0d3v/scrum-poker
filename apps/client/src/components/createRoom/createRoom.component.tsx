@@ -3,10 +3,11 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import { CreateRoomDTO } from 'models';
-import { isUndefinedNullOrEmpty, isUndefinedOrNull, sanitizeText } from "../../helpers/helpers";
-import useLocalStorage from '../../hooks/useLocalStorage';
+import { isUndefinedNullOrEmpty, isUndefinedOrNull } from "../../helpers/helpers";
 import { createRoom, getAllSeries } from '../../services/api.service';
 import { SerieDTO } from "models";
+import useSessionStorage from "../../hooks/useSessionStorage";
+import { UserDTO } from "models";
 
 export default function CreateRoomComponent() {
     const navigate = useNavigate();
@@ -14,8 +15,7 @@ export default function CreateRoomComponent() {
     const [cardsValues, setCardsValues] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [roomId, setRoomId] = useState<string>('');
-    const [admin, setAdmin] = useState<string>('');
-    const [userName, setUserName] = useLocalStorage('userName', '');
+    const [user] = useSessionStorage<UserDTO | null>("user", null);
     const [series, setSeries] = useState<Array<SerieDTO>>([])
     const [errorText, setErrorText] = useState('');
 
@@ -37,7 +37,7 @@ export default function CreateRoomComponent() {
         setErrorText('');
         const newRoom: CreateRoomDTO = {
             name: roomName,
-            admin: admin,
+            admin: user?.email,
             password: password,
             serie: cardsValues,
             values: series.find((s) => s.serie === cardsValues)?.values
@@ -62,16 +62,6 @@ export default function CreateRoomComponent() {
         setCardsValues(e?.target?.value);
     };
 
-    const onCardsValuesChange = function (e: any) {
-        const newValue = e?.target?.value;
-        setCardsValues(newValue);
-    }
-
-    const onAdminNameChange = function (e: any) {
-        const newValue = e?.target?.value;
-        setAdmin(newValue);
-    }
-
     const disableCreateRoom = () => {
         return isUndefinedNullOrEmpty(roomName) || isUndefinedNullOrEmpty(cardsValues);
     };
@@ -87,13 +77,7 @@ export default function CreateRoomComponent() {
         };
 
         useEffectAsync();
-        setUserName(sanitizeText(userName));
-
     }, [])
-
-    useEffect(() => {
-        setAdmin(userName);
-    }, [userName])
 
     return (
         <Box width={{ xs: '100%', s: '100%', md: '50%', l: '33%', xl: '33%' }}
@@ -133,8 +117,7 @@ export default function CreateRoomComponent() {
                         placeholder="Room Admin"
                         style={{ marginBottom: "1em" }}
                         disabled
-                        value={userName}
-                        onChange={onAdminNameChange} />
+                        value={user?.email} />
 
                     {!isUndefinedNullOrEmpty(errorText) &&
                         <Typography sx={{ fontSize: 14, textAlign: 'left' }} color="error">

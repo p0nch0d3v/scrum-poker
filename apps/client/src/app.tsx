@@ -40,6 +40,9 @@ export function App() {
 
   const afterLogin = function (token: string) {
     setToken(token);
+    setTimeout(()=>{
+      window.location.reload();
+    }, 250)
   };
 
   if (configIsInitialized === true) {
@@ -49,7 +52,7 @@ export function App() {
           afterLogin={afterLogin} />
       );
     }
-
+   
     return (
       <LayoutComponent>
         <Routes>

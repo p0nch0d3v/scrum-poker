@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-const useSessionStorage = (keyName: string, defaultValue: any) => {
+export default function useSessionStorage<T>(keyName: string, defaultValue: T): [T, any] {
     const [storedValue, setStoredValue] = useState(() => {
         try {
             const value = window.sessionStorage.getItem(keyName);
 
             if (value) {
-                return JSON.parse(value);
+                return JSON.parse(value) as T;
             } else {
                 window.sessionStorage.setItem(keyName, JSON.stringify(defaultValue));
                 return defaultValue;
@@ -16,7 +16,7 @@ const useSessionStorage = (keyName: string, defaultValue: any) => {
         }
     });
 
-    const setValue = (newValue: any) => {
+    const setValue = (newValue: T) => {
         try {
             window.sessionStorage.setItem(keyName, JSON.stringify(newValue));
         } catch (err) { }
@@ -25,5 +25,3 @@ const useSessionStorage = (keyName: string, defaultValue: any) => {
 
     return [storedValue, setValue];
 };
-
-export default useSessionStorage;
