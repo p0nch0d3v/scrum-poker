@@ -42,7 +42,7 @@ export function App() {
     setToken(token);
     setTimeout(()=>{
       window.location.reload();
-    }, 250)
+    }, 1)
   };
 
   if (configIsInitialized === true) {

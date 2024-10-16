@@ -35,7 +35,7 @@ const LoginComponent: FunctionComponent<LoginProps> = ({ clientId, afterLogin })
                             }
                         }}
                         onError={() => {
-                            console.log("Login Failed");
+                            console.error("Login Failed");
                         }}
                     />
                 </GoogleOAuthProvider>

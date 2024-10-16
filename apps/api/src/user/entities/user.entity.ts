@@ -12,8 +12,5 @@ export class User {
     email: string;
 
     @Column({ nullable: true })
-    image: string;
-
-    @Column({ nullable: true })
-    rawData: string;
+    picture: string;
 }

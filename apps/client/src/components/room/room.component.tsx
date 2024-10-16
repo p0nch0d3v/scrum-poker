@@ -65,7 +65,6 @@ const RoomComponent = function () {
       // if (validateUUID(id)) {
       const getRoomResult = await getRoom(paramId);
       isValidRoom = !isUndefinedOrNull(getRoomResult);
-      console.log('isValidRoom', isValidRoom, getRoomResult);
       if (isValidRoom === true) {
         setValidRoom(isValidRoom);
         setRoom(getRoomResult);

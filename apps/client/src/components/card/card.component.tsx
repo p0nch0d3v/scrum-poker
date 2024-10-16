@@ -30,7 +30,6 @@ const CardComponent: FunctionComponent<CardProps> = ({ card, onClick, disabled, 
     )
 
     if (!isUndefinedOrNull(card.user)) {
-        console.log(card.user);
         innerCardContent = (
             <img src={card.user.user.picture} />
         );

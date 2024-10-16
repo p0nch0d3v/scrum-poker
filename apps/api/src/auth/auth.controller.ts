@@ -25,8 +25,7 @@ export class AuthController {
         const user = await this.userService.login({ 
             email: email, 
             name: name, 
-            picture: picture, 
-            rawData: JSON.stringify(rawData) 
+            picture: picture
         });
         return user !== undefined && user !== null;
     }
