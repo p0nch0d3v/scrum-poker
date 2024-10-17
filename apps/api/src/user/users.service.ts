@@ -13,18 +13,19 @@ export class UsersService {
 
     async login(userToLogin: UserCreateDTO): Promise<UserDTO> {
         const existingUser = await this.userRepository.findOne({ where: { email: userToLogin.email } });
+        console.log('existing user', existingUser);
         if (existingUser !== null && existingUser !== undefined) {
-            existingUser.name = userToLogin.name;
-            existingUser.picture = userToLogin.picture;
-            await this.userRepository.save(userToLogin);
+            await this.userRepository.update({ id: existingUser.id }, { name: userToLogin.name, picture: userToLogin.picture });
             return { name: existingUser.name, email: existingUser.email, picture: existingUser.picture };
         }
 
         const newUser = await this.userRepository.create(userToLogin);
+        console.log('new user', newUser);
         await this.userRepository.save(newUser);
-        if (newUser !== null && newUser !== newUser) {
+        if (newUser !== undefined && newUser !== null) {
             return { name: newUser.name, email: newUser.email, picture: newUser.picture };
         }
+        console.log('no existing, no new');
         return null;
     }
 }
