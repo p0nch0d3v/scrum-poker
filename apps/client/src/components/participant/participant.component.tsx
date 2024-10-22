@@ -26,8 +26,14 @@ const cardContentStyle = (vote: boolean): any => {
 };
 
 const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant, isCurrentUserAdmin, onSetRoomAdmin, roomHasAdmin }) => {
-    const initialsCard = { 'text': getShortName(sanitizeText(participant.userName), 2), 'value': '' };
-    const hiddenCard = { 'text': '*', 'value': '*' };
+    const initialsCard = {
+        'user': participant
+    }
+
+    const hiddenCard = { 
+        'text': '*', 
+        'value': '*' 
+    };
 
     // ----------
     let card = undefined;
@@ -53,43 +59,43 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
     // ----------
     let onParticipantClick = () => { };
     if ((roomHasAdmin === false && isCurrentUserAdmin === false && participant.isAdmin === false) || (isCurrentUserAdmin && participant.isAdmin === false)) {
-        onParticipantClick = () => { onSetRoomAdmin(participant.userName) };
+        onParticipantClick = () => { onSetRoomAdmin(participant.user.email) };
     }
 
     // ----------
     let toolTipText = "";
     if (!isCurrentUserAdmin) {
         if (!participant.isAdmin) {
-            toolTipText = participant.userName;
+            toolTipText = participant.user.email;
         }
         else if (participant.isAdmin) {
-            toolTipText = `${participant.userName} | Admin`;
+            toolTipText = `${participant.user.email} | Admin`;
         }
     }
     else if (isCurrentUserAdmin) {
         if (!participant.isAdmin) {
             if (isUndefinedOrNull(participant.vote)) {
-                toolTipText = `${participant.userName} | Make Admin`;
+                toolTipText = `${participant.user.email} | Make Admin`;
             }
             else if (participant.vote) {
                 if (!participant.hide) {
-                    toolTipText = `${participant.userName} | Make Admin`;
+                    toolTipText = `${participant.user.email} | Make Admin`;
                 }
                 else if (participant.hide) {
-                    toolTipText = `${participant.userName} | Make Admin | ${participant.vote?.text}`;
+                    toolTipText = `${participant.user.email} | Make Admin | ${participant.vote?.text}`;
                 }
             }
         }
         else if (participant.isAdmin) {
             if (isUndefinedOrNull(participant.vote)) {
-                toolTipText = `${participant.userName} | Admin`;
+                toolTipText = `${participant.user.email} | Admin`;
             }
             else if (participant.vote) {
                 if (!participant.hide) {
-                    toolTipText = `${participant.userName} | Admin`;
+                    toolTipText = `${participant.user.email} | Admin`;
                 }
                 else if (participant.hide) {
-                    toolTipText = `${participant.userName} | Admin | ${participant.vote?.text}`;
+                    toolTipText = `${participant.user.email} | Admin | ${participant.vote?.text}`;
                 }
             }
         }
@@ -97,7 +103,11 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
 
     return (
         <span style={cardContentStyle(!isUndefinedOrNull(participant.vote))}>
-            <CardComponent card={card} onClick={onParticipantClick} toolTipText={toolTipText} innerTextStyle={innerTextStyle} />
+            <CardComponent 
+                card={card} 
+                onClick={onParticipantClick} 
+                toolTipText={toolTipText} 
+                innerTextStyle={innerTextStyle} />
         </span>
     );
 }

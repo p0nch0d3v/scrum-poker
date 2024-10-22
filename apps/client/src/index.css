@@ -1,3 +1,9 @@
+html {
+  color-scheme: light dark;
+  color: #ffffff;
+  background-color: #213547;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -22,7 +28,7 @@ body, #root {
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  html, :root {
     color: #ffffff;
     background-color: #213547;
   }

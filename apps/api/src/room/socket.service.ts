@@ -67,14 +67,14 @@ export class SocketService {
 
       const hide: boolean = await this.getHideVotesRoom(data.roomId);
       if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1) {
-        this.allRooms.get(data.roomId).push({ userName: data.userName, socketId: socket.id, vote: null, hide: hide, isAdmin: data.userName === roomAdmin });
+        this.allRooms.get(data.roomId).push({ user: data.user, socketId: socket.id, vote: null, hide: hide, isAdmin: data.user.email === roomAdmin });
       }
 
       if (this.allRooms.get(data.roomId).findIndex((e) => {
-        return e.userName.trim().toLocaleLowerCase() === data.userName.trim().toLocaleLowerCase()
+        return e.user.email.trim().toLocaleLowerCase() === data.user.email.trim().toLocaleLowerCase()
           && e.socketId !== socket.id
       }) >= 0) {
-        this.emitError(socket, data.roomId, `The username: [${data.userName}] is already joined`);
+        this.emitError(socket, data.roomId, `The username: [${data.user.email}] is already joined`);
       }
       else {
         socket.join(data.roomId);

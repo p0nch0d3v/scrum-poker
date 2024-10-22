@@ -1,27 +1,32 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Box, IconButton, Input, Toolbar, Tooltip, Typography } from '@mui/material';
-
 import { Brightness4, Brightness7 } from '@mui/icons-material';
-import { AppConstants } from 'models/index';
+
 import Config from '../../config/config';
-import { reverseString, sanitizeText } from '../../helpers/helpers';
-import useLocalStorage from '../../hooks/useLocalStorage';
 import { ThemeContext } from '../../contexts/themeContext';
+import useSessionStorage from '../../hooks/useSessionStorage';
+import LogoutModalComponent from '../logoutModal/logoutModal.component';
+import { logout } from '../../services/auth.services';
 
 export default function HeaderComponent() {
-    const [userName, setUserName] = useLocalStorage('userName', '');
-    const [applicationTitle, setApplicationTitle] = useState<string>('');
-
+    const [user] = useSessionStorage("user", null);
+    const [name, setName] = useState();
+    const [email, setEmail] = useState();
+    const [picture, setPicture] = useState();
+    const [showLogoutModal, setShowLogoutModal] = useState<boolean>(false);
     const { switchColorMode, mode } = useContext(ThemeContext)
-    const userNameRef = useRef(userName);
     const navigate = useNavigate();
 
     useEffect(() => {
-        setUserName(sanitizeText(userName));
-    }, []);
+        if (user) {
+            const { name, email, picture } = user;
+            setName(name);
+            setEmail(email);
+            setPicture(picture);
+        }
+    }, [user]);
 
     const backToHome = () => {
         setTimeout(() => {
@@ -30,43 +35,36 @@ export default function HeaderComponent() {
         }, 1);
     };
 
-    const onUserNameKeyUp = (e: any) => {
-        if (e.keyCode === 13) {
-            setTimeout(() => {
-                setUserName(sanitizeText(userNameRef.current.firstChild.value));
-                backToHome();
-            }, 250);
-        }
-    }
-
     useEffect(() => {
-        userNameRef.current.firstChild.value = userName;
-        setApplicationTitle(Config.IS_PRODUCTION === false ? reverseString(AppConstants.APP_TITLE) : AppConstants.APP_TITLE);
-        window.document.title = applicationTitle;
+        window.document.title = Config.ApplicationTitle;
     }, [])
 
     return (
         <AppBar position="relative">
-            <Toolbar>
+            <Toolbar sx={{ display: 'flex' }}>
                 <MenuIcon />
                 <Typography variant="h6" component="div" marginLeft={1} width={'100%'} align='left'
                     onClick={backToHome} >
-                    {applicationTitle}
+                    {Config.ApplicationTitle}
                 </Typography>
-                <Box alignItems={'right'} alignContent={'right'} className='participant-name' display={'flex'}>
+                <Box alignItems={'right'} alignContent={'right'} className='participant-name' display={'flex'} flexGrow={2}>
                     <Tooltip disableFocusListener arrow
-                        placement="left"
-                        title="Press [ENTER] to update the Participant name" >
-                        <Input placeholder='Participant name'
-                            sx={{ color: 'unset' }}
-                            inputProps={{ maxLength: 15 }}
-                            ref={userNameRef}
-                            onKeyUp={onUserNameKeyUp} />
+                        placement="bottom" title={email}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }} onClick={() => { setShowLogoutModal(true); }}>
+                            <Typography sx={{ minWidth: '9em', textWrap: 'pretty', textAlign: 'right', marginRight: '0.5em' }}>
+                                {name}
+                            </Typography>
+                            <img src={picture} style={{ height: '3em', width: '3em' }} />
+                        </Box>
                     </Tooltip>
                 </Box>
-                    <IconButton sx={{ ml: 1 }} onClick={switchColorMode} color="inherit">
-                        {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
-                    </IconButton>
+                <IconButton sx={{ ml: 1 }} onClick={switchColorMode} color="inherit">
+                    {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+                </IconButton>
+                {showLogoutModal && <LogoutModalComponent
+                    open={true}
+                    onYes={() => { logout(); backToHome(); }}
+                    onNo={() => { setShowLogoutModal(false); }} />}
             </Toolbar>
         </AppBar>
     );

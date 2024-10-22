@@ -64,11 +64,11 @@ const getShortName = (input: string, count: number): string => {
     return subItems[0];
 }
 
-if (Config.IS_PRODUCTION) {
+/*if (Config.IS_PRODUCTION) {
     window.console.log = () => { };
     window.console.debug = () => { };
     window.console.info = () => { };
-}
+}*/
 
 export {
     validateUUID,

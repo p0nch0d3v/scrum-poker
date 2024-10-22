@@ -5,15 +5,15 @@ import { Socket, io } from 'socket.io-client';
 
 import { CardDTO, ErrorDTO, NofityCardsDTO, NotifyPeopleDTO, ParticipantDTO, RoomDTO, SetAdminDTO } from "models";
 import Config from "../../config/config";
-import { isUndefinedNullOrEmpty, isUndefinedOrNull, sanitizeText, shuffleArray, validateUUID } from "../../helpers/helpers";
-import useLocalStorage from "../../hooks/useLocalStorage";
+import { isUndefinedNullOrEmpty, isUndefinedOrNull, shuffleArray } from "../../helpers/helpers";
 import { getRoom, setRoomAdmin } from '../../services/api.service';
 import CardComponent from "../card/card.component";
 import ErrorModalComponent from "../invalidRoomModal/errorModal.component";
-import UserNameModalComponent from "../userNameModal/userNameModal.component";
 import ParticipantListComponent from "../participantList/participantList.component";
 import VoteSummaryComponent from "../voteSummary/voteSummary.component";
 import ShowSetAdminModalComponent from "../setAdminModal/setAdminModal.component";
+import useSessionStorage from "../../hooks/useSessionStorage";
+import { UserDTO } from "models";
 
 const Messages = {
   FROM_SERVER: {
@@ -37,7 +37,7 @@ const RoomComponent = function () {
   let { paramId } = useParams();
   paramId = isUndefinedOrNull(paramId) ? '' : paramId;
 
-  const [userName, setUserName] = useLocalStorage('userName', '');
+  const [user] = useSessionStorage<UserDTO | null>("user", null);
   const [validRoom, setValidRoom] = useState<boolean>()
   const [validUserName, setValidUserName] = useState<boolean>()
   const [room, setRoom] = useState<RoomDTO | null | undefined>();
@@ -65,7 +65,6 @@ const RoomComponent = function () {
       // if (validateUUID(id)) {
       const getRoomResult = await getRoom(paramId);
       isValidRoom = !isUndefinedOrNull(getRoomResult);
-      console.log('isValidRoom', isValidRoom, getRoomResult);
       if (isValidRoom === true) {
         setValidRoom(isValidRoom);
         setRoom(getRoomResult);
@@ -73,14 +72,13 @@ const RoomComponent = function () {
         setRoomName(getRoomResult.name || '');
         setRoomHide(true);
         setRoomHasAdmin(!isUndefinedNullOrEmpty(getRoomResult.admin));
-        setIsCurrentUserAdmin(getRoomResult?.admin === userName);
+        setIsCurrentUserAdmin(getRoomResult?.admin === user?.email);
       }
       else {
         setValidRoom(isValidRoom);
       }
     }
     useEffectAsync();
-    setUserName(sanitizeText(userName));
 
     return () => {
       if (wsServer.connected || !wsServer.disconnected) {
@@ -100,7 +98,7 @@ const RoomComponent = function () {
 
   useEffect(() => {
     if (validRoom
-      && !isUndefinedNullOrEmpty(userName)
+      && !isUndefinedNullOrEmpty(user?.email)
       && !isUndefinedNullOrEmpty(roomId)
       && !isUndefinedNullOrEmpty(roomName)
     ) {
@@ -131,7 +129,7 @@ const RoomComponent = function () {
 
   const onConnectHandler = function (data: any) {
     console.log(`[${Messages.FROM_SERVER.connect}]`, data);
-    wsServer.emit(Messages.TO_SERVER.join_me, { roomId: roomId, userName: userName });
+    wsServer.emit(Messages.TO_SERVER.join_me, { roomId: roomId, user: user });
     // let usersTmp = Array<ParticipantDTO>();
     // usersTmp.push({ socketId: connectionId, userName: userName, vote: undefined, hide: users[0].hide });
     // setUsers(usersTmp);
@@ -151,7 +149,7 @@ const RoomComponent = function () {
         data.people = sortedArray;
       }
       setUsers(data.people);
-      if (data.people.some((p) => p.userName === userName && p.vote === null)) {
+      if (data.people.some((p) => p.user.email === user?.email && p.vote === null)) {
         setUserVote(null);
       }
     }
@@ -246,15 +244,13 @@ const RoomComponent = function () {
         onClose={backToHome}
         message="Invalid room Id" />}
 
-      {validRoom === true && (isUndefinedNullOrEmpty(userName) || validUserName === false)
-        && <UserNameModalComponent open={!userName} onClose={backToHome} />}
 
       {error !== null && !isUndefinedNullOrEmpty(error.message)
         && <ErrorModalComponent open={!isUndefinedNullOrEmpty(error.message)}
           onClose={backToHome}
           message={error?.message} />}
 
-      {validRoom === true && !isUndefinedNullOrEmpty(userName) && !error.message &&
+      {validRoom === true && !isUndefinedNullOrEmpty(user?.email) && !error.message &&
         <>
           {showSetAdminModal &&
             <ShowSetAdminModalComponent
@@ -295,7 +291,7 @@ const RoomComponent = function () {
                 alignSelf={'center'}>
                 <Button variant="contained"
                   onClick={onClearAllClick}
-                  disabled={roomHasAdmin !== true || room?.admin !== userName}>
+                  disabled={roomHasAdmin !== true || room?.admin !== user?.email}>
                   Clear All
                 </Button>
                 {roomHasAdmin === false &&
@@ -305,7 +301,7 @@ const RoomComponent = function () {
                   </Typography>}
                 <Button variant="contained"
                   onClick={OnHideUnHideClick}
-                  disabled={roomHasAdmin !== true || room?.admin !== userName}>
+                  disabled={roomHasAdmin !== true || room?.admin !== user?.email}>
                   {roomHide === true ? 'Unhide' : 'Hide'}
                 </Button>
               </Box>

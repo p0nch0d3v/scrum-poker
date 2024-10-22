@@ -18,7 +18,7 @@ export const ThemeContext = React.createContext<ThemeContextType>({
 })
 
 export function ThemeContextProvider({ children }: ThemeProviderProps) {
-  const [mode, setMode] = useLocalStorage('theme', 'light');
+  const [mode, setMode] = useLocalStorage<any>('theme', 'light');
 
   const switchColorMode = () => {
     setMode(mode === 'light' ? 'dark' : 'light');
