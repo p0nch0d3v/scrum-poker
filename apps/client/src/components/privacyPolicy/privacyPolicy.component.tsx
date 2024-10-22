@@ -4,14 +4,18 @@ import Markdown from 'react-markdown'
 
 export default function PrivacyPolicyComponent() {
     const [content, setContent] = useState('');
-    useEffect(()=>{
+    useEffect(() => {
         fetch('/privacyPolicy.md')
-        .then((r) => r.text())
-        .then(text  => {
-          setContent(text);
-        })
+            .then((r) => r.text())
+            .then(text => {
+                setContent(text);
+            })
     }, [])
-    return <Markdown>
-        {content}
-    </Markdown>
+
+    return (
+        <div style={{margin:'1rem'}}>
+            <Markdown>
+                {content}
+            </Markdown>
+        </div>);
 }
