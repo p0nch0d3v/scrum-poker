@@ -7,10 +7,11 @@ import LayoutComponent from './components/layout/layout.component';
 import JoinRoomComponent from './components/JoinRoom/joinRoom.component';
 import CreateRoomComponent from './components/createRoom/createRoom.component';
 import RoomListComponent from './components/roomList/roomList.component';
+import LoginComponent from './components/login/login.component';
+import PrivacyPolicyComponent from './components/privacyPolicy/privacyPolicy.component.tsx';
 import Config from './config/config.tsx';
 import './app.css'
 import useSessionStorage from './hooks/useSessionStorage';
-import LoginComponent from './components/login/login.component';
 import { UserDTO } from 'models';
 import { getUser, isTokenValid } from './services/auth.services.ts';
 
@@ -44,6 +45,10 @@ export function App() {
       window.location.reload();
     }, 1)
   };
+
+  if (window.location.pathname === '/privacy-policy') {
+    return (<PrivacyPolicyComponent />);
+  }
 
   if (configIsInitialized === true) {
     if (token === null || token === undefined || isTokenValid(token) === false) {
