@@ -6,13 +6,10 @@ const getGoogleNickname = function (input: string): string {
         let match: string = result[0];
         const regexToClean: RegExp = /(\"|\(|\))/gmi;
 
-        console.log(match)
-
         while (match.match(regexToClean)) {
-            console.log(match);
             match = match.replace(regexToClean, '');
         }
-        console.log(match)
+
         return match;
     }
     return input;
