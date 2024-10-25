@@ -29,9 +29,10 @@ const LoginComponent: FunctionComponent<LoginProps> = ({ clientId, afterLogin })
                         type="standard"
                         ux_mode="popup"
                         onSuccess={async (credentialResponse) => {
-                            const isUserCreated = await loginUser(credentialResponse?.credential || '');
+                            const googleToken = credentialResponse?.credential
+                            const isUserCreated = await loginUser( googleToken|| '');
                             if (isUserCreated === true) {
-                                afterLogin(credentialResponse?.credential);
+                                afterLogin(googleToken);
                             }
                         }}
                         onError={() => {

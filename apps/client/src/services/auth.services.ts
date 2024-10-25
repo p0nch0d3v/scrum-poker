@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { isUndefinedNullOrEmpty, isUndefinedOrNull } from "../helpers/helpers";
 import { UserDTO } from "models";
+import { getGoogleNickname } from "common/index";
 
 const isTokenValid = function (token: string | null | undefined): boolean {
     if (token) {
@@ -17,7 +18,8 @@ const getUser = function (token: string): UserDTO | null | undefined {
     if (token) {
         const decoded = jwtDecode(token);
         const parsedDecoded = JSON.parse(JSON.stringify(decoded))
-        const { email, name, picture } = parsedDecoded;
+        let { email, name, picture } = parsedDecoded;
+        name = getGoogleNickname(name);
         return { name, email, picture };
     }
     return null;
