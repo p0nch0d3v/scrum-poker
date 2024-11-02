@@ -1,10 +1,12 @@
 {
+  "name": "scrum-poker",
   "devDependencies": {
-    "turbo": "1.12.4"
+    "turbo": "2.2.3"
   },
-  "workspaces":[
+  "workspaces": [
     "apps/*"
   ],
+  "packageManager": "npm@10.7.0",
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
