@@ -29,10 +29,10 @@ class ConfigService {
 
     public isProduction(): boolean {
         const node_env = this.getValue('NODE_ENV', false);
-        const value = node_env.toLocaleLowerCase() == Environments.PRODUCTION 
+        const value = node_env?.toLocaleLowerCase() == Environments.PRODUCTION 
         || (
-            node_env.toLocaleLowerCase() !== Environments.DEVELOPMENT 
-            && node_env.toLocaleLowerCase() !== Environments.LOCAL);
+            node_env?.toLocaleLowerCase() !== Environments.DEVELOPMENT 
+            && node_env?.toLocaleLowerCase() !== Environments.LOCAL);
         console.debug('is Production =', value);
         return value;
     }
