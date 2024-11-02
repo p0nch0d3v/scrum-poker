@@ -20,7 +20,7 @@ services:
     platform: linux/amd64
     command: >
       sh -c "cd /app && 
-            npm install --global typescript@5.2.2 @nestjs/cli turbo@1.12.4 vite@5.1.0 &&
+            npm install --global typescript@5.2.2 @nestjs/cli turbo@2.2.3 vite@5.1.0 &&
             npm install --legacy-peer-deps &&
             export POSTGRES_URI=postgresql://$(printenv POSTGRES_USER):$(printenv POSTGRES_PASSWORD)@db:5432/$(printenv POSTGRES_DATABASE) &&
             cd /app/apps/api && npm run typeorm migration:run -- -d ./src/config/migration.config.ts &&
