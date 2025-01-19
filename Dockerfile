@@ -1,4 +1,4 @@
-FROM node:20-slim
+FROM node:20.18.1
 
 ARG MODE=""
 ARG NODE_ENV=""
