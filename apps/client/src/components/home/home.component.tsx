@@ -1,7 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import ListIcon from '@mui/icons-material/List';
 import SendIcon from '@mui/icons-material/Send';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Link } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
 export default function HomeComponent() {
@@ -37,6 +37,8 @@ export default function HomeComponent() {
         onClick={() => { navigate('/list'); }}>
         OPEN LIST
       </Button>
+
+      <Link target={'_blank'} href="/privacy-policy">Privacy Policy</Link>
     </Box>
   )
 }

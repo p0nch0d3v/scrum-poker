@@ -1,6 +1,6 @@
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { FunctionComponent } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Link, Typography } from "@mui/material";
 import useSessionStorage from '../../hooks/useSessionStorage';
 
 import { loginUser } from "../../services/api.service";
@@ -46,6 +46,7 @@ const LoginComponent: FunctionComponent<LoginProps> = ({ clientId, afterLogin })
                 <Button disabled sx={{ marginBottom: '0.5em' }} variant="contained">Login</Button>
                 <Button disabled sx={{ marginBottom: '0.5em' }} variant="contained">Signup</Button>
             </Box>
+            <Link target={'_blank'} href="/privacy-policy">Privacy Policy</Link>
         </Box>
     );
 }
