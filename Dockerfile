@@ -1,4 +1,4 @@
-FROM node:20.18.1
+FROM node:22.13.1
 
 ARG MODE=""
 ARG NODE_ENV=""
