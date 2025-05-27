@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { validateUUID } from 'common';
 import { JoinRoomDTO, RoomDTO, CreateRoomDTO, SetAdminDTO, CreateRoomResultDTO } from 'models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
@@ -46,7 +47,7 @@ export class RoomService {
   }
 
   async hasPassword(id: string): Promise<boolean> {
-    if (!this.validateUUID(id)) {
+    if (!validateUUID(id)) {
       return false;
     }
 
@@ -54,7 +55,7 @@ export class RoomService {
   }
 
   async getByUniqueId(id: string): Promise<RoomDTO> {
-    if (!this.validateUUID(id)) {
+    if (!validateUUID(id)) {
       return null;
     }
 
@@ -85,7 +86,7 @@ export class RoomService {
 
   async get(id: string): Promise<RoomDTO> {
     let lookupById = false;
-    if (this.validateUUID(id)) {
+    if (validateUUID(id)) {
       lookupById = true;
     }
     let savedRoom = null;
@@ -148,14 +149,4 @@ export class RoomService {
     const hashedPassword = await bcrypt.hash(password, 10);
     return hashedPassword;
   }
-
-  private validateUUID = function (uuid: string): boolean {
-    const regexV1 = /^[0-9A-F]{8}-[0-9A-F]{4}-[1][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-    const regexV2 = /^[0-9A-F]{8}-[0-9A-F]{4}-[2][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-    const regexV3 = /^[0-9A-F]{8}-[0-9A-F]{4}-[3][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-    const regexV4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-    const regexV5 = /^[0-9A-F]{8}-[0-9A-F]{4}-[5][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-
-    return regexV1.test(uuid) || regexV2.test(uuid) || regexV3.test(uuid) || regexV4.test(uuid) || regexV5.test(uuid)
-  };
 }

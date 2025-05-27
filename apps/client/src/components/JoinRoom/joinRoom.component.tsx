@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, Card, CardActions, CardContent, InputLabel, TextField, Typography } from "@mui/material";
 
 import { roomHasPassword, joinRoom } from '../../services/api.service';
-import { isUndefinedNullOrEmpty, validateUUID } from "../../helpers/helpers";
+import { isUndefinedNullOrEmpty } from "../../helpers/helpers";
+import { validateUUID } from 'common/index';
 import { JoinRoomDTO } from "models";
 
 export default function JoinRoomComponent() {
