@@ -12,3 +12,7 @@ node_modules/
 
 .env.docker
 .env.development
+
+_old
+/_old
+_old/

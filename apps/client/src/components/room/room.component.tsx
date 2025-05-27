@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Socket, io } from 'socket.io-client';
 
+import { validateUUID } from "common/index";
 import { CardDTO, ErrorDTO, NofityCardsDTO, NotifyPeopleDTO, ParticipantDTO, RoomDTO, SetAdminDTO } from "models";
 import Config from "../../config/config";
 import { isUndefinedNullOrEmpty, isUndefinedOrNull, shuffleArray } from "../../helpers/helpers";
@@ -62,7 +63,6 @@ const RoomComponent = function () {
   useEffect(() => {
     async function useEffectAsync() {
       let isValidRoom = false;
-      // if (validateUUID(id)) {
       const getRoomResult = await getRoom(paramId);
       isValidRoom = !isUndefinedOrNull(getRoomResult);
       if (isValidRoom === true) {
@@ -73,6 +73,9 @@ const RoomComponent = function () {
         setRoomHide(true);
         setRoomHasAdmin(!isUndefinedNullOrEmpty(getRoomResult.admin));
         setIsCurrentUserAdmin(getRoomResult?.admin === user?.email);
+        if (validateUUID(paramId || "")) {
+          history.pushState({}, "", "/room/" + getRoomResult.name);
+        }
       }
       else {
         setValidRoom(isValidRoom);
