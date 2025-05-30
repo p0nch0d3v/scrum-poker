@@ -26,7 +26,20 @@ RUN mkdir /app
 WORKDIR /app
 COPY . /app
 RUN npm install --global typescript@5.2.2 @nestjs/cli@10.4.9 turbo@2.2.3 vite@5.1.7
+
+WORKDIR /app/apps/models
 RUN npm install --legacy-peer-deps
+
+WORKDIR /app/apps/common
+RUN npm install --legacy-peer-deps
+
+WORKDIR /app/apps/api
+RUN npm install --legacy-peer-deps
+
+WORKDIR /app/apps/client
+RUN npm install --legacy-peer-deps
+
+WORKDIR /app
 RUN npm run build
 
 # Only for Alpine based image
