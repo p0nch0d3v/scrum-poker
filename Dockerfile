@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:22-slim
 
 ARG MODE=""
 ARG NODE_ENV=""
@@ -22,12 +22,12 @@ EXPOSE 80
 RUN mkdir /app
 WORKDIR /app
 COPY . /app
-RUN npm install --global typescript@5.2.2 @nestjs/cli turbo@2.2.3 vite@5.1.0
+RUN npm install --global typescript@5.2.2 @nestjs/cli@10.4.9 turbo@2.2.3 vite@5.1.7
 RUN npm install --legacy-peer-deps
 RUN npm run build
 
 # Only for Alpine based image
-RUN apk update && apk add bash
+# RUN apk update && apk add bash
 
 CMD ["bash", "docker_entry_point.sh"]
 
