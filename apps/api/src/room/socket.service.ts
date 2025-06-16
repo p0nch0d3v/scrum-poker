@@ -17,7 +17,8 @@ const Messages = {
     vote: 'vote',
     clear_votes: 'clear_votes',
     hide_unHide: 'hide_unHide',
-    set_admin: 'set_admin'
+    set_admin: 'set_admin',
+    voting: 'voting'
   }
 }
 
@@ -132,6 +133,19 @@ export class SocketService {
       console.log(`[${Messages.FROM_CLIENT.set_admin}]`, socket.id, roomId);
       this.emitAdmin(socket, roomId);
     });
+
+    socket.on(Messages.FROM_CLIENT.voting, (roomId: string) => {
+      let room = this.allRooms.get(roomId);
+      this.setHideVotesRoom(roomId, true);
+
+      for (let i = 0; i < room.length; i++) {
+        const user = room[i];
+        user.vote = null;
+        user.hide = true;
+      }
+
+      this.emitPeople(socket, roomId, true, this.allRooms.get(roomId));
+    });
   }
 
   emitPeople = function (socket: Socket, roomId: string, hideVotes: boolean, people: Array<ParticipantDTO>) {
@@ -212,7 +226,7 @@ export class SocketService {
     this.allRoomsInfo.get(roomId).hide = newValue;
   }
 
-   parseValue = function(input: string): string | null | undefined {
+  parseValue = function (input: string): string | null | undefined {
     let value = undefined;
     if (input == 'undefined') {
       value = undefined;
