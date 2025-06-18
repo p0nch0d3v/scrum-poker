@@ -31,7 +31,8 @@ const Messages = {
     clear_votes: 'clear_votes',
     hide_unHide: 'hide_unHide',
     set_admin: 'set_admin',
-    voting: 'voting'
+    start_voting: 'start_voting',
+    stop_voting: 'stop_voting'
   }
 }
 
@@ -58,7 +59,7 @@ const RoomComponent = function () {
   const [error, setError] = useState<ErrorDTO>({});
   const [debug, setDebug] = useState<boolean>(false);
   const [intervalId, setIntervalId] = useState<any>();
-  const [isVoting, setIsVoting] = useState<boolean>(false);
+  const [isVoting, setIsVoting] = useState<boolean | null | undefined>();
   const [votingInterval, setVotingInterval] = useState<any>();
   const [votingTime, setVotingTime] = useState<number>(0);
   const [wsServer, setWsServer] = useState(io(Config.SOCKET_SERVER, { autoConnect: false, reconnection: true }));
@@ -75,7 +76,7 @@ const RoomComponent = function () {
         setRoom(getRoomResult);
         setRoomId(getRoomResult?.id);
         setRoomName(getRoomResult.name || '');
-        setRoomHide(true);
+        // setRoomHide(true);
         setRoomHasAdmin(!isUndefinedNullOrEmpty(getRoomResult.admin));
         setIsCurrentUserAdmin(getRoomResult?.admin === user?.email);
         if (validateUUID(paramId || "")) {
@@ -133,13 +134,13 @@ const RoomComponent = function () {
     }
   }, [error, connectionId])
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (isVoting === true && votingTime <= 0) {
       clearInterval(votingInterval);
       setIsVoting(false);
-      onHideUnHideClick();
+      //onHideUnHideClick();
     }
-  }, [isVoting, votingInterval, votingTime])
+  }, [isVoting, votingInterval, votingTime])*/
 
   /* ---------- */
 
@@ -155,9 +156,16 @@ const RoomComponent = function () {
     console.log(`[${Messages.FROM_SERVER.people}]`, data, room);
 
     if (data.roomId === roomId) {
-      setRoomHide(data.hide === true ? true : false);
+      if (isVoting === false && data.voting === true ) {
+        console.log('start voting');
+      }
+      else if (isVoting === true && data.voting === false) {
+        console.log('stop voting');
+      } 
 
-      if (data.hide === false) {
+      setIsVoting(data.voting === true ? true : false);
+
+      if (data.voting === false) {
         var sortedArray: ParticipantDTO[] = data.people.sort((n1, n2) => {
           return (isNaN(Number(n2.vote?.value)) ? -1 : Number(n2.vote?.value))
             - (isNaN(Number(n1.vote?.value)) ? -1 : Number(n1.vote?.value))
@@ -220,18 +228,18 @@ const RoomComponent = function () {
   };
 
   const onStartVoteClick = function () {
-    setIsVoting(true);
-    setVotingTime(10);
-    // onClearAllClick();
-    console.log(roomHide);
-    // if (roomHide === false) {
-    //   onHideUnHideClick();
-    // }
-    let interval = setInterval(() => {
-      setVotingTime(votingTime => votingTime - 1);
-    }, 1000);
-    setVotingInterval(interval);
-    wsServer.emit(Messages.TO_SERVER.voting, { roomId: roomId });
+    // setIsVoting(true);
+    // setVotingTime(10);
+    // // onClearAllClick();
+    // console.log(roomHide);
+    // // if (roomHide === false) {
+    // //   onHideUnHideClick();
+    // // }
+    // let interval = setInterval(() => {
+    //   setVotingTime(votingTime => votingTime - 1);
+    // }, 1000);
+    // setVotingInterval(interval);
+    // wsServer.emit(Messages.TO_SERVER.voting, { roomId: roomId });
   };
 
   /* ---------- */
@@ -262,7 +270,7 @@ const RoomComponent = function () {
       {Config.IS_PRODUCTION === false && debug === true &&
         <>
           <Typography>validRoom: {validRoom ? 'valid' : 'invalid'}</Typography>
-          <Typography>roomHide: {roomHide ? 'hide' : 'no hide'}</Typography>
+          <Typography>isVoting: {isVoting ? 'true' : 'false'}</Typography>
           <Typography>{isCurrentUserAdmin === true ? 'isCurrentUserAdmin' : ''}</Typography>
           <Typography>
             {JSON.stringify(room)}
@@ -309,7 +317,7 @@ const RoomComponent = function () {
               <Box style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
                 {cards.map((card) =>
                   <CardComponent card={card}
-                    disabled={roomHide === false || roomHasAdmin == false}
+                    disabled={isVoting === false || roomHasAdmin == false}
                     selected={userVote?.value === card.value}
                     onClick={() => { onVoteClick(card); }} />
                 )}
@@ -320,12 +328,12 @@ const RoomComponent = function () {
                 display={'flex'}
                 justifyContent={'space-between'}
                 alignSelf={'center'}>
-                {/* <Button variant="contained"
+                <Button variant="contained"
                   onClick={onClearAllClick}
                   style={{ display: !roomHasAdmin ? 'none' : 'flex' }}
                   disabled={roomHasAdmin !== true || room?.admin !== user?.email || isVoting === true}>
                   Clear All
-                </Button> */}
+                </Button>
                 {roomHasAdmin === false &&
                   <Typography variant="h6" component="h6" color="warning"
                     style={{ fontStyle: 'italic', fontWeight: 900, color: '#ba8e23' }}>
@@ -337,17 +345,17 @@ const RoomComponent = function () {
                   disabled={roomHasAdmin !== true || room?.admin !== user?.email || isVoting === true}>
                   {isVoting ? `Stop ${votingTime.toString()}` : 'Start Vote'}
                 </Button>
-                {/* <Button variant="contained"
+                <Button variant="contained"
                   onClick={onHideUnHideClick}
                   style={{ display: !roomHasAdmin ? 'none' : 'flex' }}
                   disabled={roomHasAdmin !== true || room?.admin !== user?.email || isVoting === true}>
                   {roomHide === true ? 'Unhide' : 'Hide'}
-                </Button> */}
+                </Button>
               </Box>
 
-              {(roomHide === false || isCurrentUserAdmin) && <VoteSummaryComponent users={users} />}
+              {(!isVoting || isCurrentUserAdmin) && <VoteSummaryComponent users={users} />}
 
-              {roomHide === true && <ParticipantListComponent
+              {<ParticipantListComponent
                 users={users}
                 isCurrentUserAdmin={isCurrentUserAdmin}
                 roomHasAdmin={roomHasAdmin}

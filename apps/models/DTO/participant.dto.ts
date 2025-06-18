@@ -6,5 +6,6 @@ export type ParticipantDTO = {
     socketId: string | undefined,
     vote: CardDTO | undefined,
     hide: boolean,
+    voting?: boolean | null | undefined,
     isAdmin: boolean
 };

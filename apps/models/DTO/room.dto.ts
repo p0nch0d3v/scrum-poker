@@ -13,7 +13,8 @@ export class RoomDTO {
     id: string | undefined;
     name: string| undefined;
     admin: string| undefined;
-    hide?: boolean| undefined;
+    hide: boolean | undefined;
+    voting?: boolean | null | undefined;
     serie: string | null | undefined;
     values: string | null | undefined;
     password: string | null | undefined;

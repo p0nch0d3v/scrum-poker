@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { RoomService } from './room.service';
 import { NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO, ErrorDTO, ParticipantDTO, SerieDTO } from 'models'
-import { SerieService } from '../serie/seire.service';
+// import { SerieService } from '../serie/seire.service';
 
 const Messages = {
   TO_CLIENT: {
@@ -18,7 +18,8 @@ const Messages = {
     clear_votes: 'clear_votes',
     hide_unHide: 'hide_unHide',
     set_admin: 'set_admin',
-    voting: 'voting'
+    start_voting: 'start_voting',
+    stop_voting: 'stop_voting'
   }
 }
 
@@ -26,8 +27,8 @@ const Messages = {
 export class SocketService {
 
   constructor(
-    private readonly roomService: RoomService,
-    private readonly serieService: SerieService
+    private readonly roomService: RoomService
+    // private readonly serieService: SerieService
   ) { }
 
   private readonly allRooms: Map<String, Array<ParticipantDTO>> = new Map();
@@ -45,13 +46,14 @@ export class SocketService {
       for (let i = 0; i < this.allRooms.size; i++) {
         let roomId = (Array.from(this.allRooms.keys())[i]).toString();
         let room = this.allRooms.get(roomId);
-        const hide: boolean = await this.getHideVotesRoom(data.roomId);
+        const currentHide: boolean = await this.getHideVotesRoom(data.roomId);
+        const currentVoting: boolean = await this.getVotingRoom(data.roomId);
 
         const index = room.findIndex((e) => { return e.socketId == clientId });
         if (index > -1) {
           room.splice(index, 1);
           console.log(`disconnected from [${roomId}`)
-          this.emitPeople(socket, roomId, hide, this.allRooms.get(roomId));
+          this.emitPeople(socket, roomId, currentHide, currentVoting, this.allRooms.get(roomId));
         }
       }
     });
@@ -60,15 +62,26 @@ export class SocketService {
       console.log(`[${Messages.FROM_CLIENT.join_me}]`, socket.id, clientId, data);
       const roomAdmin = await this.roomService.getAdmin(data.roomId);
       if (!this.allRooms.has(data.roomId)) {
+        // register new room
         this.allRooms.set(data.roomId, []);
       }
       if (!this.allRoomsInfo.has(data.roomId)) {
-        this.allRoomsInfo.set(data.roomId, new RoomInfoDTO(data.roomId, true, roomAdmin));
+        // register new room
+        this.allRoomsInfo.set(data.roomId, new RoomInfoDTO(data.roomId, true, null, roomAdmin));
       }
 
-      const hide: boolean = await this.getHideVotesRoom(data.roomId);
+      const currentHide: boolean = await this.getHideVotesRoom(data.roomId);
+      const currentVoting: boolean = await this.getVotingRoom(data.roomId);
+
       if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1) {
-        this.allRooms.get(data.roomId).push({ user: data.user, socketId: socket.id, vote: null, hide: hide, isAdmin: data.user.email === roomAdmin });
+        this.allRooms.get(data.roomId).push({ 
+          user: data.user, 
+          socketId: socket.id, 
+          vote: null, 
+          hide: currentHide, 
+          voting: currentVoting, 
+          isAdmin: data.user.email === roomAdmin 
+        });
       }
 
       if (this.allRooms.get(data.roomId).findIndex((e) => {
@@ -80,7 +93,7 @@ export class SocketService {
       else {
         socket.join(data.roomId);
 
-        this.emitPeople(socket, data.roomId, hide, this.allRooms.get(data.roomId));
+        this.emitPeople(socket, data.roomId, currentHide, currentVoting, this.allRooms.get(data.roomId));
         await this.emitCards(socket, data.roomId);
       }
     });
@@ -89,12 +102,13 @@ export class SocketService {
       console.log(`[${Messages.FROM_CLIENT.vote}]`, socket.id, clientId, data);
       const roomId = data.roomId
       let room = this.allRooms.get(roomId);
-      const hide: boolean = await this.getHideVotesRoom(data.roomId);
+      const currentHide: boolean = await this.getHideVotesRoom(data.roomId);
+      const currentVoting: boolean | null | undefined = await this.getVotingRoom(data.roomId);
 
       const index = room.findIndex((e) => { return e.socketId == data.userId });
       if (index > -1) {
         room[index]['vote'] = data.vote != null && data.vote.value !== null ? data.vote : null;
-        this.emitPeople(socket, roomId, hide, this.allRooms.get(roomId));
+        this.emitPeople(socket, roomId, currentHide, currentVoting, this.allRooms.get(roomId));
       }
     });
 
@@ -105,13 +119,15 @@ export class SocketService {
 
       this.setHideVotesRoom(roomId, true);
       const currentHide = await this.getHideVotesRoom(roomId);
+      const currentVoting: boolean | null | undefined = await this.getHideVotesRoom(roomId);
 
       for (let i = 0; i < room.length; i++) {
         const user = room[i];
         user.vote = null;
         user.hide = true;
+        user.voting = null;
       }
-      this.emitPeople(socket, roomId, currentHide, this.allRooms.get(roomId));
+      this.emitPeople(socket, roomId, currentHide, currentVoting, this.allRooms.get(roomId));
     });
 
     socket.on(Messages.FROM_CLIENT.hide_unHide, async (data: RoomInfoDTO) => {
@@ -120,13 +136,14 @@ export class SocketService {
       let room = this.allRooms.get(roomId);
 
       this.setHideVotesRoom(roomId, await this.getHideVotesRoom(roomId) === true ? false : true)
-      const currentHide = await this.getHideVotesRoom(roomId);
+      const currentHide: boolean = await this.getHideVotesRoom(roomId);
+      const currentVoting: boolean | null | undefined = await this.getHideVotesRoom(roomId);
 
       for (let i = 0; i < room.length; i++) {
         const user = room[i];
         user.hide = currentHide;
       }
-      this.emitPeople(socket, roomId, currentHide, this.allRooms.get(roomId));
+      this.emitPeople(socket, roomId, currentHide, currentVoting, this.allRooms.get(roomId));
     });
 
     socket.on(Messages.FROM_CLIENT.set_admin, (roomId: string) => {
@@ -134,24 +151,25 @@ export class SocketService {
       this.emitAdmin(socket, roomId);
     });
 
-    socket.on(Messages.FROM_CLIENT.voting, (roomId: string) => {
-      let room = this.allRooms.get(roomId);
-      this.setHideVotesRoom(roomId, true);
+    // socket.on(Messages.FROM_CLIENT.voting, (roomId: string) => {
+    //   let room = this.allRooms.get(roomId);
+    //   this.setVotingRoom(roomId, true);
 
-      for (let i = 0; i < room.length; i++) {
-        const user = room[i];
-        user.vote = null;
-        user.hide = true;
-      }
+    //   for (let i = 0; i < room.length; i++) {
+    //     const user = room[i];
+    //     user.vote = null;
+    //     user.voting = true;
+    //   }
 
-      this.emitPeople(socket, roomId, true, this.allRooms.get(roomId));
-    });
+    //   //this.emitPeople(socket, roomId, true, ,this.allRooms.get(roomId));
+    // });
   }
 
-  emitPeople = function (socket: Socket, roomId: string, hideVotes: boolean, people: Array<ParticipantDTO>) {
+  emitPeople = function (socket: Socket, roomId: string, hideVotes: boolean, voting: boolean | null | undefined, people: Array<ParticipantDTO>) {
     const nofityJoined: NotifyPeopleDTO = {
       roomId: roomId,
       hide: hideVotes,
+      voting: voting,
       people: people
     };
 
@@ -209,22 +227,49 @@ export class SocketService {
     socket.to(socket.id).emit(Messages.TO_CLIENT.refresh, roomId);
   }
 
+  // ---------- ---------- ---------- ---------- ----------
+
   getHideVotesRoom = async function (roomId: string): Promise<boolean> {
     if (!this.allRoomsInfo.has(roomId)) {
+      // Set new room on set
       const roomAdmin = await this.roomService.getAdmin(roomId);
-      this.allRoomsInfo.set(roomId, new RoomInfoDTO(roomId, true, roomAdmin));
+      this.allRoomsInfo.set(roomId, new RoomInfoDTO(roomId, true, null, roomAdmin));
     }
-    const hide: boolean = this.allRoomsInfo.get(roomId).hide;
-    return hide;
+    const voting: boolean = this.allRoomsInfo.get(roomId).voting;
+    return voting;
   }
 
   setHideVotesRoom = async function (roomId: string, newValue: boolean) {
     if (!this.allRoomsInfo.has(roomId)) {
+      // Set new room on set
       const roomAdmin = await this.roomService.getAdmin(roomId);
-      this.allRoomsInfo.set(roomId, new RoomInfoDTO(roomId, newValue, roomAdmin));
+      this.allRoomsInfo.set(roomId, new RoomInfoDTO(roomId, newValue, null, roomAdmin));
     }
-    this.allRoomsInfo.get(roomId).hide = newValue;
+    this.allRoomsInfo.get(roomId).voting = newValue;
   }
+
+  // ---------- ---------- ---------- ---------- ----------
+
+  getVotingRoom = async function (roomId: string): Promise<boolean | null | undefined> {
+    if (!this.allRoomsInfo.has(roomId)) {
+      // Set new room on set
+      const roomAdmin = await this.roomService.getAdmin(roomId);
+      this.allRoomsInfo.set(roomId, new RoomInfoDTO(roomId, true, null, roomAdmin));
+    }
+    const voting: boolean = this.allRoomsInfo.get(roomId).voting;
+    return voting;
+  }
+
+  setVotingRoom = async function (roomId: string, newValue: boolean | null | undefined) {
+    if (!this.allRoomsInfo.has(roomId)) {
+      // Set new room on set
+      const roomAdmin = await this.roomService.getAdmin(roomId);
+      this.allRoomsInfo.set(roomId, new RoomInfoDTO(roomId, newValue, null, roomAdmin));
+    }
+    this.allRoomsInfo.get(roomId).voting = newValue;
+  }
+
+  // ---------- ---------- ---------- ---------- ----------
 
   parseValue = function (input: string): string | null | undefined {
     let value = undefined;
