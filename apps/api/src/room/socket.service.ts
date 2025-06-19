@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { RoomService } from './room.service';
-import { NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO, ErrorDTO, ParticipantDTO, SerieDTO } from 'models'
+import { NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO, ErrorDTO, ParticipantDTO, SerieDTO, RoomVotingDTO } from 'models'
 import { SerieService } from '../serie/seire.service';
 
 const Messages = {
@@ -74,13 +74,13 @@ export class SocketService {
       const currentVoting: boolean | null | undefined = await this.getVotingRoom(data.roomId);
 
       if (this.allRooms.get(data.roomId).findIndex((e) => { return e.socketId == clientId }) === -1) {
-        this.allRooms.get(data.roomId).push({ 
-          user: data.user, 
-          socketId: socket.id, 
-          vote: null, 
-          hide: currentHide, 
-          voting: currentVoting, 
-          isAdmin: data.user.email === roomAdmin 
+        this.allRooms.get(data.roomId).push({
+          user: data.user,
+          socketId: socket.id,
+          vote: null,
+          hide: currentHide,
+          voting: currentVoting,
+          isAdmin: data.user.email === roomAdmin
         });
       }
 
@@ -151,18 +151,34 @@ export class SocketService {
       this.emitAdmin(socket, roomId);
     });
 
-    // socket.on(Messages.FROM_CLIENT.voting, (roomId: string) => {
-    //   let room = this.allRooms.get(roomId);
-    //   this.setVotingRoom(roomId, true);
+    socket.on(Messages.FROM_CLIENT.start_voting, (data: RoomVotingDTO) => {
+      console.log(`[${Messages.FROM_CLIENT.start_voting}]`, socket.id, data);
 
-    //   for (let i = 0; i < room.length; i++) {
-    //     const user = room[i];
-    //     user.vote = null;
-    //     user.voting = true;
-    //   }
+      let room = this.allRooms.get(data.roomId);
 
-    //   //this.emitPeople(socket, roomId, true, ,this.allRooms.get(roomId));
-    // });
+      for (let i = 0; i < room.length; i++) {
+        const user = room[i];
+        user.vote = null;
+        user.hide = true;
+        user.voting = true;
+      }
+      this.setVotingRoom(data.roomId, true);
+      this.emitPeople(socket, data.roomId, true, true, this.allRooms.get(data.roomId));
+    });
+
+    socket.on(Messages.FROM_CLIENT.stop_voting, (data: RoomVotingDTO) => {
+      console.log(`[${Messages.FROM_CLIENT.stop_voting}]`, socket.id, data);
+
+      let room = this.allRooms.get(data.roomId);
+
+      for (let i = 0; i < room.length; i++) {
+        const user = room[i];
+        user.hide = false;
+        user.voting = false;
+      }
+       this.setVotingRoom(data.roomId, false);
+       this.emitPeople(socket, data.roomId, false, false, this.allRooms.get(data.roomId));
+    });
   }
 
   emitPeople = function (socket: Socket, roomId: string, hideVotes: boolean, voting: boolean | null | undefined, people: Array<ParticipantDTO>) {
@@ -172,6 +188,8 @@ export class SocketService {
       voting: voting,
       people: people
     };
+
+    console.log('emitPeople', nofityJoined);
 
     socket.emit(Messages.TO_CLIENT.people, nofityJoined);
     socket.broadcast.emit(Messages.TO_CLIENT.people, nofityJoined);

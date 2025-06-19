@@ -17,6 +17,7 @@ import { SerieDTO } from './DTO/serie.dto';
 import { AppConstants, Environments } from './app.constants';
 import { UserDTO } from './DTO/user/user.dto';
 import { UserCreateDTO } from './DTO/user/userCreate.dto';
+import { RoomVotingDTO } from './DTO/roomVoting.dto';
 
 export {
     type CardDTO,
@@ -37,6 +38,7 @@ export {
     SerieDTO,
     type UserDTO,
     type UserCreateDTO,
+    type RoomVotingDTO,
     AppConstants,
     Environments
 };

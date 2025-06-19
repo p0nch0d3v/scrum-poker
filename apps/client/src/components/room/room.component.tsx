@@ -147,7 +147,16 @@ const RoomComponent = function () {
     console.log(`[${Messages.FROM_SERVER.people}]`, data, room);
 
     if (data.roomId === roomId) {
+
+      if (!isVoting && data.voting === true) {
+        console.log('start voting');
+      }
+      else if (isVoting === true && !data.voting) {
+        console.log('stop voting');
+      }
+
       setRoomHide(data.hide === true ? true : false);
+      setIsVoting(data.voting === true ? true: data.voting);
 
       if (data.hide === false) {
         var sortedArray: ParticipantDTO[] = data.people.sort((n1, n2) => {
@@ -211,6 +220,15 @@ const RoomComponent = function () {
       });
   };
 
+  const onStartStopVoting = function () {
+    if (isVoting === true) {
+      wsServer.emit(Messages.TO_SERVER.stop_voting, { roomId: roomId, time: 0 });
+    }
+    else if (!isVoting) {
+      wsServer.emit(Messages.TO_SERVER.start_voting, { roomId: roomId, time: 0 });
+    }
+  };
+
   /* ---------- */
 
   const setWsEvents = function (socket: Socket): Socket {
@@ -239,7 +257,7 @@ const RoomComponent = function () {
       {Config.IS_PRODUCTION === false && debug === true &&
         <>
           <Typography>validRoom: {validRoom ? 'valid' : 'invalid'}</Typography>
-          <Typography>room hide: {roomHide ? 'true': 'false'}</Typography>
+          <Typography>room hide: {roomHide ? 'true' : 'false'}</Typography>
           <Typography>isVoting: {isVoting ? 'true' : 'false'}</Typography>
           <Typography>{isCurrentUserAdmin === true ? 'isCurrentUserAdmin' : ''}</Typography>
           <Typography>
@@ -301,7 +319,7 @@ const RoomComponent = function () {
                 <Button variant="contained"
                   onClick={onClearAllClick}
                   style={{ display: !roomHasAdmin ? 'none' : 'flex' }}
-                  disabled={roomHasAdmin !== true || room?.admin !== user?.email}>
+                  disabled={true}>
                   Clear All
                 </Button>
                 {roomHasAdmin === false &&
@@ -310,15 +328,15 @@ const RoomComponent = function () {
                     No admin set, click on any user to set as Admin
                   </Typography>}
                 <Button variant="contained"
-                  onClick={()=>{}}
+                  onClick={onStartStopVoting}
                   style={{ display: !roomHasAdmin ? 'none' : 'flex' }}
                   disabled={roomHasAdmin !== true || room?.admin !== user?.email}>
-                  {isVoting ? `Stop ${votingTime.toString()}` : 'Start Vote'}
+                  {isVoting === true ? `Stop ${votingTime.toString()}` : 'Start Vote'}
                 </Button>
                 <Button variant="contained"
                   onClick={onHideUnHideClick}
                   style={{ display: !roomHasAdmin ? 'none' : 'flex' }}
-                  disabled={roomHasAdmin !== true || room?.admin !== user?.email}>
+                  disabled={true}>
                   {roomHide === true ? 'Unhide' : 'Hide'}
                 </Button>
               </Box>
