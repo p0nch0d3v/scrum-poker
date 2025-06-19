@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { RoomService } from './room.service';
 import { NofityCardsDTO, JoinMeDTO, VoteDTO, RoomInfoDTO, NotifyPeopleDTO, ErrorDTO, ParticipantDTO, SerieDTO } from 'models'
-// import { SerieService } from '../serie/seire.service';
+import { SerieService } from '../serie/seire.service';
 
 const Messages = {
   TO_CLIENT: {
@@ -27,8 +27,8 @@ const Messages = {
 export class SocketService {
 
   constructor(
-    private readonly roomService: RoomService
-    // private readonly serieService: SerieService
+    private readonly roomService: RoomService,
+    private readonly serieService: SerieService
   ) { }
 
   private readonly allRooms: Map<String, Array<ParticipantDTO>> = new Map();
