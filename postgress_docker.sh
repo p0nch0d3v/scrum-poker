@@ -1,8 +1,8 @@
 #!/bin/bash 
 
 echo $1
-container_name=scrum-poker-local
-volume_name=scrum-poker-local-volume
+container_name=scrum-poker-db-local
+volume_name=scrum-poker-db-local-volume
 docker_image='postgres:16.1'
 env_file='.env.docker'
 
