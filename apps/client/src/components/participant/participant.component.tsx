@@ -39,7 +39,7 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
     let card = undefined;
     if (!isUndefinedOrNull(participant?.vote)) {
         card = participant.vote;
-        if (participant.voting) {
+        if (participant.hide) {
             card = hiddenCard;
         }
     }
@@ -78,10 +78,10 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
                 toolTipText = `${participant.user.email} | Make Admin`;
             }
             else if (participant.vote) {
-                if (!participant.voting) {
+                if (!participant.hide) {
                     toolTipText = `${participant.user.email} | Make Admin`;
                 }
-                else if (participant.voting) {
+                else if (participant.hide) {
                     toolTipText = `${participant.user.email} | Make Admin | ${participant.vote?.text}`;
                 }
             }
@@ -91,10 +91,10 @@ const ParticipantComponent: FunctionComponent<ParticipantProps> = ({ participant
                 toolTipText = `${participant.user.email} | Admin`;
             }
             else if (participant.vote) {
-                if (!participant.voting) {
+                if (!participant.hide) {
                     toolTipText = `${participant.user.email} | Admin`;
                 }
-                else if (participant.voting) {
+                else if (participant.hide) {
                     toolTipText = `${participant.user.email} | Admin | ${participant.vote?.text}`;
                 }
             }
