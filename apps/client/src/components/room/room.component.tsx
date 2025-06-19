@@ -71,7 +71,6 @@ const RoomComponent = function () {
       const getRoomResult = await getRoom(paramId);
       isValidRoom = !isUndefinedOrNull(getRoomResult);
       if (isValidRoom === true) {
-        console.log(getRoomResult);
         setValidRoom(isValidRoom);
         setRoom(getRoomResult);
         setRoomId(getRoomResult?.id);
@@ -324,9 +323,9 @@ const RoomComponent = function () {
                 </Button>
               </Box>
 
-              {(isCurrentUserAdmin) && <VoteSummaryComponent users={users} />}
+              {(roomHide === false || isCurrentUserAdmin) && <VoteSummaryComponent users={users} />}
 
-              {<ParticipantListComponent
+              {roomHide === true && <ParticipantListComponent
                 users={users}
                 isCurrentUserAdmin={isCurrentUserAdmin}
                 roomHasAdmin={roomHasAdmin}
