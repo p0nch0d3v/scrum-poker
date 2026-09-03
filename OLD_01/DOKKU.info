@@ -1,0 +1,12 @@
+dokku docker-options:add sp build '--build-arg NODE_ENV=Production'
+dokku docker-options:add sp build '--build-arg VITE_NODE_ENV=Production'
+dokku docker-options:add sp build '--build-arg VITE_SOCKET_SERVER=""'
+dokku docker-options:add sp build '--build-arg POSTGRES_URI="postgres://postgres:p0nCh0.123@dokku-postgres-scrumpokerdb:5432/scrumpokerdb"'
+
+POSTGRES_HOST
+POSTGRES_PORT
+POSTGRES_USER
+POSTGRES_PASSWORD
+POSTGRES_DATABASE
+
+npm run typeorm migration:run -- -d ./src/config/migration.config.ts

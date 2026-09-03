@@ -1,0 +1,14 @@
+node_modules
+/node_modules
+node_modules/
+
+.turbo
+/.turbo
+.turbo/
+
+.vscode
+/.vscode
+.vscode/
+
+.env.docker
+.env.development
