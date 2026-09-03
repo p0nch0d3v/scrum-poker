@@ -1,0 +1,3 @@
+For Agile development teams conducting refinement and planning ceremonies, our Scrum Poker application is a real-time collaboration tool that eliminates anchoring bias and drives consensus on user story estimation. 
+
+A lightweight, real-time Scrum Poker app that lets distributed teams estimate backlog items collaboratively and reach consensus faster, by replacing manual voting with synchronized, bias-free estimation during refinement and planning ceremonies.
